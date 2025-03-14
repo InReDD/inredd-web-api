@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  inredd-webservices:
+    container_name: inredd-webservices
+    build:
+      context: ./inredd-webservices
+      dockerfile: app/main/configuration/docker/Dockerfile
+    restart: always
+    ports:
+      - "18085:18081"
+    logging:
+      options:
+        max-size: "500m"
+        max-file: "3"
