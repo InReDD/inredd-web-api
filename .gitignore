@@ -1,0 +1,25 @@
+#ModelApp
+*.ipynb_checkpoints
+app/main/services/*/output/*
+
+#services/*/StrategyNetworks/strategies/weights/*
+temp/*
+*.log
+*.pth
+*.onnx
+*.pt
+*.h5
+*.keras
+
+#Python
+configs/venv/
+**/__pycache__
+
+#env file
+.env
+.vscode
+#weights
+app/main/services/singleImage/StrategyNetworks/strategies/weights/*
+
+# Jetbrains config
+.ideia/

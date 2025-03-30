@@ -7,9 +7,6 @@
 from flask import Blueprint
 from flask_restx import Api
 
-from .main.controller.user_controller import api as mouth_det_ns
-
-
 URL_PREFIX = '/api/v1'
 BASE_PATH = '/inreddweb'
 
@@ -20,5 +17,3 @@ api = Api(blueprint,
           description='InReDD WebPortal - API',
           doc='/doc/'
           )
-
-api.add_namespace(mouth_det_ns, path=BASE_PATH)

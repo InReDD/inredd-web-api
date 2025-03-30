@@ -6,9 +6,11 @@
 # ----------------------------------------------------------------------------------------------------------------------
 from flask import abort, request
 from flask_restx import Resource
-from ..model.user import User
+
+from ..model.user_model import User
 from ..model.inredd_model import InreddTO
 from ..util.log_utils import LogUtils
+
 from ..util.decorator import logging_get_request
 from werkzeug.security import check_password_hash  # For password hashing check
 

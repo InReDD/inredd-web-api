@@ -10,9 +10,15 @@ logging.info("Starting Inredd-Webservices...")
 from app import blueprint
 from app.main import create_app
 
+from database import db_session
+
 app = create_app('development')
 app.register_blueprint(blueprint)
 app.app_context().push()
 
 if __name__ == '__main__':
-    app.run()
+    app.run(port=3004)
+    
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    db_session.remove()

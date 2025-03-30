@@ -32,7 +32,7 @@ class LogUtils:
 
         stream_devnull = open(os.devnull, 'w')
         c_handler = logging.StreamHandler(stream_devnull)
-        f_handler = logging.handlers.RotatingFileHandler("/inredd-api-webportal/logs/" + PROJECT + ".log", maxBytes=1073741824,
+        f_handler = logging.handlers.RotatingFileHandler("./logs/" + PROJECT + ".log", maxBytes=1073741824,
                                                          backupCount=3)
 
         c_handler.setLevel(logging.DEBUG)
