@@ -8,14 +8,15 @@ from flask import abort, request
 from flask_restx import Resource
 
 from ..model.user_model import User
-from ..model.inredd_model import InreddTO
-from ..util.log_utils import LogUtils
+from ..model.user_namespace import InreddTO
 
+from ..util.log_utils import LogUtils
 from ..util.decorator import logging_get_request
+
 from werkzeug.security import check_password_hash  # For password hashing check
 
 log_utils = LogUtils.instance()
-user_list_response = InreddTO.user_list_response
+user_list_response = InreddTO.user_response
 api = InreddTO.api
 FILE_NAME = "user_controller.py"
 INTERNAL_SERVER_ERROR = 500
@@ -23,7 +24,6 @@ INTERNAL_SERVER_ERROR = 500
 @api.route('/login')
 class UserController(Resource):
     """Controller to Login a User."""
-
     @api.response(200, 'User successfully logged in')
     @api.doc('Login documentation')
     @logging_get_request(FILE_NAME, "post", "UserController", print_input=False)
@@ -51,5 +51,29 @@ class UserController(Resource):
 
         except Exception as e:
             abort(INTERNAL_SERVER_ERROR, str(e.args))
+@api.route('/userinfo')
+class UserController(Resource):
+    @api.response(200, 'User successfully logged in')
+    @api.doc('Login documentation')
+    @logging_get_request(FILE_NAME, "get", "UserController", print_input=False)
+    def get(self):
+        """
+        Retrieve complete user information.
+        Expects a 'username' parameter as a query parameter.
+        :return: User data if found, error otherwise
+        """
+        try:
+            firstName = request.args.get('firstName')
+            if not firstName:
+                abort(400, "Username query parameter is required")
 
+            # Query the user in the database
+            user = User.query.filter_by(username=firstName).first()
 
+            if not user:
+                abort(404, "User not found")
+
+            return user.to_dict(), 200
+
+        except Exception as e:
+            abort(INTERNAL_SERVER_ERROR, str(e.args))

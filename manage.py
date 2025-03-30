@@ -12,12 +12,12 @@ from app.main import create_app
 
 from database import db_session
 
-app = create_app('development')
+app = create_app('dev')
 app.register_blueprint(blueprint)
 app.app_context().push()
 
 if __name__ == '__main__':
-    app.run(port=3004)
+    app.run(debug=True, port=3004)
     
 @app.teardown_appcontext
 def shutdown_session(exception=None):
