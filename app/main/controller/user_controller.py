@@ -8,6 +8,7 @@ from flask import abort, request
 from flask_restx import Resource
 
 from ..model.user_model import User, UserTO
+from ..model.academic_model import Academic
 
 from ..util.log_utils import LogUtils
 from ..util.decorator import logging_get_request
@@ -67,12 +68,21 @@ class UserController(Resource):
                 abort(400, "Username query parameter is required")
 
             # Query the user in the database
-            user = User.query.filter_by(firstname=firstname).first()
+            user = User.query.filter_by(firstname=firstname).first() 
+           
+             # Query the user academic in the database 
+            iduser = user.iduser
+            academic = Academic.query.filter_by(iduser=iduser).first()
+
+            user_dict = user.to_dict()
+            academic_dic = academic.to_dict()
+            
+            response_dict = {**user_dict, **academic_dic}
 
             if not user:
                 abort(404, "User not found")
 
-            return user.to_dict(), 200
+            return response_dict, 200
 
         except Exception as e:
             abort(INTERNAL_SERVER_ERROR, str(e.args))
