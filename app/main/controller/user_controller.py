@@ -53,36 +53,40 @@ class UserController(Resource):
             abort(INTERNAL_SERVER_ERROR, str(e.args))
 @api.route('/userinfo')
 class UserController(Resource):
-    @api.response(200, 'User successfully logged in')
-    @api.doc('Login documentation')
+    @api.response(200, 'User(s) successfully retrieved')
+    @api.doc('User info retrieval')
     @logging_get_request(FILE_NAME, "get", "UserController", print_input=False)
     def get(self):
         """
         Retrieve complete user information.
-        Expects a 'username' parameter as a query parameter.
+        If a 'firstname' query parameter is provided, return the user with that first name.
+        Otherwise, return all users.
         :return: User data if found, error otherwise
         """
         try:
             firstname = request.args.get('firstname')
-            if not firstname:
-                abort(400, "Username query parameter is required")
 
-            # Query the user in the database
-            user = User.query.filter_by(firstname=firstname).first() 
-           
-             # Query the user academic in the database 
-            iduser = user.iduser
-            academic = Academic.query.filter_by(iduser=iduser).first()
+            # If a search parameter is provided, retrieve one user
+            if firstname:
+                user = User.query.filter_by(firstname=firstname).first()
+                if not user:
+                    abort(404, "User not found")
+                    
+                academic = Academic.query.filter_by(iduser=user.iduser).first()
+                # Merge dictionaries; if academic is None, use an empty dict
+                response_dict = {**user.to_dict(), **(academic.to_dict() if academic else {})}
+                return response_dict, 200
 
-            user_dict = user.to_dict()
-            academic_dic = academic.to_dict()
-            
-            response_dict = {**user_dict, **academic_dic}
-
-            if not user:
-                abort(404, "User not found")
-
-            return response_dict, 200
+            # If no search parameter is provided, return all users
+            else:
+                users = User.query.all()
+                results = []
+                for user in users:
+                    academic = Academic.query.filter_by(iduser=user.iduser).first()
+                    # Merge the dictionaries; if no academic record exists, just return user data
+                    combined = {**user.to_dict(), **(academic.to_dict() if academic else {})}
+                    results.append(combined)
+                return results, 200
 
         except Exception as e:
             abort(INTERNAL_SERVER_ERROR, str(e.args))
