@@ -7,8 +7,7 @@
 from flask import abort, request
 from flask_restx import Resource
 
-from ..model.user_model import User
-from ..model.user_namespace import InreddTO
+from ..model.user_model import User, UserTO
 
 from ..util.log_utils import LogUtils
 from ..util.decorator import logging_get_request
@@ -16,8 +15,8 @@ from ..util.decorator import logging_get_request
 from werkzeug.security import check_password_hash  # For password hashing check
 
 log_utils = LogUtils.instance()
-user_list_response = InreddTO.user_response
-api = InreddTO.api
+user_response = UserTO.user_response
+api = UserTO.api
 FILE_NAME = "user_controller.py"
 INTERNAL_SERVER_ERROR = 500
 
@@ -63,12 +62,12 @@ class UserController(Resource):
         :return: User data if found, error otherwise
         """
         try:
-            firstName = request.args.get('firstName')
-            if not firstName:
+            firstname = request.args.get('firstname')
+            if not firstname:
                 abort(400, "Username query parameter is required")
 
             # Query the user in the database
-            user = User.query.filter_by(username=firstName).first()
+            user = User.query.filter_by(firstname=firstname).first()
 
             if not user:
                 abort(404, "User not found")

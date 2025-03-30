@@ -6,7 +6,7 @@ from sqlalchemy import create_engine, event
 from sqlalchemy.orm import scoped_session, sessionmaker, declarative_base
 
 postgresql_engine = create_engine(
-    f"postgresql+psycopg2://${os.environ.get('DATABASE_URL')}",
+    f"postgresql+psycopg2://{os.getenv('DATABASE_URL')}",
     pool_reset_on_return=None, # disable default reset-on-return scheme
 )
 db_session = scoped_session(sessionmaker(autocommit=False,
