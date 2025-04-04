@@ -47,4 +47,49 @@ Se precisar modificar a porta ou algum dado do banco, edite o arquivo **applicat
 server.port=8881
 ```
 
+## Ajuste no Banco de Dados
+Se o ID do usuário não estiver sendo autoincrementado, execute o seguinte comando no banco (ta anotado para eu ver isso se continuar dando problema quando eu subir a aplicacao dnv, provavel BO de sql):
+```sql
+SELECT setval('user_id_user_seq', (SELECT MAX(id_user) FROM "user"));
+```
+
+## Criando um Usuário
+**Endpoint:**
+```
+POST: http://localhost:8881/users
+```
+
+**Corpo da requisição:**
+```json
+{
+  "firstName": "Thiago",
+  "lastName": "Teste API",
+  "email": "thiago.vmatos5@gmail.com",
+  "password": "t123456",
+  "active": true,
+  "contact": "0001"
+}
+```
+
+## Como Fazer Login
+**Endpoint:**
+```
+POST: http://localhost:8881/oauth/token
+```
+
+**Autenticação:**
+- Tipo: Basic Auth
+- Usuário: `client`
+- Senha: `client`
+
+**Body (x-www-form-urlencoded):**
+```
+grant_type=password
+username=thiago.vmatos5@gmail.com
+password=t123456
+```
+
+### Resposta
+O retorno incluirá o `refresh_token`, que possuem uma duração específica.
+
 
