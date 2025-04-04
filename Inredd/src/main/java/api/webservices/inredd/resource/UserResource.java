@@ -80,6 +80,4 @@ public class UserResource {
 			@RequestBody Boolean active){
 		userService.updateActiveProperty(id, active);
 	}
-	
-	
 }

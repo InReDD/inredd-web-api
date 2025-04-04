@@ -20,46 +20,55 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
-@Table(name = "user")
+@Table(name = "\"user\"")
 public class User {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Long idUser;
 	@NotNull
-	@Size(min = 3, max = 50)
-	private String name;
+	@Size(min = 3, max = 45)
+	private String firstName;
+	@NotNull
+	@Size(min = 3, max = 45)
+	private String lastName;
 	@NotNull
 	@Email
 	private String email;
 	@NotNull
 	@Size(min = 6, max = 150)
 	private String password;
-	@Min(value = 12)
-	private int age;
-	@Enumerated(EnumType.STRING)
 	@NotNull
-	private Gender gender;
+	@Size(min = 3, max = 50)
+	private String contact;
 	@NotNull
 	private Boolean active;
 	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "user_permission", joinColumns = @JoinColumn(name = "id_user"), inverseJoinColumns = @JoinColumn(name = "id_permission"))
+	@JoinTable(name = "user_permission", joinColumns = @JoinColumn(name = "id_user_permission"), inverseJoinColumns = @JoinColumn(name = "id_permission"))
 	private List<Permission> permissions;
 
 	public Long getId() {
-		return id;
+		return idUser;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setId(Long idUser) {
+		this.idUser = idUser;
 	}
 
-	public String getName() {
-		return name;
+	public String getFirstName() {
+		return firstName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 
 	public String getEmail() {
@@ -78,22 +87,6 @@ public class User {
 		this.password = password;
 	}
 
-	public int getAge() {
-		return age;
-	}
-
-	public void setAge(int age) {
-		this.age = age;
-	}
-
-	public Gender getGender() {
-		return gender;
-	}
-
-	public void setGender(Gender gender) {
-		this.gender = gender;
-	}
-
 	public Boolean isActive() {
 		return active;
 	}
@@ -110,9 +103,17 @@ public class User {
 		this.permissions = permissions;
 	}
 
+	public String getContact() {
+		return contact;
+	}
+
+	public void setContact(String contact) {
+		this.contact = contact;
+	}
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(id);
+		return Objects.hash(idUser);
 	}
 
 	@Override
@@ -124,7 +125,7 @@ public class User {
 		if (getClass() != obj.getClass())
 			return false;
 		User other = (User) obj;
-		return Objects.equals(id, other.id);
+		return Objects.equals(idUser, other.idUser);
 	}
 
 }
