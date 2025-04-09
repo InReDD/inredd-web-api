@@ -12,6 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import api.webservices.inredd.domain.model.User;
 import api.webservices.inredd.domain.model.dto.UserDTO;
@@ -31,10 +34,8 @@ public class GroupResource {
     private GroupService groupService;
 
     @GetMapping
-    public List<GroupDTO> list() {
-        return groupRepository.findAll().stream()
-            .map(GroupDTO::new)
-            .collect(Collectors.toList());
+    public Page<GroupDTO> list(Pageable pageable) {
+        return groupRepository.findAll(pageable).map(GroupDTO::new);
     }
 
     @PostMapping
@@ -68,8 +69,26 @@ public class GroupResource {
         return ResponseEntity.ok(updatedGroup);
     }
 
+
     @GetMapping("/{id}/users")
-    public List<UserDTO> listUsersByGroup(@PathVariable Long id) {
-        return groupService.findUsersByGroupId(id);
+    public ResponseEntity<Page<UserDTO>> listUsersByGroup(
+            @PathVariable Long id,
+            Pageable pageable) {
+
+        List<UserDTO> allUsers = groupService.findUsersByGroupId(id);
+
+        // Paginação manual
+        int page = pageable.getPageNumber();
+        int size = pageable.getPageSize();
+        int start = Math.min((int) pageable.getOffset(), allUsers.size());
+        int end = Math.min(start + size, allUsers.size());
+
+        Page<UserDTO> pageResult = new PageImpl<>(
+            allUsers.subList(start, end),
+            pageable,
+            allUsers.size()
+        );
+
+        return ResponseEntity.ok(pageResult);
     }
 }

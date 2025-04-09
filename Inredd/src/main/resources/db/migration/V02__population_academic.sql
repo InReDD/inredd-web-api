@@ -280,7 +280,10 @@ INSERT INTO user_permission (id_user_permission, id_permission) values (1, 6);
 
 
 INSERT INTO groups (id_groups, name, description)
-VALUES (1, 'InReDD', 'InReDD group');
+VALUES 
+(1, 'Coordinating Professors', 'InReDD group'), (2, 'Postdoctoral', 'InReDD group'), (3, 'Doctorate', 'InReDD group'), 
+(4, 'Master&aposs', 'InReDD group'), (5, 'Scientific Initiation', 'InReDD group'),
+(6, 'Collaborating Researchers', 'InReDD group');
 
 INSERT INTO groups_has_user (id_groups, id_user)
 VALUES (1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (1, 8), (1, 9), (1, 10);
