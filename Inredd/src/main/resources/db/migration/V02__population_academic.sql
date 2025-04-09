@@ -277,3 +277,10 @@ INSERT INTO user_permission (id_user_permission, id_permission) values (1, 3);
 INSERT INTO user_permission (id_user_permission, id_permission) values (1, 4);
 INSERT INTO user_permission (id_user_permission, id_permission) values (1, 5);
 INSERT INTO user_permission (id_user_permission, id_permission) values (1, 6);
+
+
+INSERT INTO groups (id_groups, name, description)
+VALUES (1, 'InReDD', 'InReDD group');
+
+INSERT INTO groups_has_user (id_groups, id_user)
+VALUES (1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (1, 8), (1, 9), (1, 10);

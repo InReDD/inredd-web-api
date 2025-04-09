@@ -46,6 +46,8 @@ public class User {
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "user_permission", joinColumns = @JoinColumn(name = "id_user_permission"), inverseJoinColumns = @JoinColumn(name = "id_permission"))
 	private List<Permission> permissions;
+	@ManyToMany(mappedBy = "users")
+	private List<Group> groups;
 
 	public Long getId() {
 		return idUser;
@@ -101,6 +103,14 @@ public class User {
 
 	public void setPermissions(List<Permission> permissions) {
 		this.permissions = permissions;
+	}
+
+	public List<Group> getGroups() {
+		return groups;
+	}
+
+	public void setGroups(List<Group> groups) {
+		this.groups = groups;
 	}
 
 	public String getContact() {

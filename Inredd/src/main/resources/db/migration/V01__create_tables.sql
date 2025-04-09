@@ -60,7 +60,6 @@ CREATE TABLE IF NOT EXISTS academic (
 
 CREATE TABLE IF NOT EXISTS groups (
   id_groups INT NOT NULL,
-  id_permissions INT,
   name VARCHAR(45),
   description VARCHAR(45),
   PRIMARY KEY (id_groups)

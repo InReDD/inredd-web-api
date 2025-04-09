@@ -1,5 +1,6 @@
 package api.webservices.inredd.config;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
@@ -21,6 +22,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter{
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
+		  .antMatchers(HttpMethod.GET, "/groups/**").permitAll() // Libera todos os GET em /groups
 			.antMatchers("/users").permitAll()
 				.anyRequest().authenticated()
 			.and()
