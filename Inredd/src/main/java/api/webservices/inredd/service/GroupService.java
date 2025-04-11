@@ -43,5 +43,12 @@ public class GroupService {
                 .map(UserDTO::new)
                 .collect(Collectors.toList());
     }
+
+    public List<UserDTO> findUsersByGroupIds(List<Long> groupIds) {
+        return groupRepository.findAllById(groupIds).stream()
+            .flatMap(group -> group.getUsers().stream())
+            .map(UserDTO::new)
+            .collect(Collectors.toList());
+    }
 	
 }

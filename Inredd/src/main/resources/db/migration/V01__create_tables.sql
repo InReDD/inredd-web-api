@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS "user" (
 -- Table Address
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS address (
-  id_address INT PRIMARY KEY,
+  id_address BIGSERIAL PRIMARY KEY,
   address   VARCHAR(45),
   country   VARCHAR(45),
   state     VARCHAR(45),
@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS academic (
 -- -----------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS groups (
-  id_groups INT NOT NULL,
+  id_groups BIGSERIAL NOT NULL,
   name VARCHAR(45),
   description VARCHAR(45),
   PRIMARY KEY (id_groups)
@@ -109,7 +109,7 @@ CREATE TABLE IF NOT EXISTS user_permission (
 -- -----------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS paper (
-    id_paper         INT PRIMARY KEY,      -- from __key__.name
+    id_paper   BIGSERIAL PRIMARY KEY,      -- from __key__.name
     url_doi    VARCHAR(255),                  -- from urlDOI
     publish_date VARCHAR(50),                 -- from publishDate (adjust type as needed)
     title      TEXT,                          -- from title
@@ -146,13 +146,11 @@ CREATE TABLE IF NOT EXISTS paper_has_user (
 -- -----------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS patients (
-  id_patients INT NOT NULL,
+  id_patients BIGSERIAL PRIMARY KEY,
   name VARCHAR(45),
   birth_date TIMESTAMP,
-  gender TEXT,
-  PRIMARY KEY (id_patients)
+  gender TEXT
 );
-
 -- -----------------------------------------------------
 -- Table User_has_Patients
 -- -----------------------------------------------------
@@ -181,11 +179,10 @@ CREATE TABLE IF NOT EXISTS user_has_patients (
 -- -----------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS registers (
-  id_registers INT NOT NULL,
+  id_registers BIGSERIAL PRIMARY KEY,
   patients_id_patients INT NOT NULL,
   d2l_viewer_context JSON,
   d2l_text_context JSON,
-  PRIMARY KEY (id_registers),
   CONSTRAINT fk_registers_patients1
     FOREIGN KEY (patients_id_patients)
     REFERENCES patients(id_patients)
@@ -198,13 +195,12 @@ CREATE TABLE IF NOT EXISTS registers (
 -- -----------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS access (
-  id_access INT NOT NULL,
+  id_access BIGSERIAL PRIMARY KEY,
   solution VARCHAR(45),
   status VARCHAR(45),
   created_at VARCHAR(45),
   moderated_at VARCHAR(45),
-  justification VARCHAR(45),
-  PRIMARY KEY (id_access)
+  justification VARCHAR(45)
 );
 
 -- -----------------------------------------------------

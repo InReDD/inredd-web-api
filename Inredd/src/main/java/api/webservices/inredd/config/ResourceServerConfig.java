@@ -22,7 +22,15 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter{
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
-		  .antMatchers(HttpMethod.GET, "/groups/**").permitAll() // Libera todos os GET em /groups
+			// Libera o Swagger UI e docs
+			.antMatchers(
+				"/v3/api-docs/**",
+				"/swagger-ui/**",
+				"/swagger-ui.html",
+				"/swagger-resources/**",
+				"/webjars/**"
+			).permitAll()
+		    .antMatchers(HttpMethod.GET, "/groups/**").permitAll() // Libera todos os GET em /groups
 			.antMatchers("/users").permitAll()
 				.anyRequest().authenticated()
 			.and()
