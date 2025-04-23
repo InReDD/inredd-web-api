@@ -48,6 +48,9 @@ public class User {
 	private List<Permission> permissions;
 	@ManyToMany(mappedBy = "users")
 	private List<Group> groups;
+	@ManyToMany(mappedBy = "users")
+	private List<Paper> papers;
+
 
 	public Long getId() {
 		return idUser;
@@ -119,6 +122,14 @@ public class User {
 
 	public void setContact(String contact) {
 		this.contact = contact;
+	}
+	
+	public List<Paper> getPapers() {
+		return papers;
+	}
+	
+	public void setPapers(List<Paper> papers) {
+		this.papers = papers;
 	}
 
 	@Override

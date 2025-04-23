@@ -9,10 +9,19 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/tokens")
+@Tag(name = "Tokens", description = "Operações relacionadas à gestão de tokens de autenticação")
 public class TokenResource {
 
+	@Operation(
+        summary = "Revogar o refresh token",
+        description = "Revoga o refresh token removendo o cookie `refreshToken` do cliente. Após essa operação, o cliente não poderá mais usar o refresh token para obter um novo access token. A operação retorna um status HTTP 204 (No Content) em caso de sucesso. Esse endpoint é usado para realizar logout do usuário, removendo o token de autenticação."
+    )
 	@DeleteMapping("/revoke")
 	public void revoke(HttpServletRequest req, HttpServletResponse resp) {
 		Cookie cookie = new Cookie("refreshToken", null);

@@ -31,6 +31,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter{
 				"/webjars/**"
 			).permitAll()
 		    .antMatchers(HttpMethod.GET, "/groups/**").permitAll() // Libera todos os GET em /groups
+			.antMatchers(HttpMethod.GET, "/papers/**").permitAll() // Libera todos os GET em /groups
 			.antMatchers("/users").permitAll()
 				.anyRequest().authenticated()
 			.and()

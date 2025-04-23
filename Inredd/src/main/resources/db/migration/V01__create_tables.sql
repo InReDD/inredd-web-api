@@ -118,6 +118,13 @@ CREATE TABLE IF NOT EXISTS paper (
     tags       TEXT[]                         -- from tags array
 );
 
+CREATE TABLE IF NOT EXISTS paper_tags (
+    id_paper BIGINT NOT NULL,
+    tag TEXT NOT NULL,
+    PRIMARY KEY (id_paper, tag),
+    FOREIGN KEY (id_paper) REFERENCES paper(id_paper) ON DELETE CASCADE
+);
+
 -- -----------------------------------------------------
 -- Table Paper_has_User
 -- -----------------------------------------------------

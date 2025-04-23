@@ -20,12 +20,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import api.webservices.inredd.domain.model.User;
 import api.webservices.inredd.repository.UserRepository;
 import api.webservices.inredd.service.UserService;
 
 @RestController
 @RequestMapping("/users")
+@Tag(name = "Users", description = "Operações relacionadas aos usuários do sistema")
 public class UserResource {
 	
 	@Autowired
@@ -34,12 +40,20 @@ public class UserResource {
 	@Autowired
 	private UserService userService;
 	
+	@Operation(
+        summary = "Listar todos os usuários",
+        description = "Retorna uma lista de todos os usuários registrados no sistema. Esta operação requer que o usuário tenha a autoridade 'ROLE_SEARCH_USER' e o escopo 'read'."
+    )
 	@GetMapping
 	@PreAuthorize("hasAuthority('ROLE_SEARCH_USER') and #oauth2.hasScope('read')")
 	public List<User> list(){
 		return userRepository.findAll();
 	}
 	
+	@Operation(
+        summary = "Criar um novo usuário",
+        description = "Cria um novo usuário no sistema com as informações fornecidas. Esta operação não exige autenticação específica, mas pode ser protegida conforme a lógica de segurança."
+    )
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	//@PreAuthorize("hasAuthority('ROLE_REGISTER_USER') and #oauth2.hasScope('write')")
@@ -48,6 +62,10 @@ public class UserResource {
 		return userService.save(user);
 	}
 	
+	@Operation(
+        summary = "Buscar usuário por ID",
+        description = "Busca um usuário específico no sistema utilizando o seu ID. Retorna o usuário encontrado ou uma resposta 404 caso o usuário não seja encontrado."
+    )
 	@GetMapping("/{id}")
 	@PreAuthorize("hasAuthority('ROLE_SEARCH_USER') and #oauth2.hasScope('read')")
 	public ResponseEntity<User> findById(@PathVariable Long id){
@@ -58,13 +76,21 @@ public class UserResource {
 		return ResponseEntity.notFound().build();
 	}
 	
+	@Operation(
+        summary = "Remover um usuário",
+        description = "Remove um usuário do sistema com base no seu ID. Esta operação requer que o usuário tenha a autoridade 'ROLE_REMOVE_USER' e o escopo 'write'."
+    )
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@PreAuthorize("hasAuthority('ROLE_REMOVE_USER') and #oauth2.hasScope('write')")
 	public void remove(@PathVariable Long id) {
 		userRepository.deleteById(id);
 	}
-	
+
+	@Operation(
+        summary = "Atualizar informações de um usuário",
+        description = "Atualiza as informações de um usuário existente no sistema com base no seu ID. Essa operação requer autenticação e autorização apropriadas."
+    )
 	@PutMapping("/{id}")
 	@PreAuthorize("hasAuthority('ROLE_REGISTER_USER') and #oauth2.hasScope('write')")
 	public ResponseEntity<User> update(@PathVariable Long id,
@@ -73,6 +99,10 @@ public class UserResource {
 		return ResponseEntity.ok(userSaved);
 	}
 	
+	@Operation(
+        summary = "Atualizar a propriedade 'active' de um usuário",
+        description = "Permite atualizar a propriedade 'active' de um usuário, ativando ou desativando sua conta."
+    )
 	@PutMapping("/{id}/active")
 	@PreAuthorize("hasAuthority('ROLE_REGISTER_USER') and #oauth2.hasScope('write')")
 	public void updateActiveProperty(
