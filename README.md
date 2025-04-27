@@ -28,19 +28,19 @@ mvn -v # Para verificar a instalação
 
 ## ▶️ Como Rodar a Aplicação com Docker
 
-    Primeiro, entre na pasta inredd-web-api/ e gere o build do projeto:
+Primeiro, entre na pasta inredd-web-api/ e gere o build do projeto:
 
 ```sh
 cd inredd-web-api mvn clean package -DskipTests
 ```
-    Em seguida, volte para a pasta onde está o docker-compose.yml (nível superior) e execute:
+Em seguida, volte para a pasta onde está o docker-compose.yml (nível superior) e execute:
 
 ```sh
 docker compose up -d --build inredd-web-api
 ```
 Atenção:
 
-    O docker-compose.yml precisa ser executado fora da pasta inredd-web-api/, pois o contexto de build é configurado para lá.
+O docker-compose.yml precisa ser executado fora da pasta inredd-web-api/, pois o contexto de build é configurado para lá.
 
 ## 📚 Documentação da API
 
