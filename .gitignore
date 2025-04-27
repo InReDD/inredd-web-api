@@ -1,25 +1,37 @@
-#ModelApp
-*.ipynb_checkpoints
-app/main/services/*/output/*
-
-#services/*/StrategyNetworks/strategies/weights/*
-temp/*
+# ===============================
+# Maven
+target/
+*.jar
+*.war
+*.ear
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/
+# ===============================
+# Logs
 *.log
-*.pth
-*.onnx
-*.pt
-*.h5
-*.keras
-
-#Python
-configs/venv/
-**/__pycache__
-
-#env file
-.env
-.vscode
-#weights
-app/main/services/singleImage/StrategyNetworks/strategies/weights/*
-
-# Jetbrains config
-.ideia/
+# ===============================
+# IDEs
+# IntelliJ
+.idea/
+*.iml
+# VSCode
+.vscode/
+# Eclipse
+.project
+.classpath
+.settings/
+# NetBeans
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+# ===============================
+# System files
+.DS_Store
+Thumbs.db
+# ===============================
+# Docker artifacts
+**/docker-compose.override.yml
