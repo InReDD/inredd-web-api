@@ -83,9 +83,10 @@ Autenticação:
     Senha: client
 
 Body (x-www-form-urlencoded):
-grant_type=password
-username=thiago.vmatos5@gmail.com
-password=t123456
+
+    grant_type=password
+    username=thiago.vmatos5@gmail.com
+    password=t123456
 
 ### 🔑 Resposta
 
