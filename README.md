@@ -34,6 +34,7 @@ mvn -v  # Verifique a instalação
 
 Para iniciar a aplicação, execute:
 ```sh
+mvn clean package -DskipTests
 mvn spring-boot:run
 ```
 *(Por enquanto, podemos rodar dessa forma pois havera muitos testes. A migração para Docker pode ser feita rapidamente depois.)*

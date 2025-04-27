@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>api.webservices</groupId>
-	<artifactId>Iredd</artifactId>
+	<artifactId>Inredd</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Inredd</name>
 	<description>Inredd Web API</description>
