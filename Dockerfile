@@ -1,5 +1,4 @@
 # Please add a Dockerfile
-
 FROM ubuntu:20.04 AS base
 LABEL Name=default maintainer="Inredd WebServices API" Version=1.0.1
 
