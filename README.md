@@ -1,95 +1,93 @@
 # Inredd-Webservices-API
-
 ## 🚀 Requisitos
+
 Antes de iniciar, instale as seguintes dependências:
 
-✅ Java 11 (ou superior)  
-✅ Maven  
-✅ Extensões do Java para o VS Code *(se for utilizar VS Code, mas pode testar em outra IDE)*  
+✅ Java 11 (ou superior)
+✅ Maven
+✅ Extensões do Java para o VS Code (se for utilizar VS Code, mas pode usar qualquer IDE também)
 
 ## 🔧 Instalação do Maven
-Se o Maven não estiver instalado, siga os passos:
-
 ```sh
-wget https://dlcdn.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.tar.gz
-
-tar -xzvf apache-maven-3.9.6-bin.tar.gz -C /opt/
-
-sudo mv /opt/apache-maven-3.9.6 /opt/maven
+wget https://dlcdn.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.tar.gz tar -xzvf apache-maven-3.9.6-bin.tar.gz -C /opt/ sudo mv /opt/apache-maven-3.9.6 /opt/maven
 
 nano ~/.bashrc
 ```
-Adicione as linhas no final do arquivo:
+
+Adicione no final do arquivo:
 ```sh
 export MAVEN_HOME=/opt/maven
 export PATH=$PATH:$MAVEN_HOME/bin
 ```
-Depois, execute:
+
+Depois:
 ```sh
 source ~/.bashrc
-mvn -v  # Verifique a instalação
+mvn -v # Para verificar a instalação
 ```
 
-## ▶️ Rodando a Aplicação
+## ▶️ Como Rodar a Aplicação com Docker
 
-Para iniciar a aplicação, execute:
+Primeiro, entre na pasta inredd-web-api/ e gere o build do projeto:
+
 ```sh
-mvn spring-boot:run
+cd inredd-web-api mvn clean package -DskipTests
 ```
-*(Por enquanto, podemos rodar dessa forma pois havera muitos testes. A migração para Docker pode ser feita rapidamente depois.)*
+Em seguida, volte para a pasta onde está o docker-compose.yml (nível superior) e execute:
 
-## ✅ Testando a API
-Após subir o serviço, acesse:  
-📌 `http://localhost:8881/`
-
-Se precisar modificar a porta ou algum dado do banco, edite o arquivo **application.properties**:
-```properties
-server.port=8881
+```sh
+docker compose up -d --build inredd-web-api
 ```
+Atenção:
 
-## Ajuste no Banco de Dados
-Se o ID do usuário não estiver sendo autoincrementado, execute o seguinte comando no banco (ta anotado para eu ver isso se continuar dando problema quando eu subir a aplicacao dnv, provavel BO de sql):
-```sql
-SELECT setval('user_id_user_seq', (SELECT MAX(id_user) FROM "user"));
-```
+O docker-compose.yml precisa ser executado fora da pasta inredd-web-api/, pois o contexto de build é configurado para lá.
 
-## Criando um Usuário
-**Endpoint:**
+## 📚 Documentação da API
+
+Depois que os containers estiverem rodando, acesse:
+```sh
+http://localhost:8881/swagger-ui/index.html
 ```
+A documentação completa dos endpoints estará disponível via OpenAPI/Swagger.
+
+## 🧑‍💻 Criando um Usuário
+
+Endpoint:
+
 POST: http://localhost:8881/users
-```
 
-**Corpo da requisição:**
-```json
+Corpo da requisição:
+```sh
 {
-  "firstName": "Thiago",
-  "lastName": "Teste API",
-  "email": "thiago.vmatos5@gmail.com",
-  "password": "t123456",
-  "active": true,
+  "firstName": "Thiago", 
+  "lastName": "Teste API", 
+  "email": "thiago.vmatos5@gmail.com", 
+  "password": "t123456", 
+  "active": true, 
   "contact": "0001"
 }
 ```
 
-## Como Fazer Login
-**Endpoint:**
-```
+## 🔐 Como Fazer Login
+
+Endpoint:
+
 POST: http://localhost:8881/oauth/token
-```
 
-**Autenticação:**
-- Tipo: Basic Auth
-- Usuário: `client`
-- Senha: `client`
+Autenticação:
 
-**Body (x-www-form-urlencoded):**
-```
-grant_type=password
-username=thiago.vmatos5@gmail.com
-password=t123456
-```
+    Tipo: Basic Auth
 
-### Resposta
-O retorno incluirá o `refresh_token`, que possuem uma duração específica.
+    Usuário: client
 
+    Senha: client
 
+Body (x-www-form-urlencoded):
+
+    grant_type=password
+    username=thiago.vmatos5@gmail.com
+    password=t123456
+
+### 🔑 Resposta
+
+O retorno incluirá um access_token e um refresh_token, que podem ser utilizados para autenticação nas próximas requisições.
