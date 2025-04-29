@@ -1,5 +1,7 @@
 # ===============================
 # Maven
+# ===============================
+
 target/
 *.jar
 *.war
@@ -7,20 +9,27 @@ target/
 dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/
+
 # ===============================
 # Logs
+# ===============================
 *.log
+
 # ===============================
 # IDEs
+# ===============================
 # IntelliJ
 .idea/
 *.iml
+
 # VSCode
 .vscode/
+
 # Eclipse
 .project
 .classpath
 .settings/
+
 # NetBeans
 nbproject/private/
 build/
@@ -28,10 +37,16 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
+
 # ===============================
 # System files
+# ===============================
+
 .DS_Store
 Thumbs.db
+
 # ===============================
 # Docker artifacts
+# ===============================
+
 **/docker-compose.override.yml
