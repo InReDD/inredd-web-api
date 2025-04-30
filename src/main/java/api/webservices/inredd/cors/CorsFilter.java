@@ -1,7 +1,8 @@
 package api.webservices.inredd.cors;
 
 import java.io.IOException;
-
+import java.util.Arrays;
+import java.util.List;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -18,31 +19,36 @@ import org.springframework.stereotype.Component;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class CorsFilter implements Filter {
 
-	private String originPermitida = "http://localhost:4200"; // TODO: Configurar para diferentes ambientes
-	
-	@Override
-	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
-			throws IOException, ServletException {
-		
-		HttpServletRequest request = (HttpServletRequest) req;
-		HttpServletResponse response = (HttpServletResponse) resp;
-		
-		response.setHeader("Access-Control-Allow-Origin", originPermitida);
-        	response.setHeader("Access-Control-Allow-Credentials", "true");
-		
-		if ("OPTIONS".equals(request.getMethod()) && 
-				originPermitida.equals(request.getHeader("Origin"))) {
-			response.setHeader("Access-Control-Allow-Methods", "POST, "
-					+ "GET, DELETE, PUT, OPTIONS");
-        		response.setHeader("Access-Control-Allow-Headers", "Authorization, "
-        				+ "Content-Type, Accept");
-        		response.setHeader("Access-Control-Max-Age", "3600");
-			
-			response.setStatus(HttpServletResponse.SC_OK);
-		} else {
-			chain.doFilter(req, resp);
-		}
-		
-	}
-	
+    // Liste aqui todos os hosts que podem acessar sua API
+    private final List<String> allowedOrigins = Arrays.asList(
+        "http://localhost:4200",
+        "http://localhost:3001"
+    );
+
+    @Override
+    public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
+            throws IOException, ServletException {
+        
+        HttpServletRequest  request  = (HttpServletRequest) req;
+        HttpServletResponse response = (HttpServletResponse) resp;
+        String origin = request.getHeader("Origin");
+
+        // Só aplica CORS se o Origin estiver na lista de permitidos
+        if (origin != null && allowedOrigins.contains(origin)) {
+            response.setHeader("Access-Control-Allow-Origin", origin);
+            response.setHeader("Vary", "Origin");
+            response.setHeader("Access-Control-Allow-Credentials", "true");
+            response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+            response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept");
+            response.setHeader("Access-Control-Max-Age", "3600");
+        }
+
+        // Responde direto às requisições preflight
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            response.setStatus(HttpServletResponse.SC_OK);
+            return;
+        }
+
+        chain.doFilter(req, resp);
+    }
 }
