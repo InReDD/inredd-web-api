@@ -22,7 +22,8 @@ public class CorsFilter implements Filter {
     // Liste aqui todos os hosts que podem acessar sua API
     private final List<String> allowedOrigins = Arrays.asList(
         "http://localhost:4200",
-        "http://localhost:3001"
+        "http://localhost:3001",
+        "http://localhost:3006"
     );
 
     @Override
