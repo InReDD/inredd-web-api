@@ -3,13 +3,14 @@
 -- -----------------------------------------------------
 -- "User" is a reserved word in PostgreSQL, so we quote it.
 CREATE TABLE IF NOT EXISTS "user" (
-  id_user    BIGSERIAL PRIMARY KEY,
-  first_name VARCHAR(45),
-  last_name  VARCHAR(45),
-  email  VARCHAR(45),
-  password VARCHAR(150) NOT NULL,
-  active  BOOLEAN NOT NULL,
-  contact VARCHAR(45)
+  id_user         BIGSERIAL PRIMARY KEY,
+  first_name      VARCHAR(45),
+  last_name       VARCHAR(45),
+  email           VARCHAR(45) NOT NULL UNIQUE,
+  public_picture  BYTEA, 
+  contact         VARCHAR(50),
+  password        VARCHAR(150) NOT NULL,
+  active          BOOLEAN NOT NULL
 );
 
 -- -----------------------------------------------------
@@ -20,6 +21,7 @@ CREATE TABLE IF NOT EXISTS address (
   address   VARCHAR(45),
   country   VARCHAR(45),
   state     VARCHAR(45),
+  city      VARCHAR(45),
   id_user    INT NOT NULL,
   
   CONSTRAINT fk_address_user
@@ -33,14 +35,12 @@ CREATE TABLE IF NOT EXISTS address (
 -- Table Academic
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS academic (
-  contact VARCHAR(50),
-  id_user INT, 
-  id_address INT,
   title VARCHAR(50),
   institution VARCHAR(255),
   lattes_id VARCHAR(255),
-  profile_picture BYTEA,
-  biography TEXT,
+  abstract TEXT,
+  id_user INT, 
+  id_address INT,
 
   CONSTRAINT fk_academic_user
     FOREIGN KEY (id_user)
@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS academic (
     ON UPDATE NO ACTION,
   CONSTRAINT fk_academic_address
     FOREIGN KEY (id_address)
-    REFERENCES Address(id_address)
+    REFERENCES address(id_address)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 );
@@ -70,8 +70,8 @@ CREATE TABLE IF NOT EXISTS groups (
 -- -----------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS groups_has_user (
-  id_groups INT NOT NULL,
-  id_user INT NOT NULL,
+  id_groups BIGSERIAL NOT NULL,
+  id_user BIGSERIAL NOT NULL,
 
   PRIMARY KEY (id_groups, id_user),
 
@@ -113,13 +113,14 @@ CREATE TABLE IF NOT EXISTS paper (
     url_doi    VARCHAR(255),                  -- from urlDOI
     publish_date VARCHAR(50),                 -- from publishDate (adjust type as needed)
     title      TEXT,                          -- from title
-    authors    TEXT,                          -- from authors
+    authors    TEXT[],                        -- from authors
     doi        VARCHAR(100),                  -- from DOI
-    tags       TEXT[]                         -- from tags array
+    tags       TEXT[],                        -- from tags array
+    created_at   TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
 );
 
 CREATE TABLE IF NOT EXISTS paper_tags (
-    id_paper BIGINT NOT NULL,
+    id_paper BIGSERIAL NOT NULL,
     tag TEXT NOT NULL,
     PRIMARY KEY (id_paper, tag),
     FOREIGN KEY (id_paper) REFERENCES paper(id_paper) ON DELETE CASCADE
@@ -211,7 +212,7 @@ CREATE TABLE IF NOT EXISTS access (
 );
 
 -- -----------------------------------------------------
--- Table User_has_Acess
+-- Table User_has_access
 -- -----------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS user_has_access (

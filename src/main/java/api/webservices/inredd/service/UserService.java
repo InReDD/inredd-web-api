@@ -8,11 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import api.webservices.inredd.domain.model.Academic;
 import api.webservices.inredd.domain.model.Permission;
 import api.webservices.inredd.domain.model.User;
+import api.webservices.inredd.domain.model.dto.CreateUserDTO;
 import api.webservices.inredd.repository.PermissionRepository;
 import api.webservices.inredd.repository.UserRepository;
+import api.webservices.inredd.repository.AcademicRepository;
 
 @Service
 public class UserService {
@@ -22,12 +26,35 @@ public class UserService {
 	
 	@Autowired 
 	PermissionRepository permissionRepository;
+
+	@Autowired
+    private AcademicRepository academicRepository;
 	
 	public User save(User user) {
 		user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
 		user.setPermissions(addCommonUserPermissions());
 		return userRepository.save(user);
 	}
+
+	@Transactional
+    public User saveWithAcademic(CreateUserDTO dto) {
+		// Monta o Academic
+        Academic academic = new Academic();
+        academic.setInstitution(dto.getInstitution());
+        // os outros campos do Academic: title, lattesId, abstractText e address ficam nulos
+
+        // Monta o usuário
+        User user = new User();
+        user.setFirstName(dto.getFirstName());
+        user.setLastName(dto.getLastName());
+        user.setEmail(dto.getEmail());
+        user.setPassword(new BCryptPasswordEncoder().encode(dto.getPassword()));
+        user.setActive(dto.getActive());
+        user.setPermissions(addCommonUserPermissions());
+		user.setAcademic(academic);
+
+        return userRepository.save(user);
+    }
 	
 	public List<Permission> addCommonUserPermissions(){
 		List<Permission> permissions = new ArrayList<>();

@@ -3,7 +3,9 @@ package api.webservices.inredd.domain.model;
 import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
+import java.time.OffsetDateTime;
 import org.hibernate.annotations.Type;
+import com.vladmihalcea.hibernate.type.array.StringArrayType;
 
 @Entity
 @Table(name = "paper")
@@ -21,15 +23,12 @@ public class Paper {
     private String publishDate;
 
     private String title;
-
+    
     private String authors;
 
     private String doi;
 
-    @ElementCollection
-    @CollectionTable(name = "paper_tags", joinColumns = @JoinColumn(name = "id_paper"))
-    @Column(name = "tag")
-    private List<String> tags;
+    private String tags;
 
     @ManyToMany
     @JoinTable(
@@ -38,6 +37,9 @@ public class Paper {
         inverseJoinColumns = @JoinColumn(name = "id_user")
     )
     private List<User> users;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private OffsetDateTime createdAt;
 
     public Long getId() {
         return id;
@@ -87,11 +89,11 @@ public class Paper {
         this.doi = doi;
     }
 
-    public List<String> getTags() {
+    public String getTags() {
         return tags;
     }
 
-    public void setTags(List<String> tags) {
+    public void setTags(String tags) {
         this.tags = tags;
     }
 
@@ -114,5 +116,13 @@ public class Paper {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

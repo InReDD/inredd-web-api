@@ -1,23 +1,12 @@
 package api.webservices.inredd.domain.model;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Objects;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.persistence.*;
+import javax.validation.constraints.*;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "\"user\"")
@@ -38,7 +27,6 @@ public class User {
 	@NotNull
 	@Size(min = 6, max = 150)
 	private String password;
-	@NotNull
 	@Size(min = 3, max = 50)
 	private String contact;
 	@NotNull
@@ -50,6 +38,30 @@ public class User {
 	private List<Group> groups;
 	@ManyToMany(mappedBy = "users")
 	private List<Paper> papers;
+	/**
+     * Relacionamento one-to-one para Academic.
+     * Lado inverso do @MapsId na entidade Academic.
+     * Opcional porque o usuário nao vem com todos os dados acadêmicos preenchidos.
+     */
+    @OneToOne(
+        mappedBy = "user",
+        cascade = CascadeType.ALL,
+        fetch = FetchType.LAZY,
+        optional = true
+    )
+	@JsonManagedReference   // lado “pai” da serialização
+    private Academic academic;
+	/**
+     * Relacionamento one-to-many para Address.
+     * Cada usuário pode ter múltiplos endereços.
+     */
+    @OneToMany(
+        mappedBy = "user",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true,
+        fetch = FetchType.LAZY
+    )
+    private List<Address> addresses = new ArrayList<>();
 
 
 	public Long getId() {
@@ -131,6 +143,38 @@ public class User {
 	public void setPapers(List<Paper> papers) {
 		this.papers = papers;
 	}
+
+	public Academic getAcademic() {
+		return academic;
+	}
+
+    public void setAcademic(Academic academic) {
+        this.academic = academic;
+        if (academic != null) {
+            academic.setUser(this);
+        }
+    }
+
+	public List<Address> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(List<Address> addresses) {
+        this.addresses = addresses;
+        for (Address a : addresses) {
+        	a.setUser(this);
+        }
+    }
+
+    public void addAddress(Address address) {
+        addresses.add(address);
+        address.setUser(this);
+    }
+	
+    public void removeAddress(Address address) {
+        addresses.remove(address);
+        address.setUser(null);
+    }
 
 	@Override
 	public int hashCode() {

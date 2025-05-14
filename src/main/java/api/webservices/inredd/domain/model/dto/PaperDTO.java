@@ -1,8 +1,9 @@
 package api.webservices.inredd.domain.model.dto;
 
 import api.webservices.inredd.domain.model.Paper;
-import api.webservices.inredd.domain.model.User;
-
+import java.time.OffsetDateTime;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,24 +13,52 @@ public class PaperDTO {
     private String urlDoi;
     private String publishDate;
     private String title;
-    private String authors;
+    private List<String> authors;
     private String doi;
     private List<String> tags;
     private List<String> users;
+    private OffsetDateTime createdAt;
 
     public PaperDTO(Paper paper) {
-        this.id = paper.getId();
-        this.urlDoi = paper.getUrlDoi();
+        this.id          = paper.getId();
+        this.urlDoi      = paper.getUrlDoi();
         this.publishDate = paper.getPublishDate();
-        this.title = paper.getTitle();
-        this.authors = paper.getAuthors();
-        this.doi = paper.getDoi();
-        this.tags = paper.getTags();
-        this.users = paper.getUsers()
-                      .stream()
-                      .map(user -> user.getFirstName() + " " + user.getLastName())
-                      .collect(Collectors.toList());
+        this.title       = paper.getTitle();
+        this.authors     = parseAuthors(paper.getAuthors());
+        this.doi         = paper.getDoi();
+        this.tags        = parseTags(paper.getTags());
+        this.users       = paper.getUsers()
+                                 .stream()
+                                 .map(u -> u.getFirstName() + " " + u.getLastName())
+                                 .collect(Collectors.toList());
+        this.createdAt   = paper.getCreatedAt();
     }
+
+    private List<String> parseAuthors(String raw) {
+        if (raw == null || raw.isBlank()) {
+            return Collections.emptyList();
+        }
+        // raw ex: {"M. Zhang; E. Torres"}
+        String cleaned = raw.replaceAll("[\"{}]", ""); // -> M. Zhang; E. Torres
+        return Arrays.stream(cleaned.split(";"))
+                     .map(String::trim)
+                     .filter(s -> !s.isEmpty())
+                     .collect(Collectors.toList());
+    }
+
+    private List<String> parseTags(String raw) {
+        if (raw == null || raw.isBlank()) {
+            return Collections.emptyList();
+        }
+        // raw ex: {"computer vision",transformers}
+        String cleaned = raw.replaceAll("[\"{}]", ""); // -> computer vision,transformers
+        return Arrays.stream(cleaned.split(","))
+                     .map(String::trim)
+                     .filter(s -> !s.isEmpty())
+                     .collect(Collectors.toList());
+    }
+
+    // Getters and setters
 
     public Long getId() {
         return id;
@@ -63,11 +92,11 @@ public class PaperDTO {
         this.title = title;
     }
 
-    public String getAuthors() {
+    public List<String> getAuthors() {
         return authors;
     }
 
-    public void setAuthors(String authors) {
+    public void setAuthors(List<String> authors) {
         this.authors = authors;
     }
 
@@ -82,7 +111,7 @@ public class PaperDTO {
     public List<String> getTags() {
         return tags;
     }
-    
+
     public void setTags(List<String> tags) {
         this.tags = tags;
     }
@@ -90,8 +119,16 @@ public class PaperDTO {
     public List<String> getUsers() {
         return users;
     }
-    
+
     public void setUsers(List<String> users) {
         this.users = users;
+    }
+
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

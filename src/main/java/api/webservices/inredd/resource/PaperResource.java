@@ -42,12 +42,13 @@ public class PaperResource {
     private PaperService paperService;
 
     @Operation(
-        summary = "Listar papers paginados",
-        description = "Retorna uma lista paginada de todos os artigos científicos registrados no sistema, ordenados conforme os parâmetros de paginação (como página, tamanho e ordenação)."
+      summary = "Listar papers com limite, página e ordenação",
+      description = "GET /papers?limit=4&page=1&sort=createdAt,DESC (ou ASC)"
     )
     @GetMapping
     public Page<PaperDTO> list(Pageable pageable) {
-        return paperRepository.findAll(pageable).map(PaperDTO::new);
+        return paperRepository.findAll(pageable)
+                            .map(PaperDTO::new);
     }
 
     @Operation(
@@ -61,12 +62,15 @@ public class PaperResource {
             @RequestParam(required = false) String type,
             @RequestParam(required = false) String fromYear,
             @RequestParam(required = false) String toYear,
+            @RequestParam(required = false) String title,
             Pageable pageable) {
 
-        Specification<Paper> spec = Specification.where(PaperSpecification.hasAuthor(author))
-                .and(PaperSpecification.hasPublisher(publisher))
-                .and(PaperSpecification.hasType(type))
-                .and(PaperSpecification.publishedBetween(fromYear, toYear));
+        Specification<Paper> spec = Specification
+            .where(PaperSpecification.hasAuthor(author))
+            .and(PaperSpecification.hasPublisher(publisher))
+            .and(PaperSpecification.hasType(type))
+            .and(PaperSpecification.publishedBetween(fromYear, toYear))
+            .and(PaperSpecification.hasTitle(title)); 
 
         return paperRepository.findAll(spec, pageable).map(PaperDTO::new);
     }

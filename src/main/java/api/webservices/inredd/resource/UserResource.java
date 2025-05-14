@@ -26,6 +26,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import api.webservices.inredd.domain.model.User;
+import api.webservices.inredd.domain.model.dto.CreateUserDTO;
 import api.webservices.inredd.repository.UserRepository;
 import api.webservices.inredd.service.UserService;
 
@@ -50,18 +51,25 @@ public class UserResource {
 		return userRepository.findAll();
 	}
 	
-	@Operation(
-        summary = "Criar um novo usuário",
-        description = "Cria um novo usuário no sistema com as informações fornecidas. Esta operação não exige autenticação específica, mas pode ser protegida conforme a lógica de segurança."
-    )
-	@PostMapping
-	@ResponseStatus(HttpStatus.CREATED)
-	//@PreAuthorize("hasAuthority('ROLE_REGISTER_USER') and #oauth2.hasScope('write')")
-	public User create(@Valid @RequestBody User user, 
-			HttpServletResponse response) {
-		return userService.save(user);
-	}
+	// @Operation(
+    //     summary = "Criar um novo usuário",
+    //     description = "Cria um novo usuário no sistema com as informações fornecidas. Esta operação não exige autenticação específica, mas pode ser protegida conforme a lógica de segurança."
+    // )
+	// @PostMapping
+	// @ResponseStatus(HttpStatus.CREATED)
+	// //@PreAuthorize("hasAuthority('ROLE_REGISTER_USER') and #oauth2.hasScope('write')")
+	// public User create(@Valid @RequestBody User user, 
+	// 		HttpServletResponse response) {
+	// 	return userService.save(user);
+	// }
 	
+	@Operation(summary = "Criar um novo usuário com instituição acadêmica")
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public User create(@Valid @RequestBody CreateUserDTO dto) {
+        return userService.saveWithAcademic(dto);
+    }
+
 	@Operation(
         summary = "Buscar usuário por ID",
         description = "Busca um usuário específico no sistema utilizando o seu ID. Retorna o usuário encontrado ou uma resposta 404 caso o usuário não seja encontrado."
