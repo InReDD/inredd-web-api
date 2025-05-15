@@ -76,6 +76,29 @@ public class PaperResource {
     }
 
     @Operation(
+        summary = "Listar autores únicos de papers por intervalo de anos",
+        description = "GET /papers/authors?fromYear=2018&toYear=2024"
+    )
+    @GetMapping("/authors")
+    public List<String> listAuthors(
+        @RequestParam("fromYear") String fromYear,
+        @RequestParam("toYear")   String toYear
+    ) {
+        // monta spec usando o filtro de intervalo de anos
+        Specification<Paper> spec = PaperSpecification.publishedBetween(fromYear, toYear);
+
+        // busca todos os papers que satisfazem a spec
+        List<Paper> papers = paperRepository.findAll(spec);
+
+        // converte em DTO, extrai autores, desdobra, remove duplicados e coleta
+        return papers.stream()
+                     .map(PaperDTO::new)
+                     .flatMap(dto -> dto.getAuthors().stream())
+                     .distinct()
+                     .collect(Collectors.toList());
+    }
+
+    @Operation(
         summary = "Criar um novo paper",
         description = "Cria um novo artigo científico com os dados fornecidos no corpo da requisição. É necessário ter permissão de escrita e escopo OAuth adequado. O artigo criado é retornado no corpo da resposta."
     )

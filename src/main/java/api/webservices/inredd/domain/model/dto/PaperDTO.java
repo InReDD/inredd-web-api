@@ -2,9 +2,12 @@ package api.webservices.inredd.domain.model.dto;
 
 import api.webservices.inredd.domain.model.Paper;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.Collections;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class PaperDTO {
@@ -35,15 +38,21 @@ public class PaperDTO {
     }
 
     private List<String> parseAuthors(String raw) {
+        System.out.println("DEBUGGGGGGGGGGGGGGGGGGGGGGG " + raw);
         if (raw == null || raw.isBlank()) {
             return Collections.emptyList();
         }
-        // raw ex: {"M. Zhang; E. Torres"}
-        String cleaned = raw.replaceAll("[\"{}]", ""); // -> M. Zhang; E. Torres
-        return Arrays.stream(cleaned.split(";"))
-                     .map(String::trim)
-                     .filter(s -> !s.isEmpty())
-                     .collect(Collectors.toList());
+        // Remove apenas as chaves { } mas mantém as aspas
+        String cleaned = raw.replaceAll("[\\{\\}]", "");
+        // Regex para capturar tudo que está entre aspas
+        Pattern pattern = Pattern.compile("\"([^\"]+)\"");
+        Matcher matcher = pattern.matcher(cleaned);
+    
+        List<String> authors = new ArrayList<>();
+        while (matcher.find()) {
+            authors.add(matcher.group(1).trim());
+        }
+        return authors;
     }
 
     private List<String> parseTags(String raw) {

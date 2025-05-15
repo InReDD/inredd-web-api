@@ -3,19 +3,19 @@ SELECT 1, 'https://doi.org/10.1000/xyz123', '2022-06-15', 'Deep Learning for Med
 WHERE NOT EXISTS (SELECT 1 FROM paper WHERE id_paper = 1);
 
 INSERT INTO paper (id_paper, url_doi, publish_date, title, authors, doi, tags)
-SELECT 2, 'https://doi.org/10.1000/abc456', '2023-01-10', 'Neural Networks in Production', ARRAY['L. Costa; M. Chen'], '10.1000/abc456', ARRAY['neural networks', 'production']
+SELECT 2, 'https://doi.org/10.1000/abc456', '2023-01-10', 'Neural Networks in Production', ARRAY['L. Costa', 'M. Chen'], '10.1000/abc456', ARRAY['neural networks', 'production']
 WHERE NOT EXISTS (SELECT 1 FROM paper WHERE id_paper = 2);
 
 INSERT INTO paper (id_paper, url_doi, publish_date, title, authors, doi, tags)
-SELECT 3, 'https://doi.org/10.1000/qwe789', '2021-03-22', 'Data Mining Techniques', ARRAY['S. Kumar; R. Lee'], '10.1000/qwe789', ARRAY['data mining', 'algorithms']
+SELECT 3, 'https://doi.org/10.1000/qwe789', '2021-03-22', 'Data Mining Techniques', ARRAY['S. Kumar', 'R. Lee'], '10.1000/qwe789', ARRAY['data mining', 'algorithms']
 WHERE NOT EXISTS (SELECT 1 FROM paper WHERE id_paper = 3);
 
 INSERT INTO paper (id_paper, url_doi, publish_date, title, authors, doi, tags)
-SELECT 4, 'https://doi.org/10.1000/asd987', '2024-02-05', 'Bayesian Inference Applications', ARRAY['T. Silva; B. Chan'], '10.1000/asd987', ARRAY['bayesian', 'statistics']
+SELECT 4, 'https://doi.org/10.1000/asd987', '2024-02-05', 'Bayesian Inference Applications', ARRAY['T. Silva', 'B. Chan'], '10.1000/asd987', ARRAY['bayesian', 'statistics']
 WHERE NOT EXISTS (SELECT 1 FROM paper WHERE id_paper = 4);
 
 INSERT INTO paper (id_paper, url_doi, publish_date, title, authors, doi, tags)
-SELECT 5, 'https://doi.org/10.1000/zxc321', '2020-09-30', 'Computer Vision with Transformers', ARRAY['M. Zhang; E. Torres'], '10.1000/zxc321', ARRAY['computer vision', 'transformers']
+SELECT 5, 'https://doi.org/10.1000/zxc321', '2020-09-30', 'Computer Vision with Transformers', ARRAY['M. Zhang', 'E. Torres'], '10.1000/zxc321', ARRAY['computer vision', 'transformers']
 WHERE NOT EXISTS (SELECT 1 FROM paper WHERE id_paper = 5);
 
 INSERT INTO paper (id_paper, url_doi, publish_date, title, authors, doi, tags)
@@ -23,7 +23,7 @@ SELECT 6,
        'https://doi.org/10.1007/s00784-022-04438-5',
        NULL,
        'Two decades of research on CBCT imaging in DMFR – an appraisal of scientific evidence',
-       ARRAY['Hugo Gaêta-Araujo; André Ferreira Leite; Karla de Faria Vasconcelos and Reinhilde Jacobs'],
+       ARRAY['Hugo Gaêta-Araujo', 'André Ferreira Leite', 'Karla de Faria Vasconcelos and Reinhilde Jacobs'],
        '10.1007/s00784-022-04438-5',
        ARRAY[]::text[]
 WHERE NOT EXISTS (SELECT 1 FROM paper WHERE id_paper = 6);
@@ -33,7 +33,7 @@ SELECT 7,
        'https://doi.org/10.1007/s10266-020-00511-1',
        NULL,
        'Digital photography vs. clinical assessment of resin composite restorations',
-       ARRAY['Cecília Vilela Vasconcelos Barros de Almeida', 'Karen Pintado-Palomino',  'João Henrique Parise Fortes',  'Raphael Jurca Gonçalves da Motta', 'Bruna Neves de Freitas', 'Wilson Matsumoto', 'Maria Tereza Moura de Oliveira Cavalcanti', 'Josué Alves & Camila Tirapelli'],
+       ARRAY['Cecília Vilela Vasconcelos Barros de Almeida', 'Karen Pintado-Palomino',  'João Henrique Parise Fortes',  'Raphael Jurca Gonçalves da Motta', 'Bruna Neves de Freitas', 'Wilson Matsumoto', 'Maria Tereza Moura de Oliveira Cavalcanti', 'Josué Alves', 'Camila Tirapelli'],
        '10.1007/s10266-020-00511-1',
        ARRAY[]::text[]
 WHERE NOT EXISTS (SELECT 1 FROM paper WHERE id_paper = 7);
