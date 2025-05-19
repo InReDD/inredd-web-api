@@ -13,6 +13,10 @@ CREATE TABLE IF NOT EXISTS "user" (
   active          BOOLEAN NOT NULL
 );
 
+ALTER TABLE "user"
+  ALTER COLUMN public_picture TYPE bytea
+  USING public_picture::bytea;
+
 -- -----------------------------------------------------
 -- Table Address
 -- -----------------------------------------------------

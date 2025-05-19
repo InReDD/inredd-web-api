@@ -1,52 +1,61 @@
 package api.webservices.inredd.config;
 
-import org.springframework.http.HttpMethod;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
+
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
+
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.expression.OAuth2MethodSecurityExpressionHandler;
+import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
+
+import org.springframework.security.oauth2.provider.token.TokenStore;
 
 @Configuration
 @EnableWebSecurity
 @EnableResourceServer
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter{
+
+	@Autowired
+    private TokenStore tokenStore; // vem do AuthorizationServerConfig
 	
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests()
-			// Libera o Swagger UI e docs
-			.antMatchers(
-				"/v3/api-docs/**",
-				"/swagger-ui/**",
-				"/swagger-ui.html",
-				"/swagger-resources/**",
-				"/webjars/**"
-			).permitAll()
-		    .antMatchers(HttpMethod.GET, "/groups/**").permitAll() // Libera todos os GET em /groups
-			.antMatchers(HttpMethod.GET, "/papers/**").permitAll() // Libera todos os GET em /groups
-			.antMatchers(HttpMethod.GET, "/members/**").permitAll() // Libera todos os GET em /groups
-			.antMatchers("/users").permitAll()
-				.anyRequest().authenticated()
-			.and()
-				.httpBasic()
-			.and()
-				.sessionManagement()
-				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-			.and()
-				.csrf().disable();
-	}
-	
+		http
+          .csrf().disable()
+          .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        .and()
+          .authorizeRequests()
+            // Swagger e docs
+            .antMatchers(
+                "/v3/api-docs/**",
+                "/swagger-ui/**",
+                "/swagger-ui.html",
+                "/swagger-resources/**",
+                "/webjars/**"
+            ).permitAll()
+            // libera GETs públicos
+            .antMatchers(HttpMethod.GET, "/groups/**", "/papers/**", "/members/**", "/params/**", "/me/**").permitAll()
+            .antMatchers("/users").permitAll()
+            // todo o resto precisa de token
+            .anyRequest().authenticated();
+    }
+
 	@Override
-	public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
-		resources.stateless(true);
+	public void configure(ResourceServerSecurityConfigurer resources) {
+		resources
+		.tokenStore(tokenStore)
+		.stateless(true);
 	}
 	
 	@Bean

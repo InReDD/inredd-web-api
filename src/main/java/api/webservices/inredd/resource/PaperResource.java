@@ -104,7 +104,7 @@ public class PaperResource {
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAuthority('ROLE_REGISTER_ACTIVITY') and #oauth2.hasScope('write')")
+    @PreAuthorize("hasAuthority('ROLE_REGISTER_PAPER') and #oauth2.hasScope('write')")
     public Paper create(@Valid @RequestBody Paper paper,
                         HttpServletResponse response) {
         return paperService.save(paper);
@@ -126,7 +126,7 @@ public class PaperResource {
         description = "Atualiza os dados de um artigo científico com base no ID fornecido e no conteúdo enviado no corpo da requisição. É necessário ter permissão de escrita e escopo OAuth apropriado."
     )
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_REGISTER_ACTIVITY') and #oauth2.hasScope('write')")
+    @PreAuthorize("hasAuthority('ROLE_REGISTER_PAPER') and #oauth2.hasScope('write')")
     public ResponseEntity<Paper> update(@PathVariable Long id,
                                         @Valid @RequestBody Paper paper) {
         Paper updated = paperService.update(id, paper);
@@ -139,7 +139,7 @@ public class PaperResource {
     )
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAuthority('ROLE_REMOVE_ACTIVITY') and #oauth2.hasScope('write')")
+    @PreAuthorize("hasAuthority('ROLE_REMOVE_PAPER') and #oauth2.hasScope('write')")
     public void delete(@PathVariable Long id) {
         paperRepository.deleteById(id);
     }

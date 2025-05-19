@@ -221,9 +221,13 @@ INSERT INTO permission (id, description) VALUES
   (1, 'ROLE_REGISTER_USER'   ),
   (2, 'ROLE_REMOVE_USER'     ),
   (3, 'ROLE_SEARCH_USER'     ),
-  (4, 'ROLE_REGISTER_ACTIVITY'),
-  (5, 'ROLE_REMOVE_ACTIVITY' ),
-  (6, 'ROLE_SEARCH_ACTIVITY' );
+  (4, 'ROLE_REGISTER_TERMS'),
+  (5, 'ROLE_REGISTER_GROUP'),
+  (6, 'ROLE_REMOVE_GROUP' ),
+  (7, 'ROLE_SEARCH_GROUP' ),
+  (8, 'ROLE_REGISTER_PAPER'),
+  (9, 'ROLE_REMOVE_PAPER' ),
+  (10, 'ROLE_SEARCH_PAPER' );
 
 /* ========================================================================
    4. Permissões por usuário

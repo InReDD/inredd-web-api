@@ -62,7 +62,6 @@ public class UserResource {
 	// 		HttpServletResponse response) {
 	// 	return userService.save(user);
 	// }
-	
 	@Operation(summary = "Criar um novo usuário com instituição acadêmica")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

@@ -1,9 +1,11 @@
 package api.webservices.inredd.domain.model;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import org.hibernate.annotations.Type;
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -31,6 +33,10 @@ public class User {
 	private String contact;
 	@NotNull
 	private Boolean active;
+	@Lob
+    @Column(name = "public_picture", nullable = true)
+	@Type(type = "org.hibernate.type.BinaryType")
+	private byte[] publicPicture;
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "user_permission", joinColumns = @JoinColumn(name = "id_user_permission"), inverseJoinColumns = @JoinColumn(name = "id_permission"))
 	private List<Permission> permissions;
@@ -63,6 +69,17 @@ public class User {
     )
     private List<Address> addresses = new ArrayList<>();
 
+	@Column(name = "accepted_terms_at")
+    private Instant acceptedTermsAt;
+
+    @Column(name = "user_has_accepted_terms", nullable = false)
+    private Boolean userHasAcceptedTerms = Boolean.FALSE;
+
+	@Column(name = "accepted_privacy_policy_at")
+    private Instant acceptedPrivacyPolicyAt;
+
+    @Column(name = "user_has_accepted_privacy_policy", nullable = false)
+    private Boolean userHasAcceptedPrivacyPolicy = Boolean.FALSE;
 
 	public Long getId() {
 		return idUser;
@@ -103,6 +120,14 @@ public class User {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
+	public byte[] getPublicPicture() {
+        return publicPicture;
+    }
+
+    public void setPublicPicture(byte[] publicPicture) {
+        this.publicPicture = publicPicture;
+    }
 
 	public Boolean isActive() {
 		return active;
@@ -174,6 +199,38 @@ public class User {
     public void removeAddress(Address address) {
         addresses.remove(address);
         address.setUser(null);
+    }
+
+	public Instant getAcceptedTermsAt() {
+        return acceptedTermsAt;
+    }
+
+    public void setAcceptedTermsAt(Instant acceptedTermsAt) {
+        this.acceptedTermsAt = acceptedTermsAt;
+    }
+
+    public Boolean getUserHasAcceptedTerms() {
+        return userHasAcceptedTerms;
+    }
+
+    public void setUserHasAcceptedTerms(Boolean userHasAcceptedTerms) {
+        this.userHasAcceptedTerms = userHasAcceptedTerms;
+    }
+
+	public Instant getAcceptedPrivacyPolicyAt() {
+        return acceptedPrivacyPolicyAt;
+    }
+
+    public void setAcceptedPrivacyPolicyAt(Instant acceptedPrivacyPolicyAt) {
+        this.acceptedPrivacyPolicyAt = acceptedPrivacyPolicyAt;
+    }
+
+    public Boolean getUserHasAcceptedPrivacyPolicy() {
+        return userHasAcceptedPrivacyPolicy;
+    }
+
+    public void setUserHasAcceptedPrivacyPolicy(Boolean userHasAcceptedPrivacyPolicy) {
+        this.userHasAcceptedPrivacyPolicy = userHasAcceptedPrivacyPolicy;
     }
 
 	@Override

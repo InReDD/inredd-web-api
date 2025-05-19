@@ -47,7 +47,7 @@ public class GroupResource {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAuthority('ROLE_REGISTER_ACTIVITY') and #oauth2.hasScope('write')")
+    @PreAuthorize("hasAuthority('ROLE_REGISTER_GROUP') and #oauth2.hasScope('write')")
     public Group create(@Valid @RequestBody Group group,
                         HttpServletResponse response) {
         return groupService.save(group);
@@ -65,14 +65,14 @@ public class GroupResource {
     @Operation(summary = "Remover grupo por ID")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAuthority('ROLE_REMOVE_ACTIVITY') and #oauth2.hasScope('write')")
+    @PreAuthorize("hasAuthority('ROLE_REMOVE_GROUP') and #oauth2.hasScope('write')")
     public void remove(@PathVariable Long id) {
         groupRepository.deleteById(id);
     }
 
     @Operation(summary = "Atualizar grupo por ID")
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_REGISTER_ACTIVITY') and #oauth2.hasScope('write')")
+    @PreAuthorize("hasAuthority('ROLE_REGISTER_GROUP') and #oauth2.hasScope('write')")
     public ResponseEntity<Group> update(@PathVariable Long id,
                                         @Valid @RequestBody Group group) {
         Group updatedGroup = groupService.update(id, group);

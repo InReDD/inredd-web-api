@@ -37,13 +37,11 @@ public class ActivityResource {
 	private ActivityService activityService;
 	
 	@GetMapping
-	@PreAuthorize("hasAuthority('ROLE_SEARCH_ACTIVITY') and #oauth2.hasScope('read')")
 	public Page<Activity> search(ActivityFilter activityFilter, Pageable pageable){
 		return activityService.search(activityFilter, pageable);
 	}
 	
 	@GetMapping("/{id}")
-	@PreAuthorize("hasAuthority('ROLE_SEARCH_ACTIVITY') and #oauth2.hasScope('read')")
 	public ResponseEntity<Activity> findById(@PathVariable Long id){
 		Optional<Activity> activity = 
 				activityRepository.findById(id);
@@ -54,7 +52,6 @@ public class ActivityResource {
 	}
 	
 	@GetMapping("/user/{email}")
-	@PreAuthorize("hasAuthority('ROLE_SEARCH_ACTIVITY') and #oauth2.hasScope('read')")
 	public ResponseEntity<List<Activity>> listByUser(@PathVariable String email){
 		List<Activity> activities = activityService.listByUser(email);
 		if(!activities.isEmpty()) {
@@ -65,20 +62,17 @@ public class ActivityResource {
 	
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	@PreAuthorize("hasAuthority('ROLE_REGISTER_ACTIVITY') and #oauth2.hasScope('write')")
 	public Activity create(@Valid @RequestBody Activity activity) {
 		return activityService.save(activity);
 	}
 	
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	@PreAuthorize("hasAuthority('ROLE_REMOVE_ACTIVITY') and #oauth2.hasScope('write')")
 	public void remover(@PathVariable Long id) {
 		activityRepository.deleteById(id);
 	}
 	
 	@PutMapping("/{id}")
-	@PreAuthorize("hasAuthority('ROLE_REGISTER_ACTIVITY') and #oauth2.hasScope('write')")
 	public ResponseEntity<Activity> update(@PathVariable Long id, @Valid @RequestBody Activity activity) {
 		Activity activitySaved = activityService.update(id, activity);
 		return ResponseEntity.ok(activitySaved);
