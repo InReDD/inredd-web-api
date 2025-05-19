@@ -1,12 +1,15 @@
 package api.webservices.inredd.web;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,26 +24,22 @@ public class MemberResource {
     @Autowired
     private MemberService memberService;
 
-    /**
-     * GET /members/list?group=1
-     * @param groupId ID do grupo
-     * @return lista de MemberDTO
-     */
     @GetMapping("/list")
-    public List<MemberDTO> list(@RequestParam("group") Long groupId) {
-        return memberService.listMembersByGroup(groupId);
-    }
-
-    @Operation(
-      summary = "Listar membros de múltiplos grupos",
-      description = "GET /members?group=1&group=2&page=1&limit=10 — retorna membros únicos associados aos grupos informados, paginados."
-    )
-    @GetMapping
     public ResponseEntity<Page<MemberDTO>> listByGroups(
-            @RequestParam("group") List<Long> groupIds,
-            Pageable pageable) {
+        @RequestParam("group") String[] groupParams,
+        @RequestParam(value="page",  defaultValue="0")   int page,
+        @RequestParam(value="limit",defaultValue="10")  int limit
+    ) {
+        List<Long> groupIds = Stream.of(groupParams)
+            .flatMap(p -> Arrays.stream(p.split(",")))
+            .map(String::trim)
+            .filter(s -> !s.isEmpty())
+            .map(Long::valueOf)
+            .distinct()
+            .collect(Collectors.toList());
 
-        Page<MemberDTO> page = memberService.listByGroupIds(groupIds, pageable);
-        return ResponseEntity.ok(page);
+        PageRequest pr = PageRequest.of(page, limit);
+        Page<MemberDTO> result = memberService.listByGroupIds(groupIds, pr);
+        return ResponseEntity.ok(result);
     }
 }
