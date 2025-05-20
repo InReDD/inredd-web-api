@@ -31,7 +31,7 @@ public class ParamResource {
     // 2) PUT aceita os Terms, passando userId como request-param
     @Operation(summary = "Usuário aceita o Terms of Service")
     @PutMapping("/accept-terms")
-    @PreAuthorize("hasAuthority('ROLE_REGISTER_TERMS') and #oauth2.hasScope('write')")
+    @PreAuthorize("hasAuthority('ROLE_REGISTER_TERMS_AND_POLICY') and #oauth2.hasScope('write')")
     public ResponseEntity<Void> acceptTerms(@RequestParam("userId") Long userId) {
         service.acceptTerms(userId);
         return ResponseEntity.ok().build();
@@ -48,7 +48,7 @@ public class ParamResource {
     // 4) PUT aceita a Privacy Policy, passando userId como request-param
     @Operation(summary = "Usuário aceita a Privacy Policy")
     @PutMapping("/privacy-policy")
-    @PreAuthorize("hasAuthority('ROLE_REGISTER_TERMS') and #oauth2.hasScope('write')")
+    @PreAuthorize("hasAuthority('ROLE_REGISTER_TERMS_AND_POLICY') and #oauth2.hasScope('write')")
     public ResponseEntity<Void> acceptPrivacyPolicy(@RequestParam("userId") Long userId) {
         service.acceptPrivacyPolicy(userId);
         return ResponseEntity.ok().build();

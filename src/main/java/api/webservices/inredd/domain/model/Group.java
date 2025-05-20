@@ -1,6 +1,7 @@
 package api.webservices.inredd.domain.model;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -9,16 +10,27 @@ import java.util.Objects;
 public class Group {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_groups")
     private Long id;
 
     private String name;
 
+    private String description;
+
     @ManyToMany
-		@JoinTable(name = "groups_has_user",
-				joinColumns = @JoinColumn(name = "id_groups"),
-				inverseJoinColumns = @JoinColumn(name = "id_user"))
-		private List<User> users;
+    @JoinTable(name = "groups_has_user",
+            joinColumns = @JoinColumn(name = "id_groups"),
+            inverseJoinColumns = @JoinColumn(name = "id_user"))
+    private List<User> users = new ArrayList<>();
+    
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "group_permission",
+        joinColumns = @JoinColumn(name = "id_groups"),
+        inverseJoinColumns = @JoinColumn(name = "id_permission")
+    )
+    private List<Permission> permissions = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -36,12 +48,28 @@ public class Group {
         this.name = name;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public List<User> getUsers() {
         return users;
     }
 
     public void setUsers(List<User> users) {
         this.users = users;
+    }
+
+    public List<Permission> getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(List<Permission> permissions) {
+        this.permissions = permissions;
     }
 
     @Override

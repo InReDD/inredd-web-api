@@ -1,3 +1,4 @@
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 /* ========================================================================
    1. Usuários
@@ -87,7 +88,7 @@ INSERT INTO "user" (
   (13, 'Thiago Alves Vieira de',        'Matos',      'thiago@example.com',
        pg_read_binary_file('/data/firebase/memberImages/thiagoAlves.png'),
        '+516987654321',
-       '$2a$10$Ot4XGuyPP7r82nN3WXA0bOL1Qk9gShKDlVuPoyp89HoFnHcwO4Tji',
+       crypt('t123456', gen_salt('bf', 10)),
        true
   ),
   (14, 'Vinicius',                      'Melo',       'vinicius@example.com',
@@ -218,23 +219,42 @@ VALUES
    3. Permissões
    ======================================================================== */
 INSERT INTO permission (id, description) VALUES
-  (1, 'ROLE_REGISTER_USER'   ),
-  (2, 'ROLE_REMOVE_USER'     ),
-  (3, 'ROLE_SEARCH_USER'     ),
-  (4, 'ROLE_REGISTER_TERMS'),
-  (5, 'ROLE_REGISTER_GROUP'),
-  (6, 'ROLE_REMOVE_GROUP' ),
-  (7, 'ROLE_SEARCH_GROUP' ),
-  (8, 'ROLE_REGISTER_PAPER'),
-  (9, 'ROLE_REMOVE_PAPER' ),
-  (10, 'ROLE_SEARCH_PAPER' );
+-- Insere todas as roles em permission (user + group + geral)
+  /* GROUP PERMISSIONS*/
+  /* MEMBERS = 4*/
+  (1, 'ROLE_LIST_MEMBER'),
+  (2, 'ROLE_INVITE_MEMBER'),
+  (3, 'ROLE_DELETE_MEMBER'),
+  (4, 'ROLE_EDIT_MEMBER'),
+  /* GROUPS = 4*/
+  (5, 'ROLE_LIST_GROUP'),
+  (6, 'ROLE_CREATE_GROUP'),
+  (7, 'ROLE_DELETE_GROUP'),
+  (8, 'ROLE_EDIT_GROUP'),
+  /* LIBRARY = 2*/
+  (9, 'ROLE_MODERATE_PAPER'),
+  (10, 'ROLE_UPLOAD_PAPER'),
+  /* SOLUTIONS = 5*/
+  (11, 'ROLE_SOLUTION_VIEW_OPEN_DATA_DASHBOARD'),
+  (12, 'ROLE_SOLUTION_VIEW_D2L_DASHBOARD'),
+  (13, 'ROLE_SOLUTION_MODERATE_ACCESS_REQUESTS'),
+  (14, 'ROLE_SOLUTION_LIST_USER'),
+  (15, 'ROLE_SOLUTION_DELETE_USER'),
+  /* SETTINGS = 2*/
+  (16, 'ROLE_EDIT_ACCEPT_TERMS'),
+  (17, 'ROLE_EDIT_PRIVACY_POLICY'),
+  /* GENERAL PERMISSIONS*/
+  (18, 'ROLE_REGISTER_TERMS_AND_POLICY')
+  ON CONFLICT (id) DO UPDATE
+  SET description = EXCLUDED.description;
 
 /* ========================================================================
    4. Permissões por usuário
    ======================================================================== */
 INSERT INTO user_permission (id_user_permission, id_permission) VALUES
-  -- admin (id_user = 3)
-  (3,1),(3,2),(3,3),(3,4),(3,5),(3,6),
+  -- admin (id_user = 13)
+  (13,1),(13,2),(13,3),(13,4),(13,5),(13,6),(13,7),(13,8),(13,9),(13,10),
+  (13,11),(13,12),(13,13),(13,14),(13,15),(13,16),(13,17),(13,18),
   -- common user (id_user = 1)
   (1,1),(1,3),(1,4),(1,5),(1,6);
 

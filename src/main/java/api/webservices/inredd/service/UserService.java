@@ -66,16 +66,7 @@ public class UserService {
 	
 	public List<Permission> addCommonUserPermissions(){
 		List<Permission> permissions = new ArrayList<>();
-        // 'ROLE_REGISTER_USER'
-		permissions.add(permissionRepository.findById(1L).get());
-        // 'ROLE_SEARCH_USER'
-		permissions.add(permissionRepository.findById(3L).get());
-        // 'ROLE_REGISTER_TERMS'
-		permissions.add(permissionRepository.findById(4L).get());
-        // 'ROLE_REGISTER_GROUP'
-		permissions.add(permissionRepository.findById(5L).get());
-        // 'ROLE_REMOVE_GROUP'
-		permissions.add(permissionRepository.findById(6L).get());
+		permissions.add(permissionRepository.findById(18L).get());
 		return permissions;
 	}
 
@@ -106,13 +97,7 @@ public class UserService {
     private List<Permission> getPermissionsForGroup(Long groupId) {
         if (groupId.equals(1L)) {
             List<Permission> permissions = new ArrayList<>();
-            permissions.add(permissionRepository.findById(1L).get());
-            permissions.add(permissionRepository.findById(2L).get());
-            permissions.add(permissionRepository.findById(3L).get());
-            permissions.add(permissionRepository.findById(4L).get());
-            permissions.add(permissionRepository.findById(5L).get());
-            permissions.add(permissionRepository.findById(6L).get());
-            return permissions;
+            return permissionRepository.findAll();
         } else {
             return addCommonUserPermissions();
         }

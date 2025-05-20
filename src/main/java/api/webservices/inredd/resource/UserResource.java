@@ -51,17 +51,6 @@ public class UserResource {
 		return userRepository.findAll();
 	}
 	
-	// @Operation(
-    //     summary = "Criar um novo usuário",
-    //     description = "Cria um novo usuário no sistema com as informações fornecidas. Esta operação não exige autenticação específica, mas pode ser protegida conforme a lógica de segurança."
-    // )
-	// @PostMapping
-	// @ResponseStatus(HttpStatus.CREATED)
-	// //@PreAuthorize("hasAuthority('ROLE_REGISTER_USER') and #oauth2.hasScope('write')")
-	// public User create(@Valid @RequestBody User user, 
-	// 		HttpServletResponse response) {
-	// 	return userService.save(user);
-	// }
 	@Operation(summary = "Criar um novo usuário com instituição acadêmica")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -74,7 +63,7 @@ public class UserResource {
         description = "Busca um usuário específico no sistema utilizando o seu ID. Retorna o usuário encontrado ou uma resposta 404 caso o usuário não seja encontrado."
     )
 	@GetMapping("/{id}")
-	@PreAuthorize("hasAuthority('ROLE_SEARCH_USER') and #oauth2.hasScope('read')")
+	@PreAuthorize("hasAuthority('ROLE_SOLUTION_LIST_USER') and #oauth2.hasScope('read')")
 	public ResponseEntity<User> findById(@PathVariable Long id){
 		Optional<User> user = userRepository.findById(id);
 		if(user.isPresent()) {
@@ -89,7 +78,7 @@ public class UserResource {
     )
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	@PreAuthorize("hasAuthority('ROLE_REMOVE_USER') and #oauth2.hasScope('write')")
+	@PreAuthorize("hasAuthority('ROLE_SOLUTION_DELETE_USER') and #oauth2.hasScope('write')")
 	public void remove(@PathVariable Long id) {
 		userRepository.deleteById(id);
 	}
@@ -99,7 +88,7 @@ public class UserResource {
         description = "Atualiza as informações de um usuário existente no sistema com base no seu ID. Essa operação requer autenticação e autorização apropriadas."
     )
 	@PutMapping("/{id}")
-	@PreAuthorize("hasAuthority('ROLE_REGISTER_USER') and #oauth2.hasScope('write')")
+	@PreAuthorize("hasAuthority('ROLE_SOLUTION_DELETE_USER') and #oauth2.hasScope('write')")
 	public ResponseEntity<User> update(@PathVariable Long id,
 			@Valid @RequestBody User user){
 		User userSaved = userService.update(id, user);
@@ -111,7 +100,7 @@ public class UserResource {
         description = "Permite atualizar a propriedade 'active' de um usuário, ativando ou desativando sua conta."
     )
 	@PutMapping("/{id}/active")
-	@PreAuthorize("hasAuthority('ROLE_REGISTER_USER') and #oauth2.hasScope('write')")
+	@PreAuthorize("hasAuthority('ROLE_SOLUTION_DELETE_USER') and #oauth2.hasScope('write')")
 	public void updateActiveProperty(
 			@PathVariable Long id,
 			@RequestBody Boolean active){
