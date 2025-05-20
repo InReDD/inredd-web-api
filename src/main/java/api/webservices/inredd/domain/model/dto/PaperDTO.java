@@ -19,6 +19,7 @@ public class PaperDTO {
     private List<String> authors;
     private String doi;
     private List<String> tags;
+    private String abstractText;
     private List<String> users;
     private OffsetDateTime createdAt;
 
@@ -30,6 +31,7 @@ public class PaperDTO {
         this.authors     = parseAuthors(paper.getAuthors());
         this.doi         = paper.getDoi();
         this.tags        = parseTags(paper.getTags());
+        this.abstractText = paper.getAbstractText();
         this.users       = paper.getUsers()
                                  .stream()
                                  .map(u -> u.getFirstName() + " " + u.getLastName())
@@ -123,6 +125,14 @@ public class PaperDTO {
 
     public void setTags(List<String> tags) {
         this.tags = tags;
+    }
+
+    public String getAbstractText() {
+        return abstractText;
+    }
+
+    public void setAbstractText(String abstractText) {
+        this.abstractText = abstractText;
     }
 
     public List<String> getUsers() {

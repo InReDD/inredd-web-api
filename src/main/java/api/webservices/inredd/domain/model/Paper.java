@@ -30,6 +30,9 @@ public class Paper {
 
     private String tags;
 
+    @Column(name = "abstract")
+    private String abstractText;
+
     @ManyToMany
     @JoinTable(
         name = "paper_has_user",
@@ -95,6 +98,14 @@ public class Paper {
 
     public void setTags(String tags) {
         this.tags = tags;
+    }
+
+    public String getAbstractText() {
+        return abstractText;
+    }
+
+    public void setAbstractText(String abstractText) {
+        this.abstractText = abstractText;
     }
 
     public List<User> getUsers() {
