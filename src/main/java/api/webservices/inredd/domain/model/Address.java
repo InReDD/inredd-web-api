@@ -2,9 +2,15 @@ package api.webservices.inredd.domain.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
 @Table(name = "address")
+@JsonIdentityInfo(
+    generator = ObjectIdGenerators.PropertyGenerator.class,
+    property = "idAddress"
+)
 public class Address {
 
     @Id
@@ -31,17 +37,6 @@ public class Address {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_user", nullable = false)
     private User user;
-
-    // Constructors
-    public Address() { }
-
-    public Address(String address, String country, String state, String city, User user) {
-        this.address = address;
-        this.country = country;
-        this.state   = state;
-        this.city    = city;
-        this.user    = user;
-    }
 
     // Getters and Setters
     public Long getIdAddress() {

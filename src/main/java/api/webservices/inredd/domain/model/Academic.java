@@ -1,10 +1,15 @@
 package api.webservices.inredd.domain.model;
 
 import javax.persistence.*;
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
 @Table(name = "academic")
+@JsonIdentityInfo(
+    generator = ObjectIdGenerators.PropertyGenerator.class,
+    property = "idUser"
+)
 public class Academic {
 
     @Id
@@ -13,9 +18,12 @@ public class Academic {
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @MapsId
-    @JsonBackReference
     @JoinColumn(name = "id_user", nullable = false)
     private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "id_address")
+    private Address address;
 
     @Column(name = "title", length = 50)
     private String title;
@@ -29,10 +37,6 @@ public class Academic {
     @Column(name = "abstract", columnDefinition = "TEXT")
     private String abstractText;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_address")
-    private Address address;
-
     public Academic() {
         // Default
     }
@@ -42,7 +46,7 @@ public class Academic {
      */
     public Academic(User user) {
         this.user = user;
-        this.idUser = user.getId();
+        this.idUser = user.getIdUser();
     }
 
     // Getters and setters
@@ -51,13 +55,8 @@ public class Academic {
         return idUser;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-        this.idUser = user.getId();
+    public void setIdUser(Long idUser) {
+        this.idUser = idUser;
     }
 
     public String getTitle() {

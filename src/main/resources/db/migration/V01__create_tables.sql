@@ -3,14 +3,28 @@
 -- -----------------------------------------------------
 -- "User" is a reserved word in PostgreSQL, so we quote it.
 CREATE TABLE IF NOT EXISTS "user" (
-  id_user         BIGSERIAL PRIMARY KEY,
-  first_name      VARCHAR(45),
-  last_name       VARCHAR(45),
-  email           VARCHAR(45) NOT NULL UNIQUE,
-  public_picture  BYTEA, 
-  contact         VARCHAR(50),
-  password        VARCHAR(150) NOT NULL,
-  active          BOOLEAN NOT NULL
+  id_user                          BIGSERIAL PRIMARY KEY,
+  first_name                       VARCHAR(45),
+  last_name                        VARCHAR(45),
+  email                            VARCHAR(45)       NOT NULL UNIQUE,
+  public_picture                   BYTEA,
+  contact                          VARCHAR(50),
+  password                         VARCHAR(150)      NOT NULL,
+  active                           BOOLEAN           NOT NULL,
+  
+  user_has_access_to_d2l           BOOLEAN           NOT NULL DEFAULT FALSE,
+  access_to_d2l_since              TIMESTAMP         NULL DEFAULT NULL,
+  
+  user_has_access_to_open_data     BOOLEAN           NOT NULL DEFAULT FALSE,
+  access_to_open_data_since        TIMESTAMP         NULL,
+  
+  signed_in_at                     TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+  
+  accepted_terms_at                TIMESTAMP         NULL,
+  user_has_accepted_terms          BOOLEAN           NOT NULL DEFAULT FALSE,
+  
+  accepted_privacy_policy_at       TIMESTAMP         NULL,
+  user_has_accepted_privacy_policy BOOLEAN           NOT NULL DEFAULT FALSE
 );
 
 ALTER TABLE "user"
@@ -76,6 +90,7 @@ CREATE TABLE IF NOT EXISTS groups (
 CREATE TABLE IF NOT EXISTS groups_has_user (
   id_groups BIGSERIAL NOT NULL,
   id_user BIGSERIAL NOT NULL,
+  member_since TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
 
   PRIMARY KEY (id_groups, id_user),
 

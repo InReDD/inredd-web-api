@@ -2,10 +2,12 @@ package api.webservices.inredd.resource;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import api.webservices.inredd.domain.model.dto.UserDTO;
+import api.webservices.inredd.domain.model.dto.UserUpdateDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,12 +23,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import api.webservices.inredd.domain.model.User;
 import api.webservices.inredd.domain.model.dto.CreateUserDTO;
+import api.webservices.inredd.domain.model.dto.UserResponseDTO;
 import api.webservices.inredd.repository.UserRepository;
 import api.webservices.inredd.service.UserService;
 
@@ -40,67 +41,80 @@ public class UserResource {
 	
 	@Autowired
 	private UserService userService;
-	
+
 	@Operation(
-        summary = "Listar todos os usuários",
-        description = "Retorna uma lista de todos os usuários registrados no sistema. Esta operação requer que o usuário tenha a autoridade 'ROLE_SEARCH_USER' e o escopo 'read'."
-    )
+			summary = "Listar todos os usuários",
+			description = "Retorna uma lista de todos os usuários registrados no sistema."
+	)
 	@GetMapping
 	@PreAuthorize("hasAuthority('ROLE_SEARCH_USER') and #oauth2.hasScope('read')")
-	public List<User> list(){
-		return userRepository.findAll();
+	public ResponseEntity<List<UserDTO>> list() {
+		List<User> users = userRepository.findAll();
+		List<UserDTO> userDTOs = users.stream()
+				.map(UserDTO::new)
+				.collect(Collectors.toList());
+
+		return ResponseEntity.ok(userDTOs);
 	}
 	
 	@Operation(summary = "Criar um novo usuário com instituição acadêmica")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public User create(@Valid @RequestBody CreateUserDTO dto) {
-        return userService.saveWithAcademic(dto);
+    public UserResponseDTO create(@Valid @RequestBody CreateUserDTO dto) {
+		var user = userService.saveWithAcademic(dto);
+		return new UserResponseDTO(user);
     }
 
 	@Operation(
-        summary = "Buscar usuário por ID",
-        description = "Busca um usuário específico no sistema utilizando o seu ID. Retorna o usuário encontrado ou uma resposta 404 caso o usuário não seja encontrado."
-    )
+			summary = "Buscar usuário por ID",
+			description = "Busca um usuário específico no sistema utilizando o seu ID. Retorna o usuário encontrado ou uma resposta 404 caso o usuário não seja encontrado."
+	)
 	@GetMapping("/{id}")
-	@PreAuthorize("hasAuthority('ROLE_SOLUTION_LIST_USER') and #oauth2.hasScope('read')")
-	public ResponseEntity<User> findById(@PathVariable Long id){
-		Optional<User> user = userRepository.findById(id);
-		if(user.isPresent()) {
-			return ResponseEntity.ok(user.get());
+	@PreAuthorize("hasAuthority('ROLE_SEARCH_USER') and #oauth2.hasScope('read')")
+	public ResponseEntity<UserDTO> findById(@PathVariable Long id){
+		Optional<User> userOptional = userRepository.findByIdUser(id);
+
+		if (!userOptional.isPresent()) {
+			return ResponseEntity.notFound().build();
 		}
-		return ResponseEntity.notFound().build();
+
+		User user = userOptional.get();
+		UserDTO userDTO = new UserDTO(user);
+
+		return ResponseEntity.ok(userDTO);
 	}
-	
+
+
 	@Operation(
-        summary = "Remover um usuário",
-        description = "Remove um usuário do sistema com base no seu ID. Esta operação requer que o usuário tenha a autoridade 'ROLE_REMOVE_USER' e o escopo 'write'."
-    )
+			summary = "Atualizar informações de um usuário",
+			description = "Atualiza as informações de um usuário existente no sistema com base no seu ID."
+	)
+	@PutMapping(value = "/{id}", consumes = {"application/json", "application/json;charset=UTF-8"})
+	@PreAuthorize("hasAuthority('ROLE_REGISTER_USER') and #oauth2.hasScope('write')")
+	public ResponseEntity<UserDTO> update(@PathVariable Long id,
+										  @Valid @RequestBody UserUpdateDTO userUpdateDTO) {
+		User userSaved = userService.update(id, userUpdateDTO);
+		return ResponseEntity.ok(new UserDTO(userSaved));
+	}
+
+	@Operation(
+			summary = "Remover um usuário",
+			description = "Remove um usuário do sistema com base no seu ID."
+	)
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	@PreAuthorize("hasAuthority('ROLE_SOLUTION_DELETE_USER') and #oauth2.hasScope('write')")
+	@PreAuthorize("hasAuthority('ROLE_REMOVE_USER') and #oauth2.hasScope('write')")
 	public void remove(@PathVariable Long id) {
 		userRepository.deleteById(id);
 	}
 
 	@Operation(
-        summary = "Atualizar informações de um usuário",
-        description = "Atualiza as informações de um usuário existente no sistema com base no seu ID. Essa operação requer autenticação e autorização apropriadas."
-    )
-	@PutMapping("/{id}")
-	@PreAuthorize("hasAuthority('ROLE_SOLUTION_DELETE_USER') and #oauth2.hasScope('write')")
-	public ResponseEntity<User> update(@PathVariable Long id,
-			@Valid @RequestBody User user){
-		User userSaved = userService.update(id, user);
-		return ResponseEntity.ok(userSaved);
-	}
-	
-	@Operation(
-        summary = "Atualizar a propriedade 'active' de um usuário",
-        description = "Permite atualizar a propriedade 'active' de um usuário, ativando ou desativando sua conta."
-    )
+			summary = "Atualizar a propriedade 'active' de um usuário",
+			description = "Permite atualizar a propriedade 'active' de um usuário, ativando ou desativando sua conta."
+	)
 	@PutMapping("/{id}/active")
-	@PreAuthorize("hasAuthority('ROLE_SOLUTION_DELETE_USER') and #oauth2.hasScope('write')")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	@PreAuthorize("hasAuthority('ROLE_REGISTER_USER') and #oauth2.hasScope('write')")
 	public void updateActiveProperty(
 			@PathVariable Long id,
 			@RequestBody Boolean active){

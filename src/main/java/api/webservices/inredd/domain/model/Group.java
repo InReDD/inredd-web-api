@@ -5,14 +5,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 @Entity
 @Table(name = "groups")
+@JsonIdentityInfo(
+    generator = ObjectIdGenerators.PropertyGenerator.class,
+    property = "idGroups"
+)
 public class Group {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_groups")
-    private Long id;
+    private Long idGroups;
 
     private String name;
 
@@ -32,12 +39,12 @@ public class Group {
     )
     private List<Permission> permissions = new ArrayList<>();
 
-    public Long getId() {
-        return id;
+    public Long getIdGroups() {
+        return idGroups;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setIdGroups(Long idGroups) {
+        this.idGroups = idGroups;
     }
 
     public String getName() {
@@ -77,11 +84,11 @@ public class Group {
         if (this == o) return true;
         if (!(o instanceof Group)) return false;
         Group group = (Group) o;
-        return Objects.equals(id, group.id);
+        return Objects.equals(idGroups, group.idGroups);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(idGroups);
     }
 }
