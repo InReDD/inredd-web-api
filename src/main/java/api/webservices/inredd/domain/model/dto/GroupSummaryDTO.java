@@ -2,21 +2,22 @@ package api.webservices.inredd.domain.model.dto;
 
 import api.webservices.inredd.domain.model.Group;
 
-public class GroupDTO {
+public class GroupSummaryDTO {
 
     private Long idGroups;
     private String name;
     private String description;
 
-    public GroupDTO() {
+    public GroupSummaryDTO() {
     }
 
-    public GroupDTO(Group group) {
+    public GroupSummaryDTO(Group group) {
         this.idGroups = group.getIdGroups();
         this.name = group.getName();
         this.description = group.getDescription();
     }
 
+    // Getters e Setters
     public Long getIdGroups() {
         return idGroups;
     }

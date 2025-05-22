@@ -40,7 +40,6 @@ public class PaperDTO {
     }
 
     private List<String> parseAuthors(String raw) {
-        System.out.println("DEBUGGGGGGGGGGGGGGGGGGGGGGG " + raw);
         if (raw == null || raw.isBlank()) {
             return Collections.emptyList();
         }

@@ -49,7 +49,7 @@ public class GroupResource {
     public ResponseEntity<Page<SimpleGroupDTO>> list(Pageable pageable) {
         Page<SimpleGroupDTO> page = groupRepository
             .findAll(pageable)
-            .map(g -> new SimpleGroupDTO(g.getId(), g.getName()));
+            .map(g -> new SimpleGroupDTO(g.getIdGroups(), g.getName()));
         return ResponseEntity.ok(page);
     }
 
@@ -57,11 +57,15 @@ public class GroupResource {
       summary = "Criar um novo grupo",
       description = "POST /groups — cria um grupo com nome, descrição e lista de permissões"
     )
-    @PreAuthorize("hasAuthority('ROLE_CREATE_GROUP') and #oauth2.hasScope('write')")
     @PostMapping
+    @PreAuthorize("hasAuthority('ROLE_CREATE_GROUP') and #oauth2.hasScope('write')")
     public ResponseEntity<SimpleGroupDTO> create(@RequestBody GroupCreateDTO dto) {
-        var g = groupService.createGroup(dto);
-        var out = new SimpleGroupDTO(g.getId(), g.getName());
+        Group g = groupService.createGroup(dto);
+        // antes: g.getId()
+        SimpleGroupDTO out = new SimpleGroupDTO(
+            g.getIdGroups(),
+            g.getName()
+        );
         return ResponseEntity.status(HttpStatus.CREATED).body(out);
     }
 
@@ -69,14 +73,18 @@ public class GroupResource {
       summary = "Atualizar um grupo existente",
       description = "PUT /groups/{id} — redefine nome, descrição e permissões do grupo"
     )
-    @PreAuthorize("hasAuthority('ROLE_EDIT_GROUP') and #oauth2.hasScope('write')")
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_EDIT_GROUP') and #oauth2.hasScope('write')")
     public ResponseEntity<SimpleGroupDTO> update(
             @PathVariable Long id,
             @RequestBody GroupCreateDTO dto) {
 
         Group updated = groupService.updateGroup(id, dto);
-        SimpleGroupDTO out = new SimpleGroupDTO(updated.getId(), updated.getName());
+        // antes usava updated.getIdUser(), agora:
+        SimpleGroupDTO out = new SimpleGroupDTO(
+            updated.getIdGroups(),
+            updated.getName()
+        );
         return ResponseEntity.ok(out);
     }
 

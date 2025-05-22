@@ -32,11 +32,3 @@ VALUES (
    nulla pariatur. Excepteur sint occaecat cupidatat non proident, 
    sunt in culpa qui officia deserunt mollit anim id est laborum.'
 );
-
-ALTER TABLE "user"
-  ADD COLUMN accepted_terms_at      TIMESTAMP NULL,
-  ADD COLUMN user_has_accepted_terms BOOLEAN NOT NULL DEFAULT FALSE;
-
-ALTER TABLE "user"
-  ADD COLUMN accepted_privacy_policy_at      TIMESTAMP NULL,
-  ADD COLUMN user_has_accepted_privacy_policy BOOLEAN NOT NULL DEFAULT FALSE;

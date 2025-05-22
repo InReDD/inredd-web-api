@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import org.hibernate.annotations.Type;
 import javax.persistence.*;
 import javax.validation.constraints.*;
@@ -12,36 +14,70 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "\"user\"")
+@JsonIdentityInfo(
+		generator = ObjectIdGenerators.PropertyGenerator.class,
+		property = "idUser"
+)
 public class User {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id_user")
 	private Long idUser;
+
 	@NotNull
 	@Size(min = 3, max = 45)
+	@Column(name = "first_name")
 	private String firstName;
+
 	@NotNull
 	@Size(min = 3, max = 45)
+	@Column(name = "last_name")
 	private String lastName;
+
 	@NotNull
 	@Email
+	@Column(name = "email")
 	private String email;
+
 	@NotNull
 	@Size(min = 6, max = 150)
+	@Column(name = "password")
 	private String password;
+
 	@Size(min = 3, max = 50)
+	@Column(name = "contact")
 	private String contact;
+
 	@NotNull
+	@Column(name = "active")
 	private Boolean active;
+
 	@Lob
     @Column(name = "public_picture", nullable = true)
 	@Type(type = "org.hibernate.type.BinaryType")
 	private byte[] publicPicture;
+
+	@Column(name = "signed_in_at", nullable = false, updatable = false,
+            columnDefinition = "TIMESTAMP WITH TIME ZONE DEFAULT now()")
+    private Instant signedInAt;
+
 	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "user_permission", joinColumns = @JoinColumn(name = "id_user_permission"), inverseJoinColumns = @JoinColumn(name = "id_permission"))
-	private List<Permission> permissions;
-	@ManyToMany(mappedBy = "users")
-	private List<Group> groups;
+	@JoinTable(
+			name = "user_permission",
+			joinColumns = @JoinColumn(name = "id_user_permission"),
+			inverseJoinColumns = @JoinColumn(name = "id_permission")
+	)
+	private List<Permission> permissions = new ArrayList<>();
+
+	@ManyToMany
+	@JoinTable(
+			name = "groups_has_user",
+			joinColumns = @JoinColumn(name = "id_user"),
+			inverseJoinColumns = @JoinColumn(name = "id_groups")
+	)
+	private List<Group> groups = new ArrayList<>();
+
 	@ManyToMany(mappedBy = "users")
 	private List<Paper> papers;
 	/**
@@ -55,7 +91,7 @@ public class User {
         fetch = FetchType.LAZY,
         optional = true
     )
-	@JsonManagedReference   // lado “pai” da serialização
+//	@JsonManagedReference   // lado “pai” da serialização
     private Academic academic;
 	/**
      * Relacionamento one-to-many para Address.
@@ -69,23 +105,56 @@ public class User {
     )
     private List<Address> addresses = new ArrayList<>();
 
-	@Column(name = "accepted_terms_at")
+	@Column(name = "accepted_terms_at",
+            insertable = false,
+            columnDefinition = "TIMESTAMP WITH TIME ZONE DEFAULT now()")
     private Instant acceptedTermsAt;
 
     @Column(name = "user_has_accepted_terms", nullable = false)
     private Boolean userHasAcceptedTerms = Boolean.FALSE;
 
-	@Column(name = "accepted_privacy_policy_at")
+	@Column(name = "accepted_privacy_policy_at",
+            insertable = false,
+            columnDefinition = "TIMESTAMP WITH TIME ZONE DEFAULT now()")
     private Instant acceptedPrivacyPolicyAt;
 
     @Column(name = "user_has_accepted_privacy_policy", nullable = false)
     private Boolean userHasAcceptedPrivacyPolicy = Boolean.FALSE;
 
-	public Long getId() {
+	@Column(name = "user_has_access_to_d2l", nullable = false)
+    private Boolean userHasAccessToD2L = Boolean.FALSE;
+
+    @Column(name = "access_to_d2l_since")
+    private Instant accessToD2LSince;
+
+    @Column(name = "user_has_access_to_open_data", nullable = false)
+    private Boolean userHasAccessToOpenData = Boolean.FALSE;
+
+    @Column(name = "access_to_open_data_since")
+    private Instant accessToOpenDataSince;
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(idUser);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		User other = (User) obj;
+		return Objects.equals(idUser, other.idUser);
+	}
+
+	public Long getIdUser() {
 		return idUser;
 	}
 
-	public void setId(Long idUser) {
+	public void setIdUser(Long idUser) {
 		this.idUser = idUser;
 	}
 
@@ -121,21 +190,37 @@ public class User {
 		this.password = password;
 	}
 
-	public byte[] getPublicPicture() {
-        return publicPicture;
-    }
+	public String getContact() {
+		return contact;
+	}
 
-    public void setPublicPicture(byte[] publicPicture) {
-        this.publicPicture = publicPicture;
-    }
+	public void setContact(String contact) {
+		this.contact = contact;
+	}
 
-	public Boolean isActive() {
+	public Boolean getActive() {
 		return active;
 	}
 
 	public void setActive(Boolean active) {
 		this.active = active;
 	}
+
+	public byte[] getPublicPicture() {
+		return publicPicture;
+	}
+
+	public void setPublicPicture(byte[] publicPicture) {
+		this.publicPicture = publicPicture;
+	}
+
+	public Instant getSignedInAt() {
+        return signedInAt;
+    }
+	
+    public void setSignedInAt(Instant signedInAt) {
+        this.signedInAt = signedInAt;
+    }
 
 	public List<Permission> getPermissions() {
 		return permissions;
@@ -153,18 +238,10 @@ public class User {
 		this.groups = groups;
 	}
 
-	public String getContact() {
-		return contact;
-	}
-
-	public void setContact(String contact) {
-		this.contact = contact;
-	}
-	
 	public List<Paper> getPapers() {
 		return papers;
 	}
-	
+
 	public void setPapers(List<Paper> papers) {
 		this.papers = papers;
 	}
@@ -173,81 +250,75 @@ public class User {
 		return academic;
 	}
 
-    public void setAcademic(Academic academic) {
-        this.academic = academic;
-        if (academic != null) {
-            academic.setUser(this);
-        }
-    }
+	public void setAcademic(Academic academic) {
+		this.academic = academic;
+	}
 
 	public List<Address> getAddresses() {
-        return addresses;
-    }
+		return addresses;
+	}
 
-    public void setAddresses(List<Address> addresses) {
-        this.addresses = addresses;
-        for (Address a : addresses) {
-        	a.setUser(this);
-        }
-    }
-
-    public void addAddress(Address address) {
-        addresses.add(address);
-        address.setUser(this);
-    }
-	
-    public void removeAddress(Address address) {
-        addresses.remove(address);
-        address.setUser(null);
-    }
+	public void setAddresses(List<Address> addresses) {
+		this.addresses = addresses;
+	}
 
 	public Instant getAcceptedTermsAt() {
-        return acceptedTermsAt;
-    }
+		return acceptedTermsAt;
+	}
 
-    public void setAcceptedTermsAt(Instant acceptedTermsAt) {
-        this.acceptedTermsAt = acceptedTermsAt;
-    }
+	public void setAcceptedTermsAt(Instant acceptedTermsAt) {
+		this.acceptedTermsAt = acceptedTermsAt;
+	}
 
-    public Boolean getUserHasAcceptedTerms() {
-        return userHasAcceptedTerms;
-    }
+	public Boolean getUserHasAcceptedTerms() {
+		return userHasAcceptedTerms;
+	}
 
-    public void setUserHasAcceptedTerms(Boolean userHasAcceptedTerms) {
-        this.userHasAcceptedTerms = userHasAcceptedTerms;
-    }
+	public void setUserHasAcceptedTerms(Boolean userHasAcceptedTerms) {
+		this.userHasAcceptedTerms = userHasAcceptedTerms;
+	}
 
 	public Instant getAcceptedPrivacyPolicyAt() {
-        return acceptedPrivacyPolicyAt;
-    }
-
-    public void setAcceptedPrivacyPolicyAt(Instant acceptedPrivacyPolicyAt) {
-        this.acceptedPrivacyPolicyAt = acceptedPrivacyPolicyAt;
-    }
-
-    public Boolean getUserHasAcceptedPrivacyPolicy() {
-        return userHasAcceptedPrivacyPolicy;
-    }
-
-    public void setUserHasAcceptedPrivacyPolicy(Boolean userHasAcceptedPrivacyPolicy) {
-        this.userHasAcceptedPrivacyPolicy = userHasAcceptedPrivacyPolicy;
-    }
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(idUser);
+		return acceptedPrivacyPolicyAt;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		User other = (User) obj;
-		return Objects.equals(idUser, other.idUser);
+	public void setAcceptedPrivacyPolicyAt(Instant acceptedPrivacyPolicyAt) {
+		this.acceptedPrivacyPolicyAt = acceptedPrivacyPolicyAt;
 	}
 
+	public Boolean getUserHasAcceptedPrivacyPolicy() {
+		return userHasAcceptedPrivacyPolicy;
+	}
+
+	public void setUserHasAcceptedPrivacyPolicy(Boolean userHasAcceptedPrivacyPolicy) {
+		this.userHasAcceptedPrivacyPolicy = userHasAcceptedPrivacyPolicy;
+	}
+
+	public Boolean getUserHasAccessToD2L() { 
+		return userHasAccessToD2L; 
+	}
+    public void setUserHasAccessToD2L(Boolean v) { 
+		this.userHasAccessToD2L = v; 
+	}
+
+    public Instant getAccessToD2LSince() { 
+		return accessToD2LSince; 
+	}
+    public void setAccessToD2LSince(Instant v) { 
+		this.accessToD2LSince = v; 
+	}
+
+    public Boolean getUserHasAccessToOpenData() { 
+		return userHasAccessToOpenData; 
+	}
+    public void setUserHasAccessToOpenData(Boolean v) { 
+		this.userHasAccessToOpenData = v; 
+	}
+
+    public Instant getAccessToOpenDataSince() { 
+		return accessToOpenDataSince; 
+	}
+    public void setAccessToOpenDataSince(Instant v) { 
+		this.accessToOpenDataSince = v; 
+	}
 }

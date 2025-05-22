@@ -28,8 +28,8 @@ public class ActivityService {
 	
 	public Activity save(Activity activity) {
 		Optional<User> user = userRepository.findById(
-				activity.getUser().getId());
-		if(!user.isPresent() || !user.get().isActive()) {
+				activity.getUser().getIdUser());
+		if(!user.isPresent() || !user.get().getActive()) {
 			throw new NonExistentOrInactiveUserException();
 		}
 		return activityRepository.save(activity);
