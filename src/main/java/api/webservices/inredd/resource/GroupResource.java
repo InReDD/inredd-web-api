@@ -45,7 +45,6 @@ public class GroupResource {
       description = "Retorna todos os grupos (somente id e name) com suporte a paginação e ordenação."
     )
     @GetMapping
-    @PreAuthorize("hasAuthority('ROLE_LIST_GROUP') and #oauth2.hasScope('read')")
     public ResponseEntity<Page<SimpleGroupDTO>> list(Pageable pageable) {
         Page<SimpleGroupDTO> page = groupRepository
             .findAll(pageable)

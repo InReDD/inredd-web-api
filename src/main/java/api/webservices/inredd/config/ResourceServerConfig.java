@@ -48,7 +48,8 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter{
             .antMatchers(HttpMethod.GET, "/groups/**", "/papers/**", "/members/**", "/params/**", "/me/**").permitAll()
             .antMatchers("/users").permitAll()
             // todo o resto precisa de token
-            .anyRequest().authenticated();
+            .anyRequest().permitAll();
+            //.anyRequest().authenticated();
     }
 
 	@Override
