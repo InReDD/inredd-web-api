@@ -19,6 +19,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import api.webservices.inredd.domain.model.dto.MemberDTO;
 import api.webservices.inredd.domain.model.dto.MemberViewDTO;
@@ -100,4 +102,16 @@ public class MemberResource {
         memberService.updateMemberAccessAndGroup(id, dto);
         return ResponseEntity.noContent().build();
     }
+
+    @Operation(
+      summary = "Remover um membro",
+      description = "DELETE /members/{id} — apenas remove todas as associações de grupo deste usuário (não exclui o usuário)."
+    )
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_DELETE_MEMBER') and #oauth2.hasScope('write')")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteMember(@PathVariable("id") Long id) {
+        memberService.removeMemberFromAllGroups(id);
+    }
+
 }

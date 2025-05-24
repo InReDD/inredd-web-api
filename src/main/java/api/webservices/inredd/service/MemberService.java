@@ -115,4 +115,12 @@ public class MemberService {
 
         userRepository.save(u);
     }
+
+    @Transactional
+    public void removeMemberFromAllGroups(Long userId) {
+        User u = userRepository.findByIdUser(userId)
+            .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado: " + userId));
+        u.getGroups().clear();
+        userRepository.save(u);
+    }
 }
