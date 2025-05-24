@@ -33,21 +33,19 @@ public class TokenCookieAdvice implements ResponseBodyAdvice<OAuth2AccessToken> 
             HttpServletResponse servletResp =
                 ((ServletServerHttpResponse) response).getServletResponse();
 
-            // 1) Cookie “tradicional” (para compatibilidade interna)
             Cookie cookie = new Cookie("ACCESS_TOKEN", body.getValue());
-            cookie.setHttpOnly(true);
-            cookie.setSecure(true);        // em HTTPS
+            cookie.setHttpOnly(false);
+            cookie.setSecure(false);
+            cookie.setDomain("localhost");
             cookie.setPath("/");
             cookie.setMaxAge(body.getExpiresIn());
             servletResp.addCookie(cookie);
 
-            // 2) Cabeçalho explícito para SameSite=None
             StringBuilder sb = new StringBuilder();
             sb.append("ACCESS_TOKEN=").append(body.getValue())
+              .append("; Domain=localhost")
               .append("; Max-Age=").append(body.getExpiresIn())
               .append("; Path=/")
-              .append("; HttpOnly")
-              .append("; Secure")          // apenas em HTTPS
               .append("; SameSite=None");  // <— aqui estamos definindo o SameSite
 
             servletResp.addHeader("Set-Cookie", sb.toString());
