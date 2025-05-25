@@ -16,10 +16,10 @@ public class CreateUserDTO {
     @NotBlank @Size(min = 6)
     private String password;
 
-    private Boolean active;
-
     @NotBlank
     private String institution;
+
+    private String requestToken;
 
     public String getFirstName() { return firstName; }
     public void setFirstName(String firstName) { this.firstName = firstName; }
@@ -33,9 +33,9 @@ public class CreateUserDTO {
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
 
-    public Boolean getActive() { return active; }
-    public void setActive(Boolean active) { this.active = active; }
-
     public String getInstitution() { return institution; }
     public void setInstitution(String institution) { this.institution = institution; }
+
+    public String getRequestToken() { return requestToken; }
+    public void setRequestToken(String requestToken) { this.requestToken = requestToken; }
 }

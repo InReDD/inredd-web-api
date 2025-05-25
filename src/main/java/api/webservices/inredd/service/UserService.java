@@ -1,10 +1,9 @@
 package api.webservices.inredd.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.time.Instant;
-import java.util.Base64;
-import java.util.Optional;
+import java.util.*;
+import java.time.*;
+import java.util.stream.*;
+import java.time.format.*;
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.BeanUtils;
@@ -16,30 +15,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import api.webservices.inredd.domain.model.*;
-import api.webservices.inredd.domain.model.dto.AcademicUpdateDTO;
-import api.webservices.inredd.domain.model.dto.UserUpdateDTO;
-import api.webservices.inredd.domain.model.dto.CreateUserDTO;
-import api.webservices.inredd.domain.model.dto.MeDTO;
-import api.webservices.inredd.repository.PermissionRepository;
-import api.webservices.inredd.repository.GroupRepository;
-import api.webservices.inredd.repository.UserRepository;
-import api.webservices.inredd.repository.AcademicRepository;
-import api.webservices.inredd.repository.AddressRepository;
+import api.webservices.inredd.domain.model.dto.*;
+import api.webservices.inredd.repository.*;
 
 @Service
 public class UserService {
 
-	@Autowired
-	private UserRepository userRepository;
-	
-	@Autowired 
-	PermissionRepository permissionRepository;
-
-	@Autowired 
-	GroupRepository groupRepository;
-
-	@Autowired
-    private AcademicRepository academicRepository;
+	@Autowired private UserRepository userRepository;
+	@Autowired PermissionRepository permissionRepository;
+	@Autowired GroupRepository groupRepository;
+	@Autowired private AcademicRepository academicRepository;
+    @Autowired private AccessRequestRepository accessReqRepo;
 
     @Autowired
     private AddressRepository addressRepository;
@@ -52,23 +38,39 @@ public class UserService {
 
 	@Transactional
     public User saveWithAcademic(CreateUserDTO dto) {
-        // Monta o usuário
+        // 1 Monta o usuário
         User user = new User();
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
         user.setEmail(dto.getEmail());
         user.setPassword(new BCryptPasswordEncoder().encode(dto.getPassword()));
-        user.setActive(dto.getActive());
+        user.setActive(true);
         user.setPermissions(addCommonUserPermissions());
         user.setSignedInAt(Instant.now());
 
-        // Monta o Academic
+        // 2 Monta o Academic
         Academic academic = new Academic(user);
         academic.setInstitution(dto.getInstitution());
         // os outros campos do Academic: title, lattesId, abstractText e address ficam nulos
 		user.setAcademic(academic);
 
-        return userRepository.save(user);
+        // 3) Salva o usuário
+        User saved = userRepository.save(user);
+
+        // 4) Se veio um requestToken válido, consome a AccessRequest
+        if (dto.getRequestToken() != null && !dto.getRequestToken().isBlank()) {
+            AccessRequest ar = accessReqRepo
+                .findByRequestToken(dto.getRequestToken())
+                .orElseThrow(() -> new EntityNotFoundException("Token inválido"));
+            if (ar.getExpiresAt().isBefore(Instant.now())) {
+                throw new IllegalStateException("Token expirado");
+            }
+            ar.setUser(saved);
+            ar.setConsumedAt(Instant.now());
+            accessReqRepo.save(ar);
+        }
+
+        return saved;
     }
 	
 	public List<Permission> addCommonUserPermissions(){
@@ -175,25 +177,43 @@ public class UserService {
 	}
 
     public MeDTO getCurrentUserInfo(Long userId) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new EntityNotFoundException("User not found: " + userId));
-
-        // Formata "FirstName L." (inicial do último nome + ponto)
-        String first = user.getFirstName();
-        String last  = user.getLastName();
-        String initial = last != null && !last.isBlank()
-            ? last.substring(0,1).toUpperCase() + "."
-            : "";
-        String displayName = first + " " + initial;
-
-        // Converte o byte[] da imagem para Base64 (ou retorna null se não tiver)
-        String imgBase64 = null;
-        if (user.getPublicPicture() != null) {
-            imgBase64 = Base64.getEncoder()
-                              .encodeToString(user.getPublicPicture());
-        }
-
-        return new MeDTO(displayName, imgBase64);
+        User u = userRepository.findById(userId)
+          .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
+    
+        // formatador de datas
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+          .withZone(ZoneId.systemDefault());
+    
+        boolean hasD2L = u.getUserHasAccessToD2L();
+        String  d2lSince = u.getAccessToD2LSince() != null
+          ? fmt.format(u.getAccessToD2LSince()) : null;
+    
+        boolean hasOD = u.getUserHasAccessToOpenData();
+        String  odSince = u.getAccessToOpenDataSince() != null
+          ? fmt.format(u.getAccessToOpenDataSince()) : null;
+    
+        // coleta todas as roles: diretas + via grupo
+        Set<String> perms = u.getPermissions().stream()
+          .map(Permission::getDescription)
+          .collect(Collectors.toSet());
+        u.getGroups().stream()
+          .flatMap(g -> g.getPermissions().stream())
+          .map(Permission::getDescription)
+          .forEach(perms::add);
+    
+        // monta o displayName e foto
+        String name = u.getFirstName() + " " + u.getLastName();
+        String img  = u.getPublicPicture()!=null
+          ? Base64.getEncoder().encodeToString(u.getPublicPicture())
+          : null;
+    
+        return new MeDTO(
+          name,
+          img,
+          hasD2L, d2lSince,
+          hasOD,  odSince,
+          perms
+        );
     }
 	
 }

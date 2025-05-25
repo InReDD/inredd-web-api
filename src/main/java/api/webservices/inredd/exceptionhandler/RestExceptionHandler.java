@@ -52,4 +52,19 @@ public class RestExceptionHandler {
             .status(HttpStatus.NOT_FOUND)
             .body(body);
     }
+
+    /**
+     * Bloqueia spam de solicitações ativas de acesso.
+     */
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorDTO> handleIllegalState(IllegalStateException ex) {
+        ErrorDTO body = new ErrorDTO(
+            "REQUEST_ACTIVE",
+            ex.getMessage()
+        );
+        // pode ser 400 ou 409, conforme sua escolha
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(body);
+    }
 }
