@@ -94,26 +94,39 @@ public class AccessRequestService {
         mailSender.send(msg);
     }
 
-    public Page<AccessRequestDTO> listRequests(String search, Pageable pageable) {
+    public Page<AccessRequestDTO> listRequests(String search,
+                                            Boolean completed,
+                                            Pageable pageable) {
+        // 1) base specs: só term
         Specification<AccessRequest> spec = AccessRequestSpecification.hasTerm(search);
 
+        // 2) filtra por completed, se veio param
+        if (completed != null) {
+            if (completed) {
+                spec = spec.and((root, query, cb) ->
+                    cb.isNotNull(root.get("consumedAt"))
+                );
+            } else {
+                spec = spec.and((root, query, cb) ->
+                    cb.isNull(root.get("consumedAt"))
+                );
+            }
+        }
+
+        // 3) executa e mapeia DTO
         return repo.findAll(spec, pageable)
-            .map(ar -> {
-                AccessRequestDTO dto = new AccessRequestDTO(ar);
-
-                // busca o usuário pelo e-mail (caso exista)
-                userRepo.findByEmail(ar.getEmail()).ifPresent(u -> {
-                    dto.setUserId(u.getIdUser());
-                    // pode vir nulo se ainda não tiver academic
-                    dto.setInstitution(
-                        u.getAcademic() != null
-                            ? u.getAcademic().getInstitution()
-                            : null
-                    );
-                });
-
-                return dto;
+        .map(ar -> {
+            AccessRequestDTO dto = new AccessRequestDTO(ar);
+            userRepo.findByEmail(ar.getEmail()).ifPresent(u -> {
+                dto.setUserId(u.getIdUser());
+                dto.setInstitution(
+                    u.getAcademic() != null
+                        ? u.getAcademic().getInstitution()
+                        : null
+                );
             });
+            return dto;
+        });
     }
 
     public ValidateAccessRequestDTO validateToken(String token) {
@@ -126,5 +139,78 @@ public class AccessRequestService {
         return new ValidateAccessRequestDTO(
           ar.getEmail(), ar.getFirstName(), ar.getSolution(), ar.getReason(), expiresIn
         );
+    }
+
+    public AccessRequestDTO getRequestById(Long id) {
+        AccessRequest ar = repo.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("AccessRequest não encontrada: " + id));
+    
+        AccessRequestDTO dto = new AccessRequestDTO(ar);
+    
+        // faz o lookup do usuário a partir do e-mail da AccessRequest
+        userRepo.findByEmail(ar.getEmail())
+            .ifPresent(u -> {
+                dto.setUserId(u.getIdUser());
+                dto.setInstitution(
+                    u.getAcademic() != null
+                        ? u.getAcademic().getInstitution()
+                        : null
+                );
+            });
+    
+        return dto;
+    }
+
+    @Transactional
+    public void approveRequest(Long id) {
+        AccessRequest ar = repo.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("AccessRequest não encontrada: " + id));
+
+        // só aprova se ainda não consumida e não expirada
+        if (ar.getConsumedAt() != null || ar.getExpiresAt().isBefore(Instant.now())) {
+            throw new IllegalStateException("Requisição já processada ou expirada");
+        }
+
+        // garante que o usuário já exista (opção: poderia usar findByEmail)
+        User u = userRepo.findByEmail(ar.getEmail())
+            .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado: " + ar.getEmail()));
+
+        // atualiza acesso conforme solução
+        if ("D2L".equalsIgnoreCase(ar.getSolution())) {
+            u.setUserHasAccessToD2L(true);
+            u.setAccessToD2LSince(Instant.now());
+        } else if ("OpenData".equalsIgnoreCase(ar.getSolution())) {
+            u.setUserHasAccessToOpenData(true);
+            u.setAccessToOpenDataSince(Instant.now());
+        }
+
+        userRepo.save(u);
+
+        ar.setConsumedAt(Instant.now());
+        repo.save(ar);
+    }
+
+    @Transactional
+    public void rejectRequest(Long id, String reason) {
+        AccessRequest ar = repo.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("AccessRequest não encontrada: " + id));
+
+        if (ar.getConsumedAt() != null || ar.getExpiresAt().isBefore(Instant.now())) {
+            throw new IllegalStateException("Requisição já processada ou expirada");
+        }
+
+        ar.setRejectionReason(reason);
+        ar.setConsumedAt(Instant.now());
+        repo.save(ar);
+
+        // envia o e-mail de recusa
+        SimpleMailMessage msg = new SimpleMailMessage();
+        msg.setFrom("no-reply@demomailtrap.co");
+        msg.setTo(ar.getEmail());
+        msg.setSubject("Solicitação de acesso rejeitada");
+        msg.setText("Olá " + ar.getFirstName() + ",\n\n" +
+                    "Sua solicitação de acesso à “" + ar.getSolution() +
+                    "” foi *rejeitada*.\n\nMotivo: " + reason + "\n\n");
+        mailSender.send(msg);
     }
 }

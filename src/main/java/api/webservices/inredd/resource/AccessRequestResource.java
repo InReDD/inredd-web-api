@@ -15,6 +15,7 @@ import api.webservices.inredd.domain.model.dto.*;
 import api.webservices.inredd.domain.model.dto.CreateAccessRequestDTO;
 import api.webservices.inredd.service.AccessRequestService;
 import api.webservices.inredd.service.AccessRequestService;
+import io.swagger.v3.oas.annotations.Operation;
 
 @RestController
 @RequestMapping("/access-requests")
@@ -38,8 +39,37 @@ public class AccessRequestResource {
     @GetMapping
     @PreAuthorize("hasAuthority('ROLE_SOLUTION_MODERATE_ACCESS_REQUESTS') and #oauth2.hasScope('read')")
     public ResponseEntity<Page<AccessRequestDTO>> list(
-            @RequestParam(value = "search", required = false) String search,
+            @RequestParam(value = "search",    required = false) String  search,
+            @RequestParam(value = "completed", required = false) Boolean completed,
             Pageable pageable) {
-        return ResponseEntity.ok(service.listRequests(search, pageable));
+
+        Page<AccessRequestDTO> page = service.listRequests(search, completed, pageable);
+        return ResponseEntity.ok(page);
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_SOLUTION_MODERATE_ACCESS_REQUESTS') and #oauth2.hasScope('read')")
+    public ResponseEntity<AccessRequestDTO> getOne(@PathVariable Long id) {
+        AccessRequestDTO dto = service.getRequestById(id);
+        return ResponseEntity.ok(dto);
+    }
+
+    @Operation(summary = "Aprovar solicitação de acesso")
+    @PutMapping("/{id}/approve")
+    @PreAuthorize("hasAuthority('ROLE_SOLUTION_MODERATE_ACCESS_REQUESTS') and #oauth2.hasScope('write')")
+    public ResponseEntity<Void> approve(@PathVariable Long id) {
+        service.approveRequest(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Rejeitar solicitação de acesso")
+    @PutMapping("/{id}/reject")
+    @PreAuthorize("hasAuthority('ROLE_SOLUTION_MODERATE_ACCESS_REQUESTS') and #oauth2.hasScope('write')")
+    public ResponseEntity<Void> reject(
+            @PathVariable Long id,
+            @Valid @RequestBody RejectAccessRequestDTO dto) {
+
+        service.rejectRequest(id, dto.getReason());
+        return ResponseEntity.noContent().build();
     }
 }

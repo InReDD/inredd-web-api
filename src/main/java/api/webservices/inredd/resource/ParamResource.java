@@ -9,15 +9,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
 
 @RestController
 @RequestMapping("/params")
 public class ParamResource {
 
     private final ParamService service;
+    private final TokenStore   tokenStore;
 
-    public ParamResource(ParamService service) {
+    public ParamResource(ParamService service, TokenStore tokenStore) {
         this.service = service;
+        this.tokenStore = tokenStore;
     }
 
     // 1) GET só traz o texto dos Terms of Service, sem contexto de usuário
@@ -28,11 +36,15 @@ public class ParamResource {
         return ResponseEntity.ok(content);
     }
 
-    // 2) PUT aceita os Terms, passando userId como request-param
+    /**
+     * PUT /params/accept-terms
+     * O usuário logado aceita os Terms of Service.
+     */
     @Operation(summary = "Usuário aceita o Terms of Service")
     @PutMapping("/accept-terms")
     @PreAuthorize("hasAuthority('ROLE_REGISTER_TERMS_AND_POLICY') and #oauth2.hasScope('write')")
-    public ResponseEntity<Void> acceptTerms(@RequestParam("userId") Long userId) {
+    public ResponseEntity<Void> acceptTerms(Authentication authentication) {
+        Long userId = service.extractUserId(authentication);
         service.acceptTerms(userId);
         return ResponseEntity.ok().build();
     }
@@ -45,11 +57,15 @@ public class ParamResource {
         return ResponseEntity.ok(content);
     }
 
-    // 4) PUT aceita a Privacy Policy, passando userId como request-param
+    /**
+     * PUT /params/privacy-policy
+     * O usuário logado aceita a Privacy Policy.
+     */
     @Operation(summary = "Usuário aceita a Privacy Policy")
     @PutMapping("/privacy-policy")
     @PreAuthorize("hasAuthority('ROLE_REGISTER_TERMS_AND_POLICY') and #oauth2.hasScope('write')")
-    public ResponseEntity<Void> acceptPrivacyPolicy(@RequestParam("userId") Long userId) {
+    public ResponseEntity<Void> acceptPrivacyPolicy(Authentication authentication) {
+        Long userId = service.extractUserId(authentication);
         service.acceptPrivacyPolicy(userId);
         return ResponseEntity.ok().build();
     }

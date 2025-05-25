@@ -9,6 +9,13 @@ import api.webservices.inredd.repository.TermsOfServiceRepository;
 import api.webservices.inredd.repository.PrivacyPolicyRepository;
 import api.webservices.inredd.repository.UserRepository;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +28,7 @@ public class ParamService {
     private final TermsOfServiceRepository tosRepo;
     private final PrivacyPolicyRepository ppRepo;
     private final UserRepository userRepo;
+    @Autowired private TokenStore tokenStore;
 
     public ParamService(TermsOfServiceRepository tosRepo,
                         PrivacyPolicyRepository ppRepo,
@@ -54,5 +62,28 @@ public class ParamService {
         user.setUserHasAcceptedPrivacyPolicy(true);
         user.setAcceptedPrivacyPolicyAt(Instant.now());
         userRepo.save(user);
+    }
+
+    /**
+     * Extrai o user_id que foi adicionado no token pelo seu CustomTokenEnhancer.
+     */
+    public Long extractUserId(Authentication authentication) {
+        if (!(authentication instanceof OAuth2Authentication)) {
+            throw new AccessDeniedException("Token inválido");
+        }
+        OAuth2AuthenticationDetails details =
+            (OAuth2AuthenticationDetails) authentication.getDetails();
+
+        OAuth2AccessToken accessToken =
+            tokenStore.readAccessToken(details.getTokenValue());
+
+        Number userIdNum = (Number) accessToken
+            .getAdditionalInformation()
+            .get("user_id");
+
+        if (userIdNum == null) {
+            throw new AccessDeniedException("Usuário não localizado no token");
+        }
+        return userIdNum.longValue();
     }
 }

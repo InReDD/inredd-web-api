@@ -39,6 +39,10 @@ public class AccessRequest {
     @Column(name="expires_at", nullable = false)
     private Instant expiresAt;
 
+    /** Se for rejeitado, armazena o motivo */
+    @Column(name = "rejection_reason", columnDefinition = "TEXT")
+    private String rejectionReason;
+
     public Long getId() {
         return id;
     }
@@ -117,5 +121,13 @@ public class AccessRequest {
     
     public void setExpiresAt(Instant expiresAt) {
         this.expiresAt = expiresAt;
+    }
+
+    public String getRejectionReason() {
+        return rejectionReason; 
+    }
+    
+    public void setRejectionReason(String rejectionReason) { 
+        this.rejectionReason = rejectionReason; 
     }
 }

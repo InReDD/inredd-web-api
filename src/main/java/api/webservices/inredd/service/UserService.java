@@ -66,7 +66,7 @@ public class UserService {
                 throw new IllegalStateException("Token expirado");
             }
             ar.setUser(saved);
-            ar.setConsumedAt(Instant.now());
+            // ar.setConsumedAt(Instant.now());
             accessReqRepo.save(ar);
         }
 
