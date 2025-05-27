@@ -19,8 +19,6 @@ import io.swagger.v3.oas.annotations.Operation;
 
 import api.webservices.inredd.domain.model.*;
 import api.webservices.inredd.domain.model.dto.*;
-import api.webservices.inredd.repository.UserRepository;
-import api.webservices.inredd.repository.GroupRepository;
 import api.webservices.inredd.repository.InviteRequestRepository;
 import api.webservices.inredd.service.MemberService;
 
@@ -29,9 +27,12 @@ import api.webservices.inredd.service.MemberService;
 @RequestMapping("/members")
 public class MemberResource {
 
-    @Autowired private MemberService memberService;
-    @Autowired private UserRepository userRepo;
-    @Autowired private GroupRepository groupRepo;
+    private final MemberService memberService;
+
+    @Autowired
+    public MemberResource(MemberService memberService) {
+        this.memberService = memberService;
+    }
 
     @GetMapping("/list")
     public ResponseEntity<Page<MemberDTO>> listByGroups(
@@ -78,7 +79,7 @@ public class MemberResource {
 
     @Operation(summary = "Detalhes de um membro")
     @GetMapping(
-        value    = "/{id}",
+        value    = "/{id:\\d+}",
         produces = MediaType.APPLICATION_JSON_VALUE
     )
     @PreAuthorize("hasAuthority('ROLE_LIST_MEMBER') and #oauth2.hasScope('read')")
@@ -88,7 +89,7 @@ public class MemberResource {
     }
 
     @Operation(summary = "Atualizar acessos de um membro")
-    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{id:\\d+}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('ROLE_EDIT_MEMBER') and #oauth2.hasScope('write')")
     public ResponseEntity<Void> updateAccessAndGroup(
             @PathVariable Long id,
@@ -102,7 +103,7 @@ public class MemberResource {
       summary = "Remover um membro",
       description = "DELETE /members/{id} — apenas remove todas as associações de grupo deste usuário (não exclui o usuário)."
     )
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id:\\d+}")
     @PreAuthorize("hasAuthority('ROLE_DELETE_MEMBER') and #oauth2.hasScope('write')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteMember(@PathVariable("id") Long id) {
