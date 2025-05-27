@@ -1,27 +1,21 @@
 package api.webservices.inredd.resource;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
-import api.webservices.inredd.domain.model.User;
-import api.webservices.inredd.domain.model.dto.UserDTO;
 import api.webservices.inredd.domain.model.Paper;
 import api.webservices.inredd.domain.model.dto.PaperDTO;
 import api.webservices.inredd.repository.PaperRepository;
@@ -43,12 +37,22 @@ public class PaperResource {
 
     @Operation(
       summary = "Listar papers com limite, página e ordenação",
-      description = "GET /papers?limit=4&page=1&sort=createdAt,DESC (ou ASC)"
+      description = "GET /papers?page=0&size=10&sort=title,asc"
     )
     @GetMapping
-    public Page<PaperDTO> list(Pageable pageable) {
+    public Page<PaperDTO> list(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sort,
+            @RequestParam(defaultValue = "asc") String direction) {
+
+        Sort.Direction sortDirection = direction.equalsIgnoreCase("desc") ?
+                Sort.Direction.DESC : Sort.Direction.ASC;
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sort));
+
         return paperRepository.findAll(pageable)
-                            .map(PaperDTO::new);
+                .map(PaperDTO::new);
     }
 
     @Operation(
@@ -58,21 +62,28 @@ public class PaperResource {
     @GetMapping("/search")
     public Page<PaperDTO> searchPapers(
             @RequestParam(required = false) String author,
-            @RequestParam(required = false) String publisher,
+            @RequestParam(required = false) String title,
             @RequestParam(required = false) String type,
             @RequestParam(required = false) String fromYear,
             @RequestParam(required = false) String toYear,
-            @RequestParam(required = false) String title,
-            Pageable pageable) {
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id_paper") String sort,
+            @RequestParam(defaultValue = "asc") String direction) {
 
-        Specification<Paper> spec = Specification
-            .where(PaperSpecification.hasAuthor(author))
-            .and(PaperSpecification.hasPublisher(publisher))
-            .and(PaperSpecification.hasType(type))
-            .and(PaperSpecification.publishedBetween(fromYear, toYear))
-            .and(PaperSpecification.hasTitle(title)); 
+        Sort.Direction sortDirection = direction.equalsIgnoreCase("desc") ?
+                Sort.Direction.DESC : Sort.Direction.ASC;
 
-        return paperRepository.findAll(spec, pageable).map(PaperDTO::new);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sort));
+
+        return paperRepository.searchPapers(
+                author,
+                title,
+                type,
+                fromYear,
+                toYear,
+                pageable
+        ).map(PaperDTO::new);
     }
 
     @Operation(
@@ -81,21 +92,14 @@ public class PaperResource {
     )
     @GetMapping("/authors")
     public List<String> listAuthors(
-        @RequestParam("fromYear") String fromYear,
-        @RequestParam("toYear")   String toYear
-    ) {
-        // monta spec usando o filtro de intervalo de anos
-        Specification<Paper> spec = PaperSpecification.publishedBetween(fromYear, toYear);
+            @RequestParam(required = false) String fromYear,
+            @RequestParam(required = false) String toYear) {
 
-        // busca todos os papers que satisfazem a spec
-        List<Paper> papers = paperRepository.findAll(spec);
-
-        // converte em DTO, extrai autores, desdobra, remove duplicados e coleta
-        return papers.stream()
-                     .map(PaperDTO::new)
-                     .flatMap(dto -> dto.getAuthors().stream())
-                     .distinct()
-                     .collect(Collectors.toList());
+        if (fromYear != null || toYear != null) {
+            return paperRepository.findUniqueAuthorsByYearRange(fromYear, toYear);
+        } else {
+            return paperRepository.findAllUniqueAuthors();
+        }
     }
 
     @Operation(
@@ -104,21 +108,21 @@ public class PaperResource {
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAuthority('ROLE_UPLOAD_PAPER') and #oauth2.hasScope('write')")
-    public Paper create(@Valid @RequestBody Paper paper,
-                        HttpServletResponse response) {
-        return paperService.save(paper);
+    @PreAuthorize("hasAuthority('ROLE_REGISTER_PAPER') and #oauth2.hasScope('write')")
+    public PaperDTO create(@Valid @RequestBody Paper paper) {
+        Paper savedPaper = paperService.save(paper);
+        return new PaperDTO(savedPaper);
     }
 
     @Operation(
         summary = "Buscar paper por ID",
         description = "Retorna os detalhes de um artigo científico específico a partir de seu identificador único (ID). Caso não encontrado, retorna HTTP 404."
     )
-    @GetMapping("/{id:[0-9]+}")
+    @GetMapping("/{id}")
     public ResponseEntity<PaperDTO> findById(@PathVariable Long id) {
         return paperRepository.findById(id)
-            .map(paper -> ResponseEntity.ok(new PaperDTO(paper)))
-            .orElse(ResponseEntity.notFound().build());
+                .map(paper -> ResponseEntity.ok(new PaperDTO(paper)))
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @Operation(
@@ -126,11 +130,11 @@ public class PaperResource {
         description = "Atualiza os dados de um artigo científico com base no ID fornecido e no conteúdo enviado no corpo da requisição. É necessário ter permissão de escrita e escopo OAuth apropriado."
     )
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_MODERATE_PAPER') and #oauth2.hasScope('write')")
-    public ResponseEntity<Paper> update(@PathVariable Long id,
-                                        @Valid @RequestBody Paper paper) {
+    @PreAuthorize("hasAuthority('ROLE_REGISTER_PAPER') and #oauth2.hasScope('write')")
+    public ResponseEntity<PaperDTO> update(@PathVariable Long id,
+                                           @Valid @RequestBody Paper paper) {
         Paper updated = paperService.update(id, paper);
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(new PaperDTO(updated));
     }
 
     @Operation(
@@ -139,8 +143,8 @@ public class PaperResource {
     )
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAuthority('ROLE_MODERATE_PAPER') and #oauth2.hasScope('write')")
+    @PreAuthorize("hasAuthority('ROLE_REMOVE_PAPER') and #oauth2.hasScope('write')")
     public void delete(@PathVariable Long id) {
-        paperRepository.deleteById(id);
+        paperService.delete(id);
     }
 }

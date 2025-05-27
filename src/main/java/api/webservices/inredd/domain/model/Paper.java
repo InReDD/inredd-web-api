@@ -1,14 +1,21 @@
 package api.webservices.inredd.domain.model;
 
+import com.vladmihalcea.hibernate.type.array.StringArrayType;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
+
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.time.OffsetDateTime;
-import org.hibernate.annotations.Type;
-import com.vladmihalcea.hibernate.type.array.StringArrayType;
 
 @Entity
 @Table(name = "paper")
+@TypeDefs({
+        @TypeDef(name = "string-array", typeClass = StringArrayType.class)
+})
 public class Paper {
 
     @Id
@@ -23,12 +30,16 @@ public class Paper {
     private String publishDate;
 
     private String title;
-    
-    private String authors;
+
+    @Type(type = "string-array")
+    @Column(name = "authors", columnDefinition = "text[]")
+    private String[] authors;
 
     private String doi;
 
-    private String tags;
+    @Type(type = "string-array")
+    @Column(name = "tags", columnDefinition = "text[]")
+    private String[] tags;
 
     @Column(name = "abstract")
     private String abstractText;
@@ -39,7 +50,7 @@ public class Paper {
         joinColumns = @JoinColumn(name = "id_paper"),
         inverseJoinColumns = @JoinColumn(name = "id_user")
     )
-    private List<User> users;
+    private List<User> users = new ArrayList<>();
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
@@ -76,11 +87,11 @@ public class Paper {
         this.title = title;
     }
 
-    public String getAuthors() {
+    public String[] getAuthors() {
         return authors;
     }
 
-    public void setAuthors(String authors) {
+    public void setAuthors(String[] authors) {
         this.authors = authors;
     }
 
@@ -92,11 +103,11 @@ public class Paper {
         this.doi = doi;
     }
 
-    public String getTags() {
+    public String[] getTags() {
         return tags;
     }
 
-    public void setTags(String tags) {
+    public void setTags(String[] tags) {
         this.tags = tags;
     }
 

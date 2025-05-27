@@ -24,6 +24,7 @@ public class UserService {
 	@Autowired private UserRepository userRepository;
 	@Autowired PermissionRepository permissionRepository;
 	@Autowired GroupRepository groupRepository;
+    @Autowired private InviteRequestRepository inviteRepo;
 	@Autowired private AcademicRepository academicRepository;
     @Autowired private AccessRequestRepository accessReqRepo;
 
@@ -69,6 +70,23 @@ public class UserService {
             // ar.setConsumedAt(Instant.now());
             accessReqRepo.save(ar);
         }
+        
+        // 4) Se veio um inviteToken válido, consome a AccessRequest
+        if (dto.getInviteToken()!=null && !dto.getInviteToken().isBlank()) {
+            InviteRequest ir = inviteRepo.findByInviteToken(dto.getInviteToken())
+              .orElseThrow(() -> new EntityNotFoundException("Token de convite inválido"));
+            if (ir.getExpiresAt().isBefore(Instant.now())) {
+              throw new IllegalStateException("Token de convite expirado");
+            }
+            // vincula ao grupo
+            Group g = groupRepository.findById(ir.getGroupId())
+              .orElseThrow(() -> new EntityNotFoundException("Grupo não encontrado"));
+            g.getUsers().add(saved);
+            groupRepository.save(g);
+            // marca convite como consumido
+            ir.setConsumedAt(Instant.now());
+            inviteRepo.save(ir);
+          }
 
         return saved;
     }

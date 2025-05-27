@@ -28,14 +28,20 @@ public class PaperDTO {
         this.urlDoi      = paper.getUrlDoi();
         this.publishDate = paper.getPublishDate();
         this.title       = paper.getTitle();
-        this.authors     = parseAuthors(paper.getAuthors());
+        this.authors = paper.getAuthors() != null ? Arrays.asList(paper.getAuthors()) : Collections.emptyList();
         this.doi         = paper.getDoi();
-        this.tags        = parseTags(paper.getTags());
+        this.tags = paper.getTags() != null ? Arrays.asList(paper.getTags()) : Collections.emptyList();
         this.abstractText = paper.getAbstractText();
-        this.users       = paper.getUsers()
-                                 .stream()
-                                 .map(u -> u.getFirstName() + " " + u.getLastName())
-                                 .collect(Collectors.toList());
+
+        if (paper.getUsers() != null && !paper.getUsers().isEmpty()) {
+            this.users = paper.getUsers()
+                    .stream()
+                    .map(u -> u.getFirstName() + " " + u.getLastName())
+                    .collect(Collectors.toList());
+        } else {
+            this.users = Collections.emptyList();
+        }
+
         this.createdAt   = paper.getCreatedAt();
     }
 
@@ -126,14 +132,6 @@ public class PaperDTO {
         this.tags = tags;
     }
 
-    public String getAbstractText() {
-        return abstractText;
-    }
-
-    public void setAbstractText(String abstractText) {
-        this.abstractText = abstractText;
-    }
-
     public List<String> getUsers() {
         return users;
     }
@@ -148,5 +146,13 @@ public class PaperDTO {
 
     public void setCreatedAt(OffsetDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getAbstractText() {
+        return abstractText;
+    }
+
+    public void setAbstractText(String abstractText) {
+        this.abstractText = abstractText;
     }
 }

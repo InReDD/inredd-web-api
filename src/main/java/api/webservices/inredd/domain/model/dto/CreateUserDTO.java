@@ -21,6 +21,8 @@ public class CreateUserDTO {
 
     private String requestToken;
 
+    private String inviteToken;
+
     public String getFirstName() { return firstName; }
     public void setFirstName(String firstName) { this.firstName = firstName; }
 
@@ -38,4 +40,7 @@ public class CreateUserDTO {
 
     public String getRequestToken() { return requestToken; }
     public void setRequestToken(String requestToken) { this.requestToken = requestToken; }
+
+    public String getInviteToken() { return inviteToken; }
+    public void setInviteToken(String inviteToken) { this.inviteToken = inviteToken; }
 }

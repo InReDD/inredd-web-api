@@ -1,43 +1,90 @@
 package api.webservices.inredd.specification;
 
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.Predicate;
 import api.webservices.inredd.domain.model.Paper;
 import org.springframework.data.jpa.domain.Specification;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PaperSpecification {
 
     public static Specification<Paper> hasAuthor(String author) {
-        return (root, query, cb) -> {
-            if (author == null || author.isBlank()) {
-                return cb.conjunction();
+        return (root, query, criteriaBuilder) -> {
+            if (author == null || author.isEmpty()) {
+                return criteriaBuilder.conjunction();
             }
-            // array_to_string(authors, ',') → "J. Doe;E. Torres"
-            Expression<String> arrAsString = cb.function(
-                "array_to_string",
-                String.class,
-                root.get("authors"),
-                cb.literal(";")           // use ';' ou ',' conforme seu separador
-            );
-            return cb.like(
-                cb.lower(arrAsString),
-                "%" + author.toLowerCase() + "%"
+
+            // Busca parcial e case-insensitive em array de autores
+            return criteriaBuilder.like(
+                    criteriaBuilder.function("array_to_string", String.class, root.get("authors"), criteriaBuilder.literal(',')),
+                    "%" + author.toLowerCase() + "%"
             );
         };
     }
+
     public static Specification<Paper> hasPublisher(String publisher) {
-        return (root, query, builder) ->
-            publisher == null ? null : builder.like(builder.lower(root.get("publisher")), "%" + publisher.toLowerCase() + "%");
+        return (root, query, criteriaBuilder) -> {
+            if (publisher == null || publisher.isEmpty()) {
+                return criteriaBuilder.conjunction();
+            }
+
+            // Busca parcial e case-insensitive no DOI (que pode conter o publisher)
+            return criteriaBuilder.like(
+                    criteriaBuilder.lower(root.get("doi")),
+                    "%" + publisher.toLowerCase() + "%"
+            );
+        };
     }
 
-    public static Specification<Paper> hasType(String type) {
-        return (root, query, builder) ->
-            type == null ? null : builder.equal(builder.lower(root.get("type")), type.toLowerCase());
+    public static Specification<Paper> hasTags(String type) {
+        return (root, query, criteriaBuilder) -> {
+            if (type == null || type.isEmpty()) {
+                return criteriaBuilder.conjunction();
+            }
+
+            // Busca parcial e case-insensitive em array de tags
+            return criteriaBuilder.like(
+                    criteriaBuilder.function("array_to_string", String.class, root.get("tags"), criteriaBuilder.literal(',')),
+                    "%" + type.toLowerCase() + "%"
+            );
+        };
     }
 
     public static Specification<Paper> publishedBetween(String fromYear, String toYear) {
-        return (root, query, builder) -> {
-            if (fromYear == null || toYear == null) return null;
-            return builder.between(root.get("publishDate"), fromYear, toYear);
+        return (root, query, criteriaBuilder) -> {
+            if ((fromYear == null || fromYear.isEmpty()) && (toYear == null || toYear.isEmpty())) {
+                return criteriaBuilder.conjunction();
+            }
+
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (fromYear != null && !fromYear.isEmpty()) {
+                predicates.add(
+                        criteriaBuilder.greaterThanOrEqualTo(
+                                criteriaBuilder.function("substring", String.class,
+                                        root.get("publishDate"),
+                                        criteriaBuilder.literal(1),
+                                        criteriaBuilder.literal(4)
+                                ),
+                                fromYear
+                        )
+                );
+            }
+
+            if (toYear != null && !toYear.isEmpty()) {
+                predicates.add(
+                        criteriaBuilder.lessThanOrEqualTo(
+                                criteriaBuilder.function("substring", String.class,
+                                        root.get("publishDate"),
+                                        criteriaBuilder.literal(1),
+                                        criteriaBuilder.literal(4)
+                                ),
+                                toYear
+                        )
+                );
+            }
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
     }
 
@@ -47,43 +94,15 @@ public class PaperSpecification {
      * Ex: "machine lear" → like '%machine%' OR like '%lear%'
      */
     public static Specification<Paper> hasTitle(String title) {
-        return (Root<Paper> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
-            if (title == null || title.trim().isEmpty()) {
-                return cb.conjunction();
+        return (root, query, criteriaBuilder) -> {
+            if (title == null || title.isEmpty()) {
+                return criteriaBuilder.conjunction();
             }
-            // quebra a string em palavras
-            String[] terms = title.trim().split("\\s+");
-            // inicia um OR
-            Predicate predicate = cb.disjunction();
-            for (String term : terms) {
-                // LOWER(title) LIKE %term%
-                predicate = cb.or(
-                  predicate,
-                  cb.like(
-                    cb.lower(root.get("title")),
-                    "%" + term.toLowerCase() + "%"
-                  )
-                );
-            }
-            return predicate;
+            return criteriaBuilder.like(
+                    criteriaBuilder.lower(root.get("title")),
+                    "%" + title.toLowerCase() + "%"
+            );
         };
     }
 
-    public static Specification<Paper> hasTag(String tag) {
-        return (root, query, cb) -> {
-            if (tag == null || tag.isBlank()) {
-                return cb.conjunction();
-            }
-            Expression<String> arrAsString = cb.function(
-                "array_to_string",
-                String.class,
-                root.get("tags"),
-                cb.literal(",")
-            );
-            return cb.like(
-                cb.lower(arrAsString),
-                "%" + tag.toLowerCase() + "%"
-            );
-        };
-    }
 }

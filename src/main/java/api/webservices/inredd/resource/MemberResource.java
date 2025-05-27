@@ -1,41 +1,37 @@
 package api.webservices.inredd.web;
 
-import java.util.Arrays;
-import java.util.List;
-import java.time.ZoneId;
-import java.util.stream.Collectors;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 import java.util.stream.Stream;
-import java.util.Optional;
-import java.util.Collections;
+import java.util.stream.Collectors;
+
+import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 
-import org.springframework.http.MediaType;
-import org.springframework.data.domain.Sort;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.*;
+import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 
-import api.webservices.inredd.domain.model.dto.MemberDTO;
-import api.webservices.inredd.domain.model.dto.MemberViewDTO;
-import api.webservices.inredd.domain.model.dto.MemberDetailDTO;
-import api.webservices.inredd.domain.model.dto.MemberAccessUpdateDTO;
-import api.webservices.inredd.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
+
+import api.webservices.inredd.domain.model.*;
+import api.webservices.inredd.domain.model.dto.*;
+import api.webservices.inredd.repository.UserRepository;
+import api.webservices.inredd.repository.GroupRepository;
+import api.webservices.inredd.repository.InviteRequestRepository;
+import api.webservices.inredd.service.MemberService;
 
 
 @RestController
 @RequestMapping("/members")
 public class MemberResource {
 
-    @Autowired
-    private MemberService memberService;
+    @Autowired private MemberService memberService;
+    @Autowired private UserRepository userRepo;
+    @Autowired private GroupRepository groupRepo;
 
     @GetMapping("/list")
     public ResponseEntity<Page<MemberDTO>> listByGroups(
@@ -111,6 +107,14 @@ public class MemberResource {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteMember(@PathVariable("id") Long id) {
         memberService.removeMemberFromAllGroups(id);
+    }
+
+    @Operation(summary="Convidar alguém para um grupo")
+    @PostMapping("/invite")
+    @PreAuthorize("hasAuthority('ROLE_INVITE_MEMBER') and #oauth2.hasScope('write')")
+    public ResponseEntity<Void> invite(@Valid @RequestBody InviteMemberDTO dto) {
+        memberService.inviteMember(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 }

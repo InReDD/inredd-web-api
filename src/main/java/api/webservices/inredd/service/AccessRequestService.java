@@ -28,6 +28,7 @@ public class AccessRequestService {
     @Autowired private UserRepository userRepo;
     @Autowired private JavaMailSender mailSender;
     @Autowired private UserService userService;
+    @Autowired private EmailService emailService;
 
     public void createRequest(CreateAccessRequestDTO dto) {
         Instant now    = Instant.now();
@@ -57,41 +58,27 @@ public class AccessRequestService {
         // 4) Persiste e dispara e-mail
         repo.save(ar);
         if (optUser.isPresent()) {
-            sendAnalysisEmail(ar);
+            emailService.sendEmail(
+                ar.getEmail(),
+                "Sua solicitação está em análise",
+                "Olá " + ar.getFirstName() + ",\n\n" +
+                "Recebemos sua solicitação de acesso à solução “" +
+                ar.getSolution() + "” e ela será avaliada em breve.\n\n" +
+                "Obrigado."
+            );
         } else {
-            sendSignupEmail(ar, ar.getFirstName());
+            emailService.sendEmail(
+                ar.getEmail(),
+                "Complete seu cadastro",
+                "Olá " + ar.getFirstName() + ",\n\n" +
+                "Para criar sua conta e ter acesso à “" +
+                ar.getSolution() + "”, clique no link abaixo:\n\n" +
+                "https://inredd.com.br/criar-conta?requestToken=" +
+                ar.getRequestToken() + "\n\n" +
+                "Este link expira em 7 dias.\n\n" +
+                "Obrigado."
+            );
         }
-    }
-
-    private void sendAnalysisEmail(AccessRequest ar) {
-        SimpleMailMessage msg = new SimpleMailMessage();
-        msg.setFrom("no-reply@demomailtrap.co");
-        msg.setTo(ar.getEmail());
-        msg.setSubject("Sua solicitação está em análise");
-        msg.setText(
-          "Olá " + ar.getFirstName() + ",\n\n" +
-          "Recebemos sua solicitação de acesso à solução “" +
-          ar.getSolution() + "” e ela será avaliada em breve.\n\n" +
-          "Obrigado."
-        );
-        mailSender.send(msg);
-    }
-
-    private void sendSignupEmail(AccessRequest ar, String firstName) {
-        SimpleMailMessage msg = new SimpleMailMessage();
-        msg.setFrom("no-reply@demomailtrap.co");
-        msg.setTo(ar.getEmail());
-        msg.setSubject("Complete seu cadastro");
-        msg.setText(
-          "Olá " + firstName + ",\n\n" +
-          "Para criar sua conta e ter acesso à “" +
-          ar.getSolution() + "”, clique no link abaixo:\n\n" +
-          "https://inredd.com.br/criar-conta?requestToken=" +
-          ar.getRequestToken() + "\n\n" +
-          "Este link expira em 7 dias.\n\n" +
-          "Obrigado."
-        );
-        mailSender.send(msg);
     }
 
     public Page<AccessRequestDTO> listRequests(String search,
@@ -204,13 +191,12 @@ public class AccessRequestService {
         repo.save(ar);
 
         // envia o e-mail de recusa
-        SimpleMailMessage msg = new SimpleMailMessage();
-        msg.setFrom("no-reply@demomailtrap.co");
-        msg.setTo(ar.getEmail());
-        msg.setSubject("Solicitação de acesso rejeitada");
-        msg.setText("Olá " + ar.getFirstName() + ",\n\n" +
-                    "Sua solicitação de acesso à “" + ar.getSolution() +
-                    "” foi *rejeitada*.\n\nMotivo: " + reason + "\n\n");
-        mailSender.send(msg);
+        emailService.sendEmail(
+            ar.getEmail(),
+            "Solicitação de acesso rejeitada",
+            "Olá " + ar.getFirstName() + ",\n\n" +
+            "Sua solicitação de acesso à “" + ar.getSolution() +
+            "” foi rejeitada.\n\nMotivo: " + reason + "\n\n"
+        );
     }
 }

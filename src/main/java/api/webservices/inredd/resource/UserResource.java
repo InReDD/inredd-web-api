@@ -57,7 +57,7 @@ public class UserResource {
 		return ResponseEntity.ok(userDTOs);
 	}
 	
-	@Operation(summary = "Criar um novo usuário (com optional requestToken)")
+	@Operation(summary = "Criar um novo usuário (com optional requestToken ou inviteToken)")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponseDTO create(@Valid @RequestBody CreateUserDTO dto) {
