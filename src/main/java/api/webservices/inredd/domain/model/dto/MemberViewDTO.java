@@ -3,13 +3,25 @@ package api.webservices.inredd.domain.model.dto;
 import api.webservices.inredd.domain.model.User;
 import java.util.stream.Collectors;
 
-
+/**
+ * DTO usado para listar cada membro, agora contendo:
+ *  - id
+ *  - fullName        (nome completo)
+ *  - firstName       (apenas o primeiro nome)
+ *  - lastName        (apenas o sobrenome)
+ *  - academicTitle   (título acadêmico, ex: "Profa. Dra.")
+ *  - academicAbstract (resumo/abstract do Academic)
+ *  - group           (nomes dos grupos concatenados)
+ *  - email
+ *  - institution
+ */
 public class MemberViewDTO {
     private Long   id;
     private String fullName;
     private String firstName;
     private String lastName;
     private String academicTitle;
+    private String academicAbstract;
     private String group;
     private String email;
     private String institution;
@@ -24,10 +36,14 @@ public class MemberViewDTO {
         // fullName (concatenação dos dois)
         this.fullName = this.firstName + " " + this.lastName;
 
-        // academicTitle (pode vir nulo se não houver registro em Academic)
-        this.academicTitle = (user.getAcademic() != null)
-            ? user.getAcademic().getTitle()
-            : null;
+        // academicTitle e academicAbstract (podem vir nulos se não houver Academic)
+        if (user.getAcademic() != null) {
+            this.academicTitle    = user.getAcademic().getTitle();
+            this.academicAbstract = user.getAcademic().getAbstractText();
+        } else {
+            this.academicTitle    = null;
+            this.academicAbstract = null;
+        }
 
         // se o usuário pertencer a vários grupos, concatene os nomes:
         this.group = user.getGroups().stream()
@@ -39,6 +55,8 @@ public class MemberViewDTO {
             ? user.getAcademic().getInstitution()
             : "";
     }
+
+    // --- getters ---
 
     public Long getId() {
         return id;
@@ -58,6 +76,10 @@ public class MemberViewDTO {
 
     public String getAcademicTitle() {
         return academicTitle;
+    }
+
+    public String getAcademicAbstract() {
+        return academicAbstract;
     }
 
     public String getGroup() {
