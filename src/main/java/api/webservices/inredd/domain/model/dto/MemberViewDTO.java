@@ -3,22 +3,14 @@ package api.webservices.inredd.domain.model.dto;
 import api.webservices.inredd.domain.model.User;
 import java.util.stream.Collectors;
 
-/**
- * DTO usado para listar cada membro, agora contendo:
- *  - id
- *  - fullName  (nome completo)
- *  - firstName
- *  - lastName
- *  - group     (nome ou nomes de grupos)
- *  - email
- *  - institution
- */
+
 public class MemberViewDTO {
     private Long   id;
-    private String fullName;      // nome completo
-    private String firstName;     // somente o primeiro nome
-    private String lastName;      // somente o sobrenome
-    private String group;         // nomes dos grupos concatenados
+    private String fullName;
+    private String firstName;
+    private String lastName;
+    private String academicTitle;
+    private String group;
     private String email;
     private String institution;
 
@@ -31,6 +23,11 @@ public class MemberViewDTO {
 
         // fullName (concatenação dos dois)
         this.fullName = this.firstName + " " + this.lastName;
+
+        // academicTitle (pode vir nulo se não houver registro em Academic)
+        this.academicTitle = (user.getAcademic() != null)
+            ? user.getAcademic().getTitle()
+            : null;
 
         // se o usuário pertencer a vários grupos, concatene os nomes:
         this.group = user.getGroups().stream()
@@ -57,6 +54,10 @@ public class MemberViewDTO {
 
     public String getLastName() {
         return lastName;
+    }
+
+    public String getAcademicTitle() {
+        return academicTitle;
     }
 
     public String getGroup() {
