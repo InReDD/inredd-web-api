@@ -245,7 +245,7 @@ INSERT INTO permission (id, description) VALUES
   (17, 'ROLE_EDIT_PRIVACY_POLICY'),
   /* GENERAL PERMISSIONS*/
   (18, 'ROLE_REGISTER_TERMS_AND_POLICY'),
-    /* MEMBERS = 4*/
+  /* USERS = 3*/
   (19, 'ROLE_SEARCH_USER'),
   (20, 'ROLE_REGISTER_USER'),
   (21, 'ROLE_REMOVE_USER')
@@ -258,7 +258,7 @@ INSERT INTO permission (id, description) VALUES
 INSERT INTO user_permission (id_user_permission, id_permission) VALUES
   -- admin (id_user = 13)
   (13,1),(13,2),(13,3),(13,4),(13,5),(13,6),(13,7),(13,8),(13,9),(13,10),
-  (13,11),(13,12),(13,13),(13,14),(13,15),(13,16),(13,17),(13,18),
+  (13,11),(13,12),(13,13),(13,14),(13,15),(13,16),(13,17),(13,18), (13,19), (13,20), (13,21),
   -- common user (id_user = 1)
   (1,1),(1,3),(1,4),(1,5),(1,6);
 
