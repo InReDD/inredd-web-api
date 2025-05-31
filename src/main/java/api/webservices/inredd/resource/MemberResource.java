@@ -55,7 +55,6 @@ public class MemberResource {
 
     @Operation(summary = "Listar membros (filtro por grupos e/ou nome opcional)")
     @GetMapping
-    @PreAuthorize("hasAuthority('ROLE_LIST_MEMBER') and #oauth2.hasScope('read')")
     public ResponseEntity<Page<MemberViewDTO>> list(
             @RequestParam(value = "group", required = false) String[] groupParams,
             @RequestParam(value = "name",  required = false) String name,
@@ -82,7 +81,6 @@ public class MemberResource {
         value    = "/{id:\\d+}",
         produces = MediaType.APPLICATION_JSON_VALUE
     )
-    @PreAuthorize("hasAuthority('ROLE_LIST_MEMBER') and #oauth2.hasScope('read')")
     public ResponseEntity<MemberDetailDTO> getOne(@PathVariable("id") Long id) {
         MemberDetailDTO dto = memberService.getMemberDetail(id);
         return ResponseEntity.ok(dto);
