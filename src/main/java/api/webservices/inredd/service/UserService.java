@@ -196,42 +196,56 @@ public class UserService {
 
     public MeDTO getCurrentUserInfo(Long userId) {
         User u = userRepository.findById(userId)
-          .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
-    
-        // formatador de datas
-        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-          .withZone(ZoneId.systemDefault());
-    
-        boolean hasD2L = u.getUserHasAccessToD2L();
-        String  d2lSince = u.getAccessToD2LSince() != null
-          ? fmt.format(u.getAccessToD2LSince()) : null;
-    
-        boolean hasOD = u.getUserHasAccessToOpenData();
-        String  odSince = u.getAccessToOpenDataSince() != null
-          ? fmt.format(u.getAccessToOpenDataSince()) : null;
-    
-        // coleta todas as roles: diretas + via grupo
+                 .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
+
+        // 1) displayName (nome completo)
+        String displayName = u.getFirstName() + " " + u.getLastName();
+
+        // 2) imageBase64
+        String imageBase64 = null;
+        if (u.getPublicPicture() != null) {
+            imageBase64 = Base64.getEncoder().encodeToString(u.getPublicPicture());
+        }
+
+        // 3) formata datas de acesso às soluções (ou null se não houver)
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String accessToD2LSinceStr = null;
+        if (u.getAccessToD2LSince() != null) {
+            accessToD2LSinceStr = fmt.format(
+                u.getAccessToD2LSince().atZone(ZoneId.systemDefault()).toLocalDate()
+            );
+        }
+        String accessToOpenDataSinceStr = null;
+        if (u.getAccessToOpenDataSince() != null) {
+            accessToOpenDataSinceStr = fmt.format(
+                u.getAccessToOpenDataSince().atZone(ZoneId.systemDefault()).toLocalDate()
+            );
+        }
+
+        // 4) flags de acesso (simples boolean)
+        boolean userHasAccessToD2L      = Boolean.TRUE.equals(u.getUserHasAccessToD2L());
+        boolean userHasAccessToOpenData = Boolean.TRUE.equals(u.getUserHasAccessToOpenData());
+
+        // 5) obtém o conjunto de descrições das permissões,
+        //    ex: ["ROLE_LIST_MEMBER", "ROLE_EDIT_GROUP", ...]
         Set<String> perms = u.getPermissions().stream()
-          .map(Permission::getDescription)
-          .collect(Collectors.toSet());
-        u.getGroups().stream()
-          .flatMap(g -> g.getPermissions().stream())
-          .map(Permission::getDescription)
-          .forEach(perms::add);
-    
-        // monta o displayName e foto
-        String name = u.getFirstName() + " " + u.getLastName();
-        String img  = u.getPublicPicture()!=null
-          ? Base64.getEncoder().encodeToString(u.getPublicPicture())
-          : null;
-    
-        return new MeDTO(
-          name,
-          img,
-          hasD2L, d2lSince,
-          hasOD,  odSince,
-          perms
+                             .map(Permission::getDescription)
+                             .collect(Collectors.toSet());
+
+        // 6) constrói o DTO
+        MeDTO dto = new MeDTO(
+            displayName,
+            u.getFirstName(),
+            u.getLastName(),
+            imageBase64,
+            userHasAccessToD2L,
+            accessToD2LSinceStr,
+            userHasAccessToOpenData,
+            accessToOpenDataSinceStr,
+            perms
         );
+
+        return dto;
     }
 	
 }

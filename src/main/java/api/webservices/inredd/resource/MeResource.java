@@ -36,17 +36,31 @@ public class MeResource {
 
     @Operation(summary = "Dados básicos do usuário logado")
     @GetMapping
-    public ResponseEntity<MeDTO> me(Authentication auth) {
-        if (!(auth instanceof OAuth2Authentication)) {
+    public ResponseEntity<MeDTO> me(Authentication authentication) {
+      if (authentication == null || !authentication.isAuthenticated()) {
           return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        String tokenValue = ((OAuth2AuthenticationDetails)auth.getDetails()).getTokenValue();
-        OAuth2AccessToken t = tokenStore.readAccessToken(tokenValue);
-        Number uid = (Number)t.getAdditionalInformation().get("user_id");
-        if (uid==null) {
-          return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        MeDTO dto = userService.getCurrentUserInfo(uid.longValue());
-        return ResponseEntity.ok(dto);
       }
+
+      Object details = authentication.getDetails();
+      if (!(details instanceof OAuth2AuthenticationDetails)) {
+          return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+      }
+      String tokenValue = ((OAuth2AuthenticationDetails) details).getTokenValue();
+
+      OAuth2AccessToken accessToken = tokenStore.readAccessToken(tokenValue);
+      if (accessToken == null) {
+          return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+      }
+
+      @SuppressWarnings("unchecked")
+      Map<String, Object> info = accessToken.getAdditionalInformation();
+      Number userIdNum = (Number) info.get("user_id");
+      if (userIdNum == null) {
+          return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+      }
+      Long userId = userIdNum.longValue();
+
+      MeDTO dto = userService.getCurrentUserInfo(userId);
+      return ResponseEntity.ok(dto);
+    }
 }
