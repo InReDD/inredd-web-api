@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import api.webservices.inredd.domain.model.dto.UserDTO;
 import api.webservices.inredd.domain.model.dto.GroupCreateDTO;
+import api.webservices.inredd.domain.model.dto.GroupDetailDTO;
 import api.webservices.inredd.domain.model.User;
 import api.webservices.inredd.domain.model.Permission;
 import api.webservices.inredd.domain.model.Group;
@@ -27,6 +28,15 @@ public class GroupService {
     private GroupRepository groupRepository;
     @Autowired
     private PermissionRepository permissionRepository;
+
+    /**
+     * Retorna detalhes completos de um grupo (id, name, description + lista de membros).
+    */
+    public GroupDetailDTO getGroupDetail(Long groupId) {
+        Group group = groupRepository.findById(groupId)
+            .orElseThrow(() -> new EntityNotFoundException("Grupo não encontrado: " + groupId));
+        return new GroupDetailDTO(group);
+    }
 
     @Transactional
     public Group createGroup(GroupCreateDTO dto) {

@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,7 @@ import api.webservices.inredd.domain.model.User;
 import api.webservices.inredd.domain.model.dto.UserDTO;
 import api.webservices.inredd.domain.model.Group;
 import api.webservices.inredd.domain.model.dto.GroupCreateDTO;
+import api.webservices.inredd.domain.model.dto.GroupDetailDTO;
 import api.webservices.inredd.domain.model.dto.SimpleGroupDTO;
 import api.webservices.inredd.repository.GroupRepository;
 import api.webservices.inredd.service.GroupService;
@@ -50,6 +52,20 @@ public class GroupResource {
             .findAll(pageable)
             .map(g -> new SimpleGroupDTO(g.getIdGroups(), g.getName()));
         return ResponseEntity.ok(page);
+    }
+
+    @Operation(
+      summary = "Exibir detalhes de um grupo",
+      description = "Retorna detalhes completos de um grupo (id, name, description + lista de membros)."
+    )
+    @GetMapping("/{id}")
+    public ResponseEntity<GroupDetailDTO> getGroupById(@PathVariable("id") Long id) {
+        try {
+            GroupDetailDTO dto = groupService.getGroupDetail(id);
+            return ResponseEntity.ok(dto);
+        } catch (EntityNotFoundException ex) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @Operation(
