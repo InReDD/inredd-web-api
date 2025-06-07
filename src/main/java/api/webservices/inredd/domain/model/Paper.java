@@ -1,21 +1,23 @@
 package api.webservices.inredd.domain.model;
 
 import com.vladmihalcea.hibernate.type.array.StringArrayType;
+import com.vladmihalcea.hibernate.type.basic.PostgreSQLEnumType;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
 
 import javax.persistence.*;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.time.OffsetDateTime;
 
+@TypeDefs({
+    @TypeDef(name = "string-array", typeClass = StringArrayType.class),
+    @TypeDef(name = "pgsql_enum", typeClass = PostgreSQLEnumType.class)
+})
 @Entity
 @Table(name = "paper")
-@TypeDefs({
-        @TypeDef(name = "string-array", typeClass = StringArrayType.class)
-})
 public class Paper {
 
     @Id
@@ -54,6 +56,16 @@ public class Paper {
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
+
+    @Type(type = "pgsql_enum")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "format", nullable = false, columnDefinition = "paper_format")
+    private PaperFormat format;
+
+    @Column(columnDefinition = "TEXT")
+    private String formattedText;
+
+    // Getters and setters
 
     public Long getId() {
         return id;
@@ -127,6 +139,30 @@ public class Paper {
         this.users = users;
     }
 
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public PaperFormat getFormat() {
+        return format;
+    }
+
+    public void setFormat(PaperFormat format) {
+        this.format = format;
+    }
+
+    public String getFormattedText() {
+        return formattedText;
+    }
+
+    public void setFormattedText(String formattedText) {
+        this.formattedText = formattedText;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -138,13 +174,5 @@ public class Paper {
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }
-
-    public OffsetDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(OffsetDateTime createdAt) {
-        this.createdAt = createdAt;
     }
 }

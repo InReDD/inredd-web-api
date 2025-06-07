@@ -3,29 +3,25 @@ package api.webservices.inredd.resource;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.Collections;
 
 import javax.validation.Valid;
 
 import api.webservices.inredd.domain.model.dto.UserDTO;
 import api.webservices.inredd.domain.model.dto.UserUpdateDTO;
+import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import api.webservices.inredd.domain.model.User;
+import api.webservices.inredd.domain.model.dto.UserDTO;
 import api.webservices.inredd.domain.model.dto.CreateUserDTO;
 import api.webservices.inredd.domain.model.dto.UserResponseDTO;
 import api.webservices.inredd.repository.UserRepository;
@@ -42,20 +38,49 @@ public class UserResource {
 	@Autowired
 	private UserService userService;
 
-	@Operation(
-			summary = "Listar todos os usuários",
-			description = "Retorna uma lista de todos os usuários registrados no sistema."
-	)
-	@GetMapping
-	@PreAuthorize("hasAuthority('ROLE_SEARCH_USER') and #oauth2.hasScope('read')")
-	public ResponseEntity<List<UserDTO>> list() {
-		List<User> users = userRepository.findAll();
-		List<UserDTO> userDTOs = users.stream()
-				.map(UserDTO::new)
-				.collect(Collectors.toList());
+	/**
+     * Lista todos os usuários que NÃO pertencem a nenhum grupo.
+     */
+    @GetMapping("/list")
+    @PreAuthorize("hasAuthority('ROLE_SEARCH_USER') and #oauth2.hasScope('read')")
+    public ResponseEntity<List<UserDTO>> listAllNoGroup() {
+        Specification<User> specNoGroup = (root, query, cb) -> cb.isEmpty(root.get("groups"));
 
-		return ResponseEntity.ok(userDTOs);
-	}
+        List<UserDTO> dtos = userRepository.findAll(specNoGroup).stream()
+            .map(u -> {
+                UserDTO dto = new UserDTO(u);
+                dto.setPermissions(Collections.emptyList());  // remove perms
+                dto.setGroups(Collections.emptyList());       // remove grupos
+                return dto;
+            })
+            .collect(Collectors.toList());
+
+        return ResponseEntity.ok(dtos);
+    }
+
+    /**
+     * Lista pageable de usuários que NÃO pertencem a nenhum grupo.
+     * Parâmetros de paginação: page (padrão 0) e limit (padrão 10).
+     */
+    @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_SEARCH_USER') and #oauth2.hasScope('read')")
+    public ResponseEntity<Page<UserDTO>> listPageNoGroup(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int limit
+    ) {
+        Pageable pageable = PageRequest.of(page, limit);
+        Specification<User> specNoGroup = (root, query, cb) -> cb.isEmpty(root.get("groups"));
+
+        Page<UserDTO> dtos = userRepository.findAll(specNoGroup, pageable)
+            .map(u -> {
+                UserDTO dto = new UserDTO(u);
+                dto.setPermissions(Collections.emptyList());
+                dto.setGroups(Collections.emptyList());
+                return dto;
+            });
+
+        return ResponseEntity.ok(dtos);
+    }
 	
 	@Operation(summary = "Criar um novo usuário (com optional requestToken ou inviteToken)")
     @PostMapping

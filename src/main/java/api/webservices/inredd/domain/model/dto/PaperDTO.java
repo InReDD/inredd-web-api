@@ -1,6 +1,7 @@
 package api.webservices.inredd.domain.model.dto;
 
 import api.webservices.inredd.domain.model.Paper;
+import api.webservices.inredd.domain.model.PaperFormat;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,6 +10,11 @@ import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import javax.persistence.Column;
+import javax.persistence.Enumerated;
+import javax.persistence.EnumType;
+
 
 public class PaperDTO {
 
@@ -21,6 +27,10 @@ public class PaperDTO {
     private List<String> tags;
     private String abstractText;
     private List<String> users;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "format", nullable = false, columnDefinition = "TEXT")
+    private PaperFormat format;
+    private String formattedText;
     private OffsetDateTime createdAt;
 
     public PaperDTO(Paper paper) {
@@ -41,6 +51,9 @@ public class PaperDTO {
         } else {
             this.users = Collections.emptyList();
         }
+
+        this.format        = paper.getFormat();
+        this.formattedText = paper.getFormattedText();
 
         this.createdAt   = paper.getCreatedAt();
     }
@@ -154,5 +167,21 @@ public class PaperDTO {
 
     public void setAbstractText(String abstractText) {
         this.abstractText = abstractText;
+    }
+
+    public PaperFormat getFormat() {
+        return format;
+    }
+
+    public void setFormat(PaperFormat format) {
+        this.format = format;
+    }
+
+    public String getFormattedText() {
+        return formattedText;
+    }
+
+    public void setFormattedText(String formattedText) {
+        this.formattedText = formattedText;
     }
 }
