@@ -27,9 +27,8 @@ public class UserService {
     @Autowired private InviteRequestRepository inviteRepo;
 	@Autowired private AcademicRepository academicRepository;
     @Autowired private AccessRequestRepository accessReqRepo;
+    @Autowired private AddressRepository addressRepository;
 
-    @Autowired
-    private AddressRepository addressRepository;
     @Transactional
 	public User save(User user) {
 		user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
@@ -246,6 +245,112 @@ public class UserService {
         );
 
         return dto;
+    }
+
+    public ProfileDTO getProfile(Long userId) {
+        User u = userRepository.findById(userId)
+            .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
+        return toProfileDTO(u);
+    }
+
+    @Transactional
+    public ProfileDTO updateProfile(Long userId, ProfileUpdateDTO upd) {
+        User u = userRepository.findById(userId)
+            .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
+    
+        // Campos básicos
+        if (upd.getFirstName() != null) u.setFirstName(upd.getFirstName());
+        if (upd.getLastName()  != null) u.setLastName(upd.getLastName());
+        if (upd.getEmail()     != null) u.setEmail(upd.getEmail());
+        if (upd.getContact()   != null) u.setContact(upd.getContact());
+    
+        // Public picture
+        if (upd.getPublicPicture() != null) {
+            byte[] decoded = Base64.getDecoder().decode(upd.getPublicPicture());
+            u.setPublicPicture(decoded);
+        }
+    
+        // Academic
+        if (upd.getAcademicTitle() != null ||
+            upd.getInstitution()    != null ||
+            upd.getLattesId()       != null ||
+            upd.getAbstractText()   != null) {
+    
+            if (u.getAcademic() == null) {
+                u.setAcademic(new Academic(u));
+            }
+            Academic ac = u.getAcademic();
+            if (upd.getAcademicTitle() != null) ac.setTitle(upd.getAcademicTitle());
+            if (upd.getInstitution()    != null) ac.setInstitution(upd.getInstitution());
+            if (upd.getLattesId()       != null) ac.setLattesId(upd.getLattesId());
+            if (upd.getAbstractText()   != null) ac.setAbstractText(upd.getAbstractText());
+        }
+    
+        // Endereços
+        if (upd.getAddresses() != null) {
+            u.getAddresses().clear();
+            for (AddressDTO aDto : upd.getAddresses()) {
+                Address a;
+                if (aDto.getIdAddress() != null) {
+                    a = addressRepository.findById(aDto.getIdAddress())
+                          .orElseThrow(() -> new EntityNotFoundException(
+                              "Endereço não encontrado com ID: " + aDto.getIdAddress()));
+                } else {
+                    a = new Address(u);
+                }
+                a.setAddress(aDto.getAddress());
+                a.setCity(aDto.getCity());
+                a.setState(aDto.getState());
+                a.setCountry(aDto.getCountry());
+                u.getAddresses().add(a);
+            }
+        }
+    
+        // Salva e retorna ProfileDTO completo (incluindo picture, abstract, lattesId e grupos)
+        userRepository.save(u);
+        return toProfileDTO(u);
+    }
+
+    private ProfileDTO toProfileDTO(User u) {
+        ProfileDTO d = new ProfileDTO();
+        d.setId(u.getIdUser());
+        d.setFirstName(u.getFirstName());
+        d.setLastName(u.getLastName());
+        d.setEmail(u.getEmail());
+        d.setContact(u.getContact());
+    
+        // Academic
+        if (u.getAcademic() != null) {
+            d.setAcademicTitle(u.getAcademic().getTitle());
+            d.setInstitution(u.getAcademic().getInstitution());
+            d.setLattesId(u.getAcademic().getLattesId());
+            d.setAbstractText(u.getAcademic().getAbstractText());
+        }
+    
+        // Public picture em Base64
+        if (u.getPublicPicture() != null) {
+            d.setPublicPicture(Base64.getEncoder().encodeToString(u.getPublicPicture()));
+        }
+    
+        // Endereços
+        d.setAddresses(
+            u.getAddresses().stream()
+             .map(AddressDTO::new)
+             .collect(Collectors.toList())
+        );
+    
+        // grupos — apenas os nomes
+        if (!u.getGroups().isEmpty()) {
+            d.setGroupNames(
+                u.getGroups().stream()
+                 .map(Group::getName)
+                 .collect(Collectors.toList())
+            );
+        }
+    
+        d.setUserHasAccessToD2L(u.getUserHasAccessToD2L());
+        d.setUserHasAccessToOpenData(u.getUserHasAccessToOpenData());
+        return d;
     }
 	
 }

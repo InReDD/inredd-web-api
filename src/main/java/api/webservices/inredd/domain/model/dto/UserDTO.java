@@ -1,6 +1,7 @@
 package api.webservices.inredd.domain.model.dto;
 
 import api.webservices.inredd.domain.model.User;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.stream.Collectors;
 
 public class UserDTO {
 
+    @JsonProperty("id")
     private Long idUser;
     private String firstName;
     private String lastName;
@@ -16,6 +18,8 @@ public class UserDTO {
     private Boolean active;
     private Boolean userHasAcceptedTerms;
     private Boolean userHasAcceptedPrivacyPolicy;
+    private Boolean userHasAccessToD2L;
+    private Boolean userHasAccessToOpenData;
     private AcademicDTO academic;
     private List<AddressDTO> addresses = new ArrayList<>();
     private List<GroupDTO> groups = new ArrayList<>();
@@ -33,6 +37,8 @@ public class UserDTO {
         this.active = user.getActive();
         this.userHasAcceptedTerms = user.getUserHasAcceptedTerms();
         this.userHasAcceptedPrivacyPolicy = user.getUserHasAcceptedPrivacyPolicy();
+        this.userHasAccessToD2L = user.getUserHasAccessToD2L();
+        this.userHasAccessToOpenData = user.getUserHasAccessToOpenData();
 
         if (user.getAcademic() != null) {
             this.academic = new AcademicDTO(user.getAcademic());
@@ -123,6 +129,14 @@ public class UserDTO {
 
     public void setUserHasAcceptedPrivacyPolicy(Boolean userHasAcceptedPrivacyPolicy) {
         this.userHasAcceptedPrivacyPolicy = userHasAcceptedPrivacyPolicy;
+    }
+
+    public Boolean getUserHasAccessToD2L() { 
+        return userHasAccessToD2L; 
+    }
+
+    public Boolean getUserHasAccessToOpenData() { 
+        return userHasAccessToOpenData; 
     }
 
     public AcademicDTO getAcademic() {

@@ -4,6 +4,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import api.webservices.inredd.domain.model.User;
 
 @Entity
 @Table(name = "address")
@@ -37,6 +38,12 @@ public class Address {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_user", nullable = false)
     private User user;
+
+    public Address() {}
+
+    public Address(User user) {
+        this.user = user;
+    }
 
     // Getters and Setters
     public Long getIdAddress() {
