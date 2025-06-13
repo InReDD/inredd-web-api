@@ -11,13 +11,15 @@ import java.util.List;
 
 public class UserSpecification {
 
-    /** Se groupIds for nulo ou vazio, não aplica filtro. */
     public static Specification<User> inGroups(List<Long> groupIds) {
         return (root, query, builder) -> {
             if (groupIds == null || groupIds.isEmpty()) {
-                return null;
+                // Filtra usuários que têm pelo menos um grupo (INNER JOIN)
+                // O join força que só venham usuários com associação na tabela de junção
+                root.join("groups");
+                return builder.conjunction(); // equivalente a "where 1=1", mas só usuários que têm grupo entram por causa do join
             }
-            // root.join gera INNER JOIN user.groups g
+            // Se groupIds foi informado, filtra normalmente
             Join<User, Group> join = root.join("groups");
             return join.get("idGroups").in(groupIds);
         };

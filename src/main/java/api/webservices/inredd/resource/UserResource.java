@@ -40,7 +40,7 @@ public class UserResource {
 
 	/**
      * Lista todos os usuários que NÃO pertencem a nenhum grupo.
-     */
+    */
     @GetMapping("/list")
     @PreAuthorize("hasAuthority('ROLE_SEARCH_USER') and #oauth2.hasScope('read')")
     public ResponseEntity<List<UserDTO>> listAllNoGroup() {
@@ -108,7 +108,6 @@ public class UserResource {
 
 		return ResponseEntity.ok(userDTO);
 	}
-
 
 	@Operation(
 			summary = "Atualizar informações de um usuário",

@@ -50,7 +50,7 @@ public class GroupResource {
     public ResponseEntity<Page<SimpleGroupDTO>> list(Pageable pageable) {
         Page<SimpleGroupDTO> page = groupRepository
             .findAll(pageable)
-            .map(g -> new SimpleGroupDTO(g.getIdGroups(), g.getName()));
+            .map(g -> new SimpleGroupDTO(g.getIdGroups(), g.getName(), g.getDescription()));
         return ResponseEntity.ok(page);
     }
 
@@ -79,7 +79,8 @@ public class GroupResource {
         // antes: g.getId()
         SimpleGroupDTO out = new SimpleGroupDTO(
             g.getIdGroups(),
-            g.getName()
+            g.getName(),
+            g.getDescription()
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(out);
     }
@@ -98,7 +99,8 @@ public class GroupResource {
         // antes usava updated.getIdUser(), agora:
         SimpleGroupDTO out = new SimpleGroupDTO(
             updated.getIdGroups(),
-            updated.getName()
+            updated.getName(),
+            updated.getDescription()
         );
         return ResponseEntity.ok(out);
     }

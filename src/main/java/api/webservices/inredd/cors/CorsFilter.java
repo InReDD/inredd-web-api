@@ -23,7 +23,9 @@ public class CorsFilter implements Filter {
     private final List<String> allowedOrigins = Arrays.asList(
         "http://localhost:4200",
         "http://localhost:3001",
-        "http://localhost:3006"
+        "http://localhost:3006",
+        "https://dev.inredd.com.br",
+        "https://api.inredd.com.br"
     );
 
     @Override

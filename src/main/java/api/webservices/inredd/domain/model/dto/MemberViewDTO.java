@@ -25,6 +25,7 @@ public class MemberViewDTO {
     private String group;
     private String email;
     private String institution;
+    private String lattesUrl;
 
     public MemberViewDTO(User user) {
         this.id = user.getIdUser();
@@ -43,6 +44,14 @@ public class MemberViewDTO {
         } else {
             this.academicTitle    = null;
             this.academicAbstract = null;
+        }
+
+        // monta o link do lattes se houver lattesId
+        String lattesId = user.getAcademic().getLattesId();
+        if (lattesId != null && !lattesId.trim().isEmpty()) {
+            this.lattesUrl = "http://lattes.cnpq.br/" + lattesId.trim();
+        } else {
+            this.lattesUrl = null;
         }
 
         // se o usuário pertencer a vários grupos, concatene os nomes:
@@ -92,5 +101,9 @@ public class MemberViewDTO {
 
     public String getInstitution() {
         return institution;
+    }
+
+    public String getLattesUrl() { 
+        return lattesUrl; 
     }
 }

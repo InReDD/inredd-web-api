@@ -2,6 +2,7 @@ package api.webservices.inredd.domain.model.dto;
 
 import api.webservices.inredd.domain.model.Group;
 import api.webservices.inredd.domain.model.User;
+import api.webservices.inredd.domain.model.Permission;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,6 +14,7 @@ public class GroupDetailDTO {
     private String name;
     private String description;
     private List<MemberSummary> members;
+    private List<PermissionInfo> permissions;
 
     public GroupDetailDTO(Group group) {
         this.id          = group.getIdGroups();
@@ -22,6 +24,10 @@ public class GroupDetailDTO {
 
         this.members = group.getUsers().stream()
             .map(MemberSummary::new)
+            .collect(Collectors.toList());
+
+        this.permissions = group.getPermissions().stream()
+            .map(PermissionInfo::new)
             .collect(Collectors.toList());
     }
 
@@ -39,6 +45,10 @@ public class GroupDetailDTO {
 
     public List<MemberSummary> getMembers() {
         return members;
+    }
+
+    public List<PermissionInfo> getPermissions() {
+        return permissions;
     }
 
     public static class MemberSummary {
@@ -76,6 +86,23 @@ public class GroupDetailDTO {
 
         public String getInstitution() {
             return institution;
+        }
+    }
+
+    public static class PermissionInfo {
+        private Long id;
+        private String name;
+    
+        public PermissionInfo(Permission p) {
+            this.id = p.getId();
+            this.name = p.getDescription();
+        }
+    
+        public Long getId() {
+            return id;
+        }
+        public String getName() {
+            return name;
         }
     }
 }

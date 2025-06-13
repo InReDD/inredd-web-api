@@ -1,6 +1,7 @@
 package api.webservices.inredd.service;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
@@ -40,17 +41,35 @@ public class GroupService {
 
     @Transactional
     public Group createGroup(GroupCreateDTO dto) {
-        // carrega todas as permissões da lista
-        List permissions = permissionRepository.findAllById(dto.getPermissionIds());
-        if (permissions.size() != dto.getPermissionIds().size()) {
-            throw new EntityNotFoundException("Alguma permissão não existe");
+        List<Permission> permissions = new ArrayList<>();
+    
+        // Permissões por ID
+        if (dto.getPermissionIds() != null && !dto.getPermissionIds().isEmpty()) {
+            List<Permission> byId = permissionRepository.findAllById(dto.getPermissionIds());
+            if (byId.size() != dto.getPermissionIds().size()) {
+                throw new EntityNotFoundException("Alguma permissão por ID não existe");
+            }
+            permissions.addAll(byId);
         }
-
+    
+        // Permissões por nome (aceita nomes com ou sem ROLE_)
+        if (dto.getPermissionNames() != null && !dto.getPermissionNames().isEmpty()) {
+            for (String name : dto.getPermissionNames()) {
+                String normalized = name.startsWith("ROLE_") ? name : "ROLE_" + name;
+                Permission perm = permissionRepository.findByDescription(normalized)
+                    .orElseThrow(() -> new EntityNotFoundException("Permissão não existe: " + name));
+                permissions.add(perm);
+            }
+        }
+    
+        // Remover duplicados (caso venha id e nome de uma mesma permissão)
+        permissions = permissions.stream().distinct().collect(Collectors.toList());
+    
         Group g = new Group();
         g.setName(dto.getName());
         g.setDescription(dto.getDescription());
         g.setPermissions(permissions);
-
+    
         return groupRepository.save(g);
     }
 

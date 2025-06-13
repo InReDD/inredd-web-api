@@ -3,10 +3,12 @@ package api.webservices.inredd.domain.model.dto;
 public class SimpleGroupDTO {
     private Long id;
     private String name;
+    private String description;
 
-    public SimpleGroupDTO(Long id, String name) {
+    public SimpleGroupDTO(Long id, String name, String description) {
         this.id   = id;
         this.name = name;
+        this.description = description;
     }
 
     public Long getId() {
@@ -20,5 +22,11 @@ public class SimpleGroupDTO {
     }
     public void setName(String name) {
         this.name = name;
+    }
+    public String getDescription() { 
+        return description; 
+    }
+    public void setDescription(String description) { 
+        this.description = description; 
     }
 }

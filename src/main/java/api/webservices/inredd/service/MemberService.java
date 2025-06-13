@@ -134,10 +134,8 @@ public class MemberService {
         if (opt.isPresent()) {
             User u = opt.get();
             // — já membro?
-            boolean already = u.getGroups().stream()
-                                .anyMatch(g -> g.getIdGroups().equals(dto.getGroupId()));
-            if (already) {
-                throw new IllegalStateException("Usuário já é membro deste grupo");
+            if (!u.getGroups().isEmpty()) {
+                throw new IllegalStateException("Usuário já pertence a um grupo");
             }
             // — vincula direto
             Group g = groupRepository.findById(dto.getGroupId())
@@ -158,6 +156,9 @@ public class MemberService {
             String token   = UUID.randomUUID().toString();
             Instant expires = now.plus(14, ChronoUnit.DAYS);
 
+            Group g = groupRepository.findById(dto.getGroupId())
+            .orElseThrow(() -> new EntityNotFoundException("Grupo não encontrado"));
+
             InviteRequest ir = new InviteRequest();
             ir.setEmail(email);
             ir.setGroupId(dto.getGroupId());
@@ -171,7 +172,7 @@ public class MemberService {
                 email,
                 "Você foi convidado para o InReDD",
                 "Olá!\n\n"
-              + "Para se cadastrar e entrar no grupo " + dto.getGroupId() + ", clique aqui:\n"
+              + "Para se cadastrar e entrar no grupo " + g.getName() + ", clique aqui:\n"
               + "https://inredd.com.br/criar-conta?inviteToken=" + token + "\n\n"
               + "Este link expira em 14 dias."
             );

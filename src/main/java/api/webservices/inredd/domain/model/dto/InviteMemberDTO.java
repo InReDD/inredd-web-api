@@ -12,6 +12,7 @@ public class InviteMemberDTO {
 
     @NotNull
     private Long groupId;
+    
 
     public String getEmail() {
         return email;

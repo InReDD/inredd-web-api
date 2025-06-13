@@ -73,7 +73,7 @@ public class AccessRequestService {
                 "Olá " + ar.getFirstName() + ",\n\n" +
                 "Para criar sua conta e ter acesso à “" +
                 ar.getSolution() + "”, clique no link abaixo:\n\n" +
-                "https://inredd.com.br/criar-conta?requestToken=" +
+                "https://inredd.com.br/create-account?requestToken=" +
                 ar.getRequestToken() + "\n\n" +
                 "Este link expira em 7 dias.\n\n" +
                 "Obrigado."
