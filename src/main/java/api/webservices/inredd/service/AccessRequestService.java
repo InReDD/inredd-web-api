@@ -1,20 +1,22 @@
 package api.webservices.inredd.service;
 
-import java.time.Instant;
-import java.util.UUID;
-import java.util.Optional;
+import java.time.*;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.time.temporal.ChronoUnit;
 import javax.persistence.EntityNotFoundException;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
+
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.*;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import api.webservices.inredd.domain.model.*;
 import api.webservices.inredd.domain.model.dto.*;
@@ -145,6 +147,7 @@ public class AccessRequestService {
         );
     }
 
+    // deprecated
     public AccessRequestDTO getRequestById(Long id) {
         AccessRequest ar = repo.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("AccessRequest não encontrada: " + id));
@@ -165,17 +168,84 @@ public class AccessRequestService {
         return dto;
     }
 
+    public AccessRequestDetailDTO getAccessRequestDetailById(Long id) {
+        AccessRequest ar = repo.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("AccessRequest não encontrada: " + id));
+        
+        AccessRequestDetailDTO dto = new AccessRequestDetailDTO();
+        dto.setId(ar.getId());
+        dto.setEmail(ar.getEmail());
+        dto.setFirstName(ar.getFirstName());
+        dto.setSolution(ar.getSolution());
+        dto.setReason(ar.getReason());
+        dto.setCreatedAt(ar.getCreatedAt());
+        dto.setExpiresAt(ar.getExpiresAt());
+        dto.setCompleted(ar.getConsumedAt() != null);
+    
+        // Estado da solicitação
+        if (ar.getConsumedAt() == null) {
+            dto.setState("pending");
+        } else if (ar.getRejectionReason() != null) {
+            dto.setState("rejected");
+            dto.setModerationReason(ar.getRejectionReason());
+        } else {
+            dto.setState("accepted");
+        }
+        // Bloco que seta moderador e data, se houver
+        if (ar.getModeratedBy() != null) {
+            dto.setModeratorName(
+                ar.getModeratedBy().getFirstName() + " " + ar.getModeratedBy().getLastName()
+            );
+            dto.setModerationDate(ar.getConsumedAt());
+        }
+    
+        // Dados do user (incluindo institution do academic, se houver)
+        userRepo.findByEmail(ar.getEmail()).ifPresent(u -> {
+            dto.setInstitution(
+                u.getAcademic() != null ? u.getAcademic().getInstitution() : null
+            );
+            dto.setFirstName(u.getFirstName());
+            // Se quiser trazer mais campos do User, adicione no DTO
+        });
+    
+        // Histórico de solicitações anteriores do usuário
+        List<PreviousRequestDTO> history = repo.findAll(
+            (root, query, cb) -> cb.equal(root.get("email"), ar.getEmail())
+        ).stream()
+        .filter(r -> !Objects.equals(r.getId(), id))
+        .filter(r -> r.getCreatedAt().isBefore(ar.getCreatedAt())) // Só anteriores!
+        .map(r -> new PreviousRequestDTO(
+            r.getId(),
+            r.getCreatedAt(),
+            r.getSolution(),
+            r.getConsumedAt() == null ? "pending" : (r.getRejectionReason() != null ? "rejected" : "accepted"),
+            r.getRejectionReason(),
+            r.getModeratedBy() != null ? r.getModeratedBy().getFirstName() + " " + r.getModeratedBy().getLastName() : null,
+            r.getConsumedAt()
+        ))
+        .collect(Collectors.toList());
+        dto.setPreviousRequests(history);
+    
+        return dto;
+    }
+
     @Transactional
     public void approveRequest(Long id) {
         AccessRequest ar = repo.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("AccessRequest não encontrada: " + id));
 
-        // só aprova se ainda não consumida e não expirada
         if (ar.getConsumedAt() != null || ar.getExpiresAt().isBefore(Instant.now())) {
             throw new IllegalStateException("Requisição já processada ou expirada");
         }
 
-        // garante que o usuário já exista (opção: poderia usar findByEmail)
+        // pega o usuário autenticado
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User moderator = userRepo.findByEmail(username)
+            .orElseThrow(() -> new EntityNotFoundException("Moderador não encontrado: " + username));
+        ar.setModeratedBy(moderator);
+
+        // garante que o usuário já exista
         User u = userRepo.findByEmail(ar.getEmail())
             .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado: " + ar.getEmail()));
 
@@ -189,7 +259,6 @@ public class AccessRequestService {
         }
 
         userRepo.save(u);
-
         ar.setConsumedAt(Instant.now());
         repo.save(ar);
     }
@@ -198,16 +267,22 @@ public class AccessRequestService {
     public void rejectRequest(Long id, String reason) {
         AccessRequest ar = repo.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("AccessRequest não encontrada: " + id));
-
+    
         if (ar.getConsumedAt() != null || ar.getExpiresAt().isBefore(Instant.now())) {
             throw new IllegalStateException("Requisição já processada ou expirada");
         }
-
+    
+        // pega o usuário autenticado
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User moderator = userRepo.findByEmail(username)
+            .orElseThrow(() -> new EntityNotFoundException("Moderador não encontrado: " + username));
+        ar.setModeratedBy(moderator);
+    
         ar.setRejectionReason(reason);
         ar.setConsumedAt(Instant.now());
         repo.save(ar);
-
-        // envia o e-mail de recusa
+    
         emailService.sendEmail(
             ar.getEmail(),
             "Solicitação de acesso rejeitada",

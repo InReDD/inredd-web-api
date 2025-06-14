@@ -43,6 +43,10 @@ public class AccessRequest {
     @Column(name = "rejection_reason", columnDefinition = "TEXT")
     private String rejectionReason;
 
+    @ManyToOne
+    @JoinColumn(name = "moderated_by")
+    private User moderatedBy;
+
     public Long getId() {
         return id;
     }
@@ -129,5 +133,13 @@ public class AccessRequest {
     
     public void setRejectionReason(String rejectionReason) { 
         this.rejectionReason = rejectionReason; 
+    }
+
+    public User getModeratedBy() { 
+        return moderatedBy; 
+    }
+    
+    public void setModeratedBy(User moderatedBy) { 
+        this.moderatedBy = moderatedBy; 
     }
 }

@@ -12,7 +12,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import api.webservices.inredd.domain.model.dto.*;
-import api.webservices.inredd.domain.model.dto.CreateAccessRequestDTO;
 import api.webservices.inredd.service.AccessRequestService;
 import api.webservices.inredd.service.AccessRequestService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -55,11 +54,17 @@ public class AccessRequestResource {
         return ResponseEntity.ok(page);
     }
 
+    // @GetMapping("/{id}")
+    // @PreAuthorize("hasAuthority('ROLE_SOLUTION_MODERATE_ACCESS_REQUESTS') and #oauth2.hasScope('read')")
+    // public ResponseEntity<AccessRequestDTO> getOne(@PathVariable Long id) {
+    //     AccessRequestDTO dto = service.getRequestById(id);
+    //     return ResponseEntity.ok(dto);
+    // }
+
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('ROLE_SOLUTION_MODERATE_ACCESS_REQUESTS') and #oauth2.hasScope('read')")
-    public ResponseEntity<AccessRequestDTO> getOne(@PathVariable Long id) {
-        AccessRequestDTO dto = service.getRequestById(id);
-        return ResponseEntity.ok(dto);
+    public ResponseEntity<AccessRequestDetailDTO> getDetail(@PathVariable Long id) {
+        return ResponseEntity.ok(service.getAccessRequestDetailById(id));
     }
 
     @Operation(summary = "Aprovar solicitação de acesso")
