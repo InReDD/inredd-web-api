@@ -204,10 +204,7 @@ public class UserService {
         String displayName = u.getFirstName() + " " + u.getLastName();
 
         // 2) imageBase64
-        String imageBase64 = null;
-        if (u.getPublicPicture() != null) {
-            imageBase64 = Base64.getEncoder().encodeToString(u.getPublicPicture());
-        }
+        String imageBase64 = u.getPublicPicture();
 
         // 3) formata datas de acesso às soluções (ou null se não houver)
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -269,8 +266,8 @@ public class UserService {
     
         // Public picture
         if (upd.getPublicPicture() != null) {
-            byte[] decoded = Base64.getDecoder().decode(upd.getPublicPicture());
-            u.setPublicPicture(decoded);
+            // salva o texto diretamente (data URL)
+            u.setPublicPicture(upd.getPublicPicture());
         }
     
         // Academic
@@ -332,8 +329,8 @@ public class UserService {
     
         // Public picture em Base64
         if (u.getPublicPicture() != null) {
-            d.setPublicPicture(Base64.getEncoder().encodeToString(u.getPublicPicture()));
-        }
+            d.setPublicPicture(u.getPublicPicture());
+        }        
     
         // Endereços
         d.setAddresses(

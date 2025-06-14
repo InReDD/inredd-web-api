@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS "user" (
   first_name                       VARCHAR(45),
   last_name                        VARCHAR(45),
   email                            VARCHAR(45)       NOT NULL UNIQUE,
-  public_picture                   BYTEA,
+  public_picture                   TEXT,
   contact                          VARCHAR(50),
   password                         VARCHAR(150)      NOT NULL,
   active                           BOOLEAN           NOT NULL,
@@ -27,9 +27,7 @@ CREATE TABLE IF NOT EXISTS "user" (
   user_has_accepted_privacy_policy BOOLEAN           NOT NULL DEFAULT FALSE
 );
 
-ALTER TABLE "user"
-  ALTER COLUMN public_picture TYPE bytea
-  USING public_picture::bytea;
+ALTER TABLE "user" ALTER COLUMN public_picture TYPE text;
 
 -- -----------------------------------------------------
 -- Table Address

@@ -101,7 +101,7 @@ public class MemberDetailDTO {
         this.institution = (u.getAcademic() != null) ? u.getAcademic().getInstitution() : null;
 
         if (u.getPublicPicture() != null) {
-            this.photoBase64 = Base64.getEncoder().encodeToString(u.getPublicPicture());
+            this.photoBase64 = u.getPublicPicture();
         }
 
         if (u.getAcademic() != null) {

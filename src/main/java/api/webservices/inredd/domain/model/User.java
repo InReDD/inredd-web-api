@@ -53,10 +53,8 @@ public class User {
 	@Column(name = "active")
 	private Boolean active;
 
-	@Lob
-    @Column(name = "public_picture", nullable = true)
-	@Type(type = "org.hibernate.type.BinaryType")
-	private byte[] publicPicture;
+    @Column(name = "public_picture")
+	private String publicPicture;
 
 	@Column(name = "signed_in_at", nullable = false, updatable = false,
             columnDefinition = "TIMESTAMP WITH TIME ZONE DEFAULT now()")
@@ -206,11 +204,11 @@ public class User {
 		this.active = active;
 	}
 
-	public byte[] getPublicPicture() {
+	public String getPublicPicture() {
 		return publicPicture;
 	}
 
-	public void setPublicPicture(byte[] publicPicture) {
+	public void setPublicPicture(String publicPicture) {
 		this.publicPicture = publicPicture;
 	}
 
