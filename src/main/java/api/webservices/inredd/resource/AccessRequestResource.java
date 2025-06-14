@@ -32,8 +32,16 @@ public class AccessRequestResource {
 
     @GetMapping("/validate")
     public ResponseEntity<ValidateAccessRequestDTO> validate(
-        @RequestParam("requestToken") String token) {
-        return ResponseEntity.ok(service.validateToken(token));
+        @RequestParam(value = "requestToken", required = false) String requestToken,
+        @RequestParam(value = "inviteToken", required = false) String inviteToken) {
+
+        if (requestToken != null) {
+            return ResponseEntity.ok(service.validateRequestToken(requestToken));
+        } else if (inviteToken != null) {
+            return ResponseEntity.ok(service.validateInviteToken(inviteToken));
+        } else {
+            throw new IllegalArgumentException("Parâmetro requestToken ou inviteToken deve ser informado.");
+        }
     }
 
     @GetMapping

@@ -25,6 +25,7 @@ import api.webservices.inredd.specification.*;
 @Service
 public class AccessRequestService {
     @Autowired private AccessRequestRepository repo;
+    @Autowired private InviteRequestRepository inviteRequestRepository;
     @Autowired private UserRepository userRepo;
     @Autowired private JavaMailSender mailSender;
     @Autowired private UserService userService;
@@ -116,7 +117,7 @@ public class AccessRequestService {
         });
     }
 
-    public ValidateAccessRequestDTO validateToken(String token) {
+    public ValidateAccessRequestDTO validateRequestToken(String token) {
         AccessRequest ar = repo.findByRequestToken(token)
           .orElseThrow(() -> new EntityNotFoundException("Token inválido"));
         if (ar.getExpiresAt().isBefore(Instant.now())) {
@@ -125,6 +126,22 @@ public class AccessRequestService {
         long expiresIn = ar.getExpiresAt().getEpochSecond() - Instant.now().getEpochSecond();
         return new ValidateAccessRequestDTO(
           ar.getEmail(), ar.getFirstName(), ar.getSolution(), ar.getReason(), expiresIn
+        );
+    }
+
+    public ValidateAccessRequestDTO validateInviteToken(String token) {
+        InviteRequest invite = inviteRequestRepository.findByInviteToken(token)
+            .orElseThrow(() -> new EntityNotFoundException("InviteToken inválido"));
+        if (invite.getExpiresAt().isBefore(Instant.now())) {
+            throw new IllegalStateException("Invite expirado");
+        }
+        long expiresIn = invite.getExpiresAt().getEpochSecond() - Instant.now().getEpochSecond();
+        return new ValidateAccessRequestDTO(
+            invite.getEmail(), // Email do convidado
+            null,              // firstName (não cadastrado ainda)
+            null,              // solution (não se aplica)
+            null,              // reason (não se aplica)
+            expiresIn
         );
     }
 
