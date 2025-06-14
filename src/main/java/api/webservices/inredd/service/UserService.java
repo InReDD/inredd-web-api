@@ -4,9 +4,12 @@ import java.util.*;
 import java.time.*;
 import java.util.stream.*;
 import java.time.format.*;
+import java.text.Normalizer;
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -353,4 +356,50 @@ public class UserService {
         return d;
     }
 	
+    public Page<UserDTO> findUsersNoGroup(int page, int limit, String name, String sort, String direction) {
+        // Corrige o campo de sort (id → idUser)
+        String sortField = "id".equals(sort) ? "idUser" : sort;
+        Pageable pageable = PageRequest.of(page, limit, Sort.by(
+                direction.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC,
+                sortField
+        ));
+
+        Specification<User> specNoGroup = (root, query, cb) -> cb.isEmpty(root.get("groups"));
+        Page<User> users = userRepository.findAll(specNoGroup, pageable);
+
+        // Filtro de nome insensível a acento/case, multi-palavra
+        List<User> filtered = users.getContent();
+        if (name != null && !name.trim().isEmpty()) {
+            String norm = normalize(name);
+            String[] tokens = norm.split("\\s+");
+            filtered = filtered.stream().filter(u -> {
+                String fn = normalize(u.getFirstName());
+                String ln = normalize(u.getLastName());
+                String full = (fn + " " + ln).trim();
+                return Arrays.stream(tokens).allMatch(token ->
+                    fn.contains(token) || ln.contains(token) || full.contains(token)
+                );
+            }).collect(Collectors.toList());
+        }
+
+        // Paginação manual após filtrar em memória
+        int start = (int) Math.min(pageable.getOffset(), filtered.size());
+        int end   = (int) Math.min(start + pageable.getPageSize(), filtered.size());
+        List<UserDTO> dtoList = filtered.subList(start, end).stream()
+            .map(u -> {
+                UserDTO dto = new UserDTO(u);
+                dto.setPermissions(Collections.emptyList());
+                dto.setGroups(Collections.emptyList());
+                return dto;
+            }).collect(Collectors.toList());
+
+        return new PageImpl<>(dtoList, pageable, filtered.size());
+    }
+
+	public static String normalize(String input) {
+		if (input == null) return "";
+		return Normalizer.normalize(input, Normalizer.Form.NFD)
+				.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "")
+				.toLowerCase();
+	}
 }

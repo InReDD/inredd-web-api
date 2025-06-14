@@ -86,4 +86,22 @@ public class ParamService {
         }
         return userIdNum.longValue();
     }
+
+    @Transactional
+    public void refuseTerms(Long userId) {
+        User user = userRepo.findByIdUser(userId)
+            .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado: " + userId));
+        user.setUserHasAcceptedTerms(false);
+        user.setAcceptedTermsAt(null);
+        userRepo.save(user);
+    }
+
+    @Transactional
+    public void refusePrivacyPolicy(Long userId) {
+        User user = userRepo.findByIdUser(userId)
+            .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado: " + userId));
+        user.setUserHasAcceptedPrivacyPolicy(false);
+        user.setAcceptedPrivacyPolicyAt(null);
+        userRepo.save(user);
+    }
 }

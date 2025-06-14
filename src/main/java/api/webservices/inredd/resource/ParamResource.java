@@ -68,5 +68,33 @@ public class ParamResource {
         Long userId = service.extractUserId(authentication);
         service.acceptPrivacyPolicy(userId);
         return ResponseEntity.ok().build();
+
     }
+
+    /**
+     * PUT /params/refuse-terms
+     * O usuário logado recusa os Terms of Service.
+     */
+    @Operation(summary = "Usuário recusa o Terms of Service")
+    @PutMapping("/refuse-terms")
+    @PreAuthorize("hasAuthority('ROLE_REGISTER_TERMS_AND_POLICY') and #oauth2.hasScope('write')")
+    public ResponseEntity<Void> refuseTerms(Authentication authentication) {
+        Long userId = service.extractUserId(authentication);
+        service.refuseTerms(userId);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * PUT /params/refuse-privacy-policy
+     * O usuário logado recusa a Privacy Policy.
+     */
+    @Operation(summary = "Usuário recusa a Privacy Policy")
+    @PutMapping("/refuse-privacy-policy")
+    @PreAuthorize("hasAuthority('ROLE_REGISTER_TERMS_AND_POLICY') and #oauth2.hasScope('write')")
+    public ResponseEntity<Void> refusePrivacyPolicy(Authentication authentication) {
+        Long userId = service.extractUserId(authentication);
+        service.refusePrivacyPolicy(userId);
+        return ResponseEntity.ok().build();
+    }
+    
 }

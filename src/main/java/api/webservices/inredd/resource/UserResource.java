@@ -1,9 +1,11 @@
 package api.webservices.inredd.resource;
 
 import java.util.List;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.Collections;
+import java.text.Normalizer;
 
 import javax.validation.Valid;
 
@@ -58,29 +60,18 @@ public class UserResource {
         return ResponseEntity.ok(dtos);
     }
 
-    /**
-     * Lista pageable de usuários que NÃO pertencem a nenhum grupo.
-     * Parâmetros de paginação: page (padrão 0) e limit (padrão 10).
-     */
     @GetMapping
-    @PreAuthorize("hasAuthority('ROLE_SEARCH_USER') and #oauth2.hasScope('read')")
-    public ResponseEntity<Page<UserDTO>> listPageNoGroup(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int limit
-    ) {
-        Pageable pageable = PageRequest.of(page, limit);
-        Specification<User> specNoGroup = (root, query, cb) -> cb.isEmpty(root.get("groups"));
-
-        Page<UserDTO> dtos = userRepository.findAll(specNoGroup, pageable)
-            .map(u -> {
-                UserDTO dto = new UserDTO(u);
-                dto.setPermissions(Collections.emptyList());
-                dto.setGroups(Collections.emptyList());
-                return dto;
-            });
-
-        return ResponseEntity.ok(dtos);
-    }
+	@PreAuthorize("hasAuthority('ROLE_SEARCH_USER') and #oauth2.hasScope('read')")
+	public ResponseEntity<Page<UserDTO>> listPageNoGroup(
+		@RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "10") int limit,
+		@RequestParam(value = "name", required = false) String name,
+		@RequestParam(value = "sort", defaultValue = "firstName") String sort,
+		@RequestParam(value = "direction", defaultValue = "asc") String direction
+	) {
+		Page<UserDTO> users = userService.findUsersNoGroup(page, limit, name, sort, direction);
+		return ResponseEntity.ok(users);
+	}
 	
 	@Operation(summary = "Criar um novo usuário (com optional requestToken ou inviteToken)")
     @PostMapping
