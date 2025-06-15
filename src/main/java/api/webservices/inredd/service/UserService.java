@@ -360,26 +360,33 @@ public class UserService {
                 direction.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC,
                 sortField
         ));
-
+    
         Specification<User> specNoGroup = (root, query, cb) -> cb.isEmpty(root.get("groups"));
-        Page<User> users = userRepository.findAll(specNoGroup, pageable);
-
-        // Filtro de nome insensível a acento/case, multi-palavra
-        List<User> filtered = users.getContent();
-        if (name != null && !name.trim().isEmpty()) {
-            String norm = normalize(name);
-            String[] tokens = norm.split("\\s+");
-            filtered = filtered.stream().filter(u -> {
-                String fn = normalize(u.getFirstName());
-                String ln = normalize(u.getLastName());
-                String full = (fn + " " + ln).trim();
-                return Arrays.stream(tokens).allMatch(token ->
-                    fn.contains(token) || ln.contains(token) || full.contains(token)
-                );
-            }).collect(Collectors.toList());
+    
+        if (name == null || name.trim().isEmpty()) {
+            // Sem filtro por nome: deixa o banco paginar
+            return userRepository.findAll(specNoGroup, pageable)
+                .map(u -> {
+                    UserDTO dto = new UserDTO(u);
+                    dto.setPermissions(Collections.emptyList());
+                    dto.setGroups(Collections.emptyList());
+                    return dto;
+                });
         }
-
-        // Paginação manual após filtrar em memória
+    
+        // --- Se houver filtro por nome, busca todos sem grupo, filtra e pagina em memória ---
+        List<User> allNoGroup = userRepository.findAll(specNoGroup, Sort.by(sortField));
+        String norm = normalize(name);
+        String[] tokens = norm.split("\\s+");
+        List<User> filtered = allNoGroup.stream().filter(u -> {
+            String fn = normalize(u.getFirstName());
+            String ln = normalize(u.getLastName());
+            String full = (fn + " " + ln).trim();
+            return Arrays.stream(tokens).allMatch(token ->
+                fn.contains(token) || ln.contains(token) || full.contains(token)
+            );
+        }).collect(Collectors.toList());
+    
         int start = (int) Math.min(pageable.getOffset(), filtered.size());
         int end   = (int) Math.min(start + pageable.getPageSize(), filtered.size());
         List<UserDTO> dtoList = filtered.subList(start, end).stream()
@@ -389,7 +396,7 @@ public class UserService {
                 dto.setGroups(Collections.emptyList());
                 return dto;
             }).collect(Collectors.toList());
-
+    
         return new PageImpl<>(dtoList, pageable, filtered.size());
     }
 
