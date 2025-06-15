@@ -38,6 +38,7 @@ public class MemberDetailDTO {
     private String           memberSince;    // (manter para compatibilidade: data da aceitação de termos)
 
     private String           lattesId;
+    private String           lattesUrl;
     private String           bio;            // abstractText
     private Boolean          userHasAccessToD2L;
     private String           accessToD2LSince;
@@ -107,6 +108,9 @@ public class MemberDetailDTO {
         if (u.getAcademic() != null) {
             this.lattesId = u.getAcademic().getLattesId();
             this.bio      = u.getAcademic().getAbstractText();
+            if (this.lattesId != null && !this.lattesId.trim().isEmpty()) {
+                this.lattesUrl = "http://lattes.cnpq.br/" + this.lattesId.trim();
+            }
         }
 
         // 10) Acessos a D2L / Open Data
@@ -267,5 +271,13 @@ public class MemberDetailDTO {
         public String getCountry() {
             return country;
         }
+    }
+
+    public String getLattesUrl() {
+        return lattesUrl;
+    }
+
+    public void setLattesUrl(String lattesUrl) {
+        this.lattesUrl = lattesUrl;
     }
 }
