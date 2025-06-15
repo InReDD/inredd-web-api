@@ -82,15 +82,34 @@ public class GroupService {
         g.setName(dto.getName());
         g.setDescription(dto.getDescription());
 
-        // carrega as novas permissões
-        List<Permission> newPerms = permissionRepository.findAllById(dto.getPermissionIds());
-        if (newPerms.size() != dto.getPermissionIds().size()) {
-            throw new EntityNotFoundException("Alguma permissão não existe");
+        // aceita tanto ids quanto nomes, igual ao create 
+        List<Permission> permissions = new ArrayList<>();
+
+        // Permissões por ID
+        if (dto.getPermissionIds() != null && !dto.getPermissionIds().isEmpty()) {
+            List<Permission> byId = permissionRepository.findAllById(dto.getPermissionIds());
+            if (byId.size() != dto.getPermissionIds().size()) {
+                throw new EntityNotFoundException("Alguma permissão por ID não existe");
+            }
+            permissions.addAll(byId);
         }
+
+        // Permissões por nome (aceita nomes com ou sem ROLE_)
+        if (dto.getPermissionNames() != null && !dto.getPermissionNames().isEmpty()) {
+            for (String name : dto.getPermissionNames()) {
+                String normalized = name.startsWith("ROLE_") ? name : "ROLE_" + name;
+                Permission perm = permissionRepository.findByDescription(normalized)
+                    .orElseThrow(() -> new EntityNotFoundException("Permissão não existe: " + name));
+                permissions.add(perm);
+            }
+        }
+
+        // Remove duplicados (caso venha id e nome de uma mesma permissão)
+        permissions = permissions.stream().distinct().collect(Collectors.toList());
 
         // sincroniza a coleção: remove as antigas e adiciona as novas
         g.getPermissions().clear();
-        g.getPermissions().addAll(newPerms);
+        g.getPermissions().addAll(permissions);
 
         return groupRepository.save(g);
     }
