@@ -261,6 +261,14 @@ public class AccessRequestService {
         userRepo.save(u);
         ar.setConsumedAt(Instant.now());
         repo.save(ar);
+
+        emailService.sendEmail(
+            ar.getEmail(),
+            "Solicitação de acesso aprovada",
+            "Olá " + ar.getFirstName() + ",\n\n" +
+            "Sua solicitação de acesso à “" + ar.getSolution() +
+            "” foi aprovada.\n\nMotivo: " + reason + "\n\n"
+        );
     }
 
     @Transactional
