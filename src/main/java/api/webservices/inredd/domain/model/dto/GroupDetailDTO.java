@@ -95,7 +95,13 @@ public class GroupDetailDTO {
     
         public PermissionInfo(Permission p) {
             this.id = p.getId();
-            this.name = p.getDescription();
+            // Remove o prefixo "ROLE_" se existir
+            String desc = p.getDescription();
+            if (desc != null && desc.startsWith("ROLE_")) {
+                this.name = desc.substring("ROLE_".length());
+            } else {
+                this.name = desc;
+            }
         }
     
         public Long getId() {
