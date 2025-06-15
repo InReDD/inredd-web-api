@@ -171,7 +171,7 @@ public class AccessRequestService {
     public AccessRequestDetailDTO getAccessRequestDetailById(Long id) {
         AccessRequest ar = repo.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("AccessRequest não encontrada: " + id));
-        
+    
         AccessRequestDetailDTO dto = new AccessRequestDetailDTO();
         dto.setId(ar.getId());
         dto.setEmail(ar.getEmail());
@@ -191,6 +191,7 @@ public class AccessRequestService {
         } else {
             dto.setState("accepted");
         }
+    
         // Bloco que seta moderador e data, se houver
         if (ar.getModeratedBy() != null) {
             dto.setModeratorName(
@@ -205,6 +206,7 @@ public class AccessRequestService {
                 u.getAcademic() != null ? u.getAcademic().getInstitution() : null
             );
             dto.setFirstName(u.getFirstName());
+            dto.setUserId(u.getIdUser()); // <-- SETA O userId!
             // Se quiser trazer mais campos do User, adicione no DTO
         });
     

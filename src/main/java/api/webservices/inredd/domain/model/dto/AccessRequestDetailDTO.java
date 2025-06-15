@@ -6,6 +6,7 @@ import java.util.List;
 public class AccessRequestDetailDTO {
     private Long id;
     private String email;
+    private Long userId;
     private String firstName;
     private String institution;
     private String solution;
@@ -24,6 +25,7 @@ public class AccessRequestDetailDTO {
     public AccessRequestDetailDTO(
             Long id,
             String email,
+            Long userId,
             String firstName,
             String institution,
             String solution,
@@ -39,6 +41,7 @@ public class AccessRequestDetailDTO {
     ) {
         this.id = id;
         this.email = email;
+        this.userId = userId;
         this.firstName = firstName;
         this.institution = institution;
         this.solution = solution;
@@ -57,6 +60,9 @@ public class AccessRequestDetailDTO {
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+
+    public Long getUserId() { return userId; }
+    public void setUserId(Long userId) { this.userId = userId; }
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
