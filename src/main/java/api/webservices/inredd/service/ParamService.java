@@ -104,4 +104,20 @@ public class ParamService {
         user.setAcceptedPrivacyPolicyAt(null);
         userRepo.save(user);
     }
+
+    @Transactional
+    public void updateTermsText(String content) {
+        TermsOfService tos = new TermsOfService();
+        tos.setContent(content);
+        tos.setCreatedAt(Instant.now());
+        tosRepo.save(tos);
+    }
+
+    @Transactional
+    public void updatePrivacyText(String content) {
+        PrivacyPolicy pp = new PrivacyPolicy();
+        pp.setContent(content);
+        pp.setCreatedAt(Instant.now());
+        ppRepo.save(pp);
+    }
 }

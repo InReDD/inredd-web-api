@@ -1,7 +1,6 @@
 package api.webservices.inredd.resource;
 
-import api.webservices.inredd.domain.model.dto.TermsDTO;
-import api.webservices.inredd.domain.model.dto.PrivacyPolicyDTO;
+import api.webservices.inredd.domain.model.dto.*;
 import api.webservices.inredd.service.ParamService;
 import io.swagger.v3.oas.annotations.Operation;
 
@@ -94,6 +93,22 @@ public class ParamResource {
     public ResponseEntity<Void> refusePrivacyPolicy(Authentication authentication) {
         Long userId = service.extractUserId(authentication);
         service.refusePrivacyPolicy(userId);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "Atualizar o texto dos Terms of Service")
+    @PutMapping("/accept-terms/content")
+    @PreAuthorize("hasAuthority('ROLE_EDIT_ACCEPT_TERMS') and #oauth2.hasScope('write')")
+    public ResponseEntity<Void> updateTermsText(@RequestBody PolicyTextDTO dto) {
+        service.updateTermsText(dto.getContent());
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "Atualizar o texto da Privacy Policy")
+    @PutMapping("/privacy-policy/content")
+    @PreAuthorize("hasAuthority('ROLE_EDIT_PRIVACY_POLICY') and #oauth2.hasScope('write')")
+    public ResponseEntity<Void> updatePrivacyText(@RequestBody PolicyTextDTO dto) {
+        service.updatePrivacyText(dto.getContent());
         return ResponseEntity.ok().build();
     }
     
