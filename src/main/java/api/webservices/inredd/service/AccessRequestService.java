@@ -267,7 +267,7 @@ public class AccessRequestService {
             "Solicitação de acesso aprovada",
             "Olá " + ar.getFirstName() + ",\n\n" +
             "Sua solicitação de acesso à “" + ar.getSolution() +
-            "” foi aprovada.\n\nMotivo: " + reason + "\n\n"
+            "” foi aprovada.\n"
         );
     }
 
