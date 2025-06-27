@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Optional;
 import java.time.Instant;
 
 @Service
@@ -39,11 +40,15 @@ public class ParamService {
     }
 
     public String getLatestTermsContent() {
-        return tosRepo.findTopByOrderByCreatedAtDesc().getContent();
+        return tosRepo.findTopByOrderByCreatedAtDesc()
+            .map(TermsOfService::getContent)
+            .orElseThrow(() -> new EntityNotFoundException("Nenhum conteúdo para Termos de Serviço foi encontrado."));
     }
     
     public String getLatestPrivacyPolicyContent() {
-        return ppRepo.findTopByOrderByCreatedAtDesc().getContent();
+        return ppRepo.findTopByOrderByCreatedAtDesc()
+            .map(PrivacyPolicy::getContent)
+            .orElseThrow(() -> new EntityNotFoundException("Nenhum conteúdo para Política de Privacidade foi encontrado."));
     }
 
     @Transactional
@@ -103,5 +108,42 @@ public class ParamService {
         user.setUserHasAcceptedPrivacyPolicy(false);
         user.setAcceptedPrivacyPolicyAt(null);
         userRepo.save(user);
+    }
+
+    @Transactional
+    public void updateTermsText(String content) {
+        Optional<TermsOfService> existingTosOpt = tosRepo.findTopByOrderByCreatedAtDesc();
+        TermsOfService tosToSave;
+
+        if (existingTosOpt.isPresent()) {
+            tosToSave = existingTosOpt.get();
+            tosToSave.setContent(content);
+            tosToSave.setUpdatedAt(Instant.now());
+        } else {
+            tosToSave = new TermsOfService();
+            tosToSave.setContent(content);
+            tosToSave.setCreatedAt(Instant.now());
+        }
+        
+        tosRepo.save(tosToSave);
+    }
+
+    @Transactional
+    public void updatePrivacyText(String content) {
+        Optional<PrivacyPolicy> existingPpOpt = ppRepo.findTopByOrderByCreatedAtDesc();
+        PrivacyPolicy ppToSave;
+    
+        if (existingPpOpt.isPresent()) {
+            ppToSave = existingPpOpt.get();
+            ppToSave.setContent(content);
+            ppToSave.setUpdatedAt(Instant.now());
+    
+        } else {
+            ppToSave = new PrivacyPolicy();
+            ppToSave.setContent(content);
+            ppToSave.setCreatedAt(Instant.now()); 
+        }
+    
+        ppRepo.save(ppToSave);
     }
 }

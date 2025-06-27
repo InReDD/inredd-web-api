@@ -17,6 +17,9 @@ public class PrivacyPolicy {
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
+    @Column(name = "updated_at")
+    private Instant updatedAt;
+
     public Long getIdPrivacyPolicy() { return idPrivacyPolicy; }
     public void setIdPrivacyPolicy(Long id) { this.idPrivacyPolicy = id; }
 
@@ -25,4 +28,7 @@ public class PrivacyPolicy {
 
     public Instant getCreatedAt() { return createdAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
+
+    public Instant getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
 }

@@ -16,6 +16,9 @@ public class TermsOfService {
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
+    @Column(name = "updated_at")
+    private Instant updatedAt;
+
     public Long getIdTermsOfService() { return idTermsOfService; }
     public void setIdTermsOfService(Long id) { this.idTermsOfService = id; }
 
@@ -24,4 +27,7 @@ public class TermsOfService {
 
     public Instant getCreatedAt() { return createdAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
+
+    public Instant getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
 }

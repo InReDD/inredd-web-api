@@ -20,10 +20,12 @@ public class UserDTO {
     private Boolean userHasAcceptedPrivacyPolicy;
     private Boolean userHasAccessToD2L;
     private Boolean userHasAccessToOpenData;
+    private String lattesUrl;
     private AcademicDTO academic;
     private List<AddressDTO> addresses = new ArrayList<>();
     private List<GroupDTO> groups = new ArrayList<>();
     private List<PermissionDTO> permissions = new ArrayList<>();
+    private String publicPicture;
 
     public UserDTO() {
     }
@@ -39,9 +41,14 @@ public class UserDTO {
         this.userHasAcceptedPrivacyPolicy = user.getUserHasAcceptedPrivacyPolicy();
         this.userHasAccessToD2L = user.getUserHasAccessToD2L();
         this.userHasAccessToOpenData = user.getUserHasAccessToOpenData();
+        this.publicPicture = user.getPublicPicture();
 
         if (user.getAcademic() != null) {
             this.academic = new AcademicDTO(user.getAcademic());
+            String lattesId = user.getAcademic().getLattesId();
+            if (lattesId != null && !lattesId.trim().isEmpty()) {
+                this.lattesUrl = "http://lattes.cnpq.br/" + lattesId.trim();
+            }
         }
 
         if (user.getAddresses() != null) {
@@ -139,6 +146,13 @@ public class UserDTO {
         return userHasAccessToOpenData; 
     }
 
+    public String getLattesUrl() {
+        return lattesUrl;
+    }
+    public void setLattesUrl(String lattesUrl) {
+        this.lattesUrl = lattesUrl;
+    }
+
     public AcademicDTO getAcademic() {
         return academic;
     }
@@ -169,5 +183,13 @@ public class UserDTO {
 
     public void setAddresses(List<AddressDTO> addresses) {
         this.addresses = addresses;
+    }
+
+    public String getPublicPicture() {
+        return publicPicture;
+    }
+    
+    public void setPublicPicture(String publicPicture) {
+        this.publicPicture = publicPicture;
     }
 }

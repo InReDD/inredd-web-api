@@ -26,6 +26,7 @@ public class MemberViewDTO {
     private String email;
     private String institution;
     private String lattesUrl;
+    private String publicPicture;
 
     public MemberViewDTO(User user) {
         this.id = user.getIdUser();
@@ -63,6 +64,8 @@ public class MemberViewDTO {
         this.institution = (user.getAcademic() != null)
             ? user.getAcademic().getInstitution()
             : "";
+
+        this.publicPicture = user.getPublicPicture();
     }
 
     // --- getters ---
@@ -105,5 +108,9 @@ public class MemberViewDTO {
 
     public String getLattesUrl() { 
         return lattesUrl; 
+    }
+
+    public String getPublicPicture() { 
+        return publicPicture;
     }
 }

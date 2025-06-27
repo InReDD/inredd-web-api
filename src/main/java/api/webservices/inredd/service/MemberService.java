@@ -173,7 +173,7 @@ public class MemberService {
                 "Você foi convidado para o InReDD",
                 "Olá!\n\n"
               + "Para se cadastrar e entrar no grupo " + g.getName() + ", clique aqui:\n"
-              + "https://inredd.com.br/criar-conta?inviteToken=" + token + "\n\n"
+              + "https://inredd.com.br/create-account?inviteToken=" + token + "\n\n"
               + "Este link expira em 14 dias."
             );
         }
