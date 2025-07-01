@@ -30,25 +30,24 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter{
 	
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
-		http
-          .csrf().disable()
-          .sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        .and()
-          .authorizeRequests()
-            // Swagger e docs
-            .antMatchers(
-                "/v3/api-docs/**",
-                "/swagger-ui/**",
-                "/swagger-ui.html",
-                "/swagger-resources/**",
-                "/webjars/**"
-            ).permitAll()
-            // libera GETs públicos
-            .antMatchers(HttpMethod.GET, "/groups/**", "/papers/**", "/members/**", "/params/**", "/me/**").permitAll()
-            .antMatchers("/users").permitAll()
-            // todo o resto precisa de token
-            .anyRequest().permitAll();
+        http
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(management -> management
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeRequests(requests -> requests
+                        // Swagger e docs
+                        .antMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/swagger-resources/**",
+                                "/webjars/**"
+                        ).permitAll()
+                        // libera GETs públicos
+                        .antMatchers(HttpMethod.GET, "/groups/**", "/papers/**", "/members/**", "/params/**", "/me/**").permitAll()
+                        .antMatchers("/users").permitAll()
+                        // todo o resto precisa de token
+                        .anyRequest().permitAll());
             //.anyRequest().authenticated();
     }
 

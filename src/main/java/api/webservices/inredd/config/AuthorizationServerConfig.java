@@ -3,8 +3,6 @@ package api.webservices.inredd.config;
 import java.util.Arrays;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -29,7 +27,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     private final JwtAccessTokenConverter accessTokenConverter;
     private final TokenEnhancer        tokenEnhancer;
 
-    @Autowired
     public AuthorizationServerConfig(
         AuthenticationManager authenticationManager,
         UserDetailsService   userDetailsService,

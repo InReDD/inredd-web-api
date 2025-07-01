@@ -10,9 +10,6 @@ import javax.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.*;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.core.Authentication;
@@ -21,7 +18,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import api.webservices.inredd.domain.model.*;
 import api.webservices.inredd.domain.model.dto.*;
 import api.webservices.inredd.repository.*;
-import api.webservices.inredd.service.*;
 import api.webservices.inredd.specification.*;
 
 @Service
@@ -29,8 +25,6 @@ public class AccessRequestService {
     @Autowired private AccessRequestRepository repo;
     @Autowired private InviteRequestRepository inviteRequestRepository;
     @Autowired private UserRepository userRepo;
-    @Autowired private JavaMailSender mailSender;
-    @Autowired private UserService userService;
     @Autowired private EmailService emailService;
 
     public void createRequest(CreateAccessRequestDTO dto) {

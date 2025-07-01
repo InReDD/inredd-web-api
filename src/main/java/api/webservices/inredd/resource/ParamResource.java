@@ -5,26 +5,18 @@ import api.webservices.inredd.service.ParamService;
 import io.swagger.v3.oas.annotations.Operation;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
-import org.springframework.security.oauth2.common.OAuth2AccessToken;
 
 @RestController
 @RequestMapping("/params")
 public class ParamResource {
 
     private final ParamService service;
-    private final TokenStore   tokenStore;
-
     public ParamResource(ParamService service, TokenStore tokenStore) {
         this.service = service;
-        this.tokenStore = tokenStore;
     }
 
     // 1) GET só traz o texto dos Terms of Service, sem contexto de usuário

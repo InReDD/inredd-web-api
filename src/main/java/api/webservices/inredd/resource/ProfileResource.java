@@ -4,7 +4,6 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -24,7 +23,6 @@ public class ProfileResource {
     private final UserService userService;
     private final TokenStore tokenStore;
 
-    @Autowired
     public ProfileResource(UserService userService, TokenStore tokenStore) {
         this.userService = userService;
         this.tokenStore  = tokenStore;
@@ -60,7 +58,6 @@ public class ProfileResource {
         }
         String tokenValue = ((OAuth2AuthenticationDetails) details).getTokenValue();
         OAuth2AccessToken accessToken = tokenStore.readAccessToken(tokenValue);
-        @SuppressWarnings("unchecked")
         Map<String, Object> info = accessToken.getAdditionalInformation();
         Number userIdNum = (Number) info.get("user_id");
         if (userIdNum == null) {

@@ -58,6 +58,7 @@ public class PaperDTO {
         this.createdAt   = paper.getCreatedAt();
     }
 
+    @SuppressWarnings("unused")
     private List<String> parseAuthors(String raw) {
         if (raw == null || raw.isBlank()) {
             return Collections.emptyList();
@@ -75,6 +76,7 @@ public class PaperDTO {
         return authors;
     }
 
+    @SuppressWarnings("unused")
     private List<String> parseTags(String raw) {
         if (raw == null || raw.isBlank()) {
             return Collections.emptyList();

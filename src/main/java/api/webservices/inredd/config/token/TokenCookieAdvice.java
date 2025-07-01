@@ -1,6 +1,5 @@
 package api.webservices.inredd.config.token;
 
-import java.util.Objects;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
@@ -15,12 +14,14 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 @ControllerAdvice
 public class TokenCookieAdvice implements ResponseBodyAdvice<OAuth2AccessToken> {
 
+    @SuppressWarnings("null")
     @Override
     public boolean supports(MethodParameter returnType,
                             Class<? extends HttpMessageConverter<?>> converterType) {
         return returnType.getDeclaringClass().getSimpleName().equals("TokenEndpoint");
     }
 
+    @SuppressWarnings("null")
     @Override
     public OAuth2AccessToken beforeBodyWrite(OAuth2AccessToken body,
                                              MethodParameter returnType,

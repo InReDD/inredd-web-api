@@ -1,12 +1,10 @@
 package api.webservices.inredd.domain.model.dto;
 
 import api.webservices.inredd.domain.model.User;
-import api.webservices.inredd.domain.model.Group;
 import api.webservices.inredd.domain.model.Address;
 
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 

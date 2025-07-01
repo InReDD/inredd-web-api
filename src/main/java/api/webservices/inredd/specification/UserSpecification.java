@@ -1,4 +1,4 @@
-package api.webservices.inredd.domain.specification;
+package api.webservices.inredd.specification;
 
 import api.webservices.inredd.domain.model.User;
 import api.webservices.inredd.domain.model.Group;

@@ -20,11 +20,13 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 public class RefreshTokenPostProcessor implements 
 	ResponseBodyAdvice<OAuth2AccessToken>{
 
+	@SuppressWarnings("null")
 	@Override
 	public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
 		return returnType.getMethod().getName().equals("postAccessToken");
 	}
 
+	@SuppressWarnings("null")
 	@Override
 	public OAuth2AccessToken beforeBodyWrite(OAuth2AccessToken body, MethodParameter returnType,
 			MediaType selectedContentType, Class<? extends HttpMessageConverter<?>> selectedConverterType,

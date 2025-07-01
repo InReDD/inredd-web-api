@@ -3,7 +3,6 @@ package api.webservices.inredd.repository;
 import java.util.List;
 import java.time.Instant;
 import org.springframework.data.jpa.repository.*;
-import org.springframework.stereotype.Repository;
 import api.webservices.inredd.domain.model.AccessRequest;
 import java.util.Optional;
 

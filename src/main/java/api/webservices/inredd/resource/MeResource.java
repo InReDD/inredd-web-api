@@ -4,8 +4,6 @@ import api.webservices.inredd.domain.model.dto.MeDTO;
 import api.webservices.inredd.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 
@@ -14,7 +12,6 @@ import org.springframework.security.oauth2.provider.authentication.OAuth2Authent
 
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.token.TokenStore;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,7 +25,6 @@ public class MeResource {
     private final UserService userService;
     private final TokenStore tokenStore;
 
-    @Autowired
     public MeResource(UserService userService, TokenStore tokenStore) {
         this.userService = userService;
         this.tokenStore  = tokenStore;
@@ -52,7 +48,6 @@ public class MeResource {
           return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
       }
 
-      @SuppressWarnings("unchecked")
       Map<String, Object> info = accessToken.getAdditionalInformation();
       Number userIdNum = (Number) info.get("user_id");
       if (userIdNum == null) {

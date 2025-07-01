@@ -1,6 +1,4 @@
-package api.webservices.inredd.web.exception;
-
-import api.webservices.inredd.service.exception.GroupNotEmptyException;
+package api.webservices.inredd.exceptionhandler;
 
 import javax.persistence.EntityNotFoundException;
 

@@ -4,7 +4,6 @@ import javax.persistence.*;
 import javax.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import api.webservices.inredd.domain.model.User;
 
 @Entity
 @Table(name = "address")

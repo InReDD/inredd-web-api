@@ -1,8 +1,6 @@
 package api.webservices.inredd.resource;
 
 import java.util.List;
-import java.util.stream.Collectors;
-
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +18,6 @@ import api.webservices.inredd.domain.model.Paper;
 import api.webservices.inredd.domain.model.dto.PaperDTO;
 import api.webservices.inredd.repository.PaperRepository;
 import api.webservices.inredd.service.PaperService;
-import api.webservices.inredd.specification.PaperSpecification;
-import org.springframework.data.jpa.domain.Specification;
 
 @SecurityRequirement(name = "oauth2_scheme")
 @RestController

@@ -32,6 +32,7 @@ public class InreddExceptionHandler extends
 	@Autowired
 	private MessageSource messageSource;
 	
+	@SuppressWarnings("null")
 	@Override
 	protected ResponseEntity<Object> handleHttpMessageNotReadable
 		(HttpMessageNotReadableException ex,
@@ -48,6 +49,7 @@ public class InreddExceptionHandler extends
 				headers, HttpStatus.BAD_REQUEST, request);
 	}
 	
+	@SuppressWarnings("null")
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(
 			MethodArgumentNotValidException ex,

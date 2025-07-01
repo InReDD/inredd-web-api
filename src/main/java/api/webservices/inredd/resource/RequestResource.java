@@ -1,10 +1,9 @@
-package api.webservices.inredd.web;
+package api.webservices.inredd.resource;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
-import org.springframework.http.*;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
@@ -13,13 +12,12 @@ import org.springframework.web.bind.annotation.*;
 
 import api.webservices.inredd.domain.model.dto.*;
 import api.webservices.inredd.service.AccessRequestService;
-import api.webservices.inredd.service.AccessRequestService;
 import io.swagger.v3.oas.annotations.Operation;
 
 @RestController
 @RequestMapping("/access-requests")
 @Validated
-public class AccessRequestResource {
+public class RequestResource {
 
     @Autowired private AccessRequestService service;
 
@@ -53,13 +51,6 @@ public class AccessRequestResource {
         Page<AccessRequestDTO> page = service.listRequests(search, completed, pageable);
         return ResponseEntity.ok(page);
     }
-
-    // @GetMapping("/{id}")
-    // @PreAuthorize("hasAuthority('ROLE_SOLUTION_MODERATE_ACCESS_REQUESTS') and #oauth2.hasScope('read')")
-    // public ResponseEntity<AccessRequestDTO> getOne(@PathVariable Long id) {
-    //     AccessRequestDTO dto = service.getRequestById(id);
-    //     return ResponseEntity.ok(dto);
-    // }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('ROLE_SOLUTION_MODERATE_ACCESS_REQUESTS') and #oauth2.hasScope('read')")

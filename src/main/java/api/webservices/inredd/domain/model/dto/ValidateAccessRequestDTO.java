@@ -2,7 +2,6 @@ package api.webservices.inredd.domain.model.dto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.time.Instant;
 
 /**
  * Utilizado para retornar ao cliente os dados da AccessRequest antes de completar o cadastro.

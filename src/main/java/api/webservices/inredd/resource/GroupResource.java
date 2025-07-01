@@ -1,11 +1,5 @@
 package api.webservices.inredd.resource;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,15 +8,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
-import api.webservices.inredd.domain.model.User;
-import api.webservices.inredd.domain.model.dto.UserDTO;
 import api.webservices.inredd.domain.model.Group;
 import api.webservices.inredd.domain.model.dto.GroupCreateDTO;
 import api.webservices.inredd.domain.model.dto.GroupDetailDTO;

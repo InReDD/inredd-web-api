@@ -3,8 +3,6 @@ package api.webservices.inredd.service;
 import api.webservices.inredd.domain.model.TermsOfService;
 import api.webservices.inredd.domain.model.PrivacyPolicy;
 import api.webservices.inredd.domain.model.User;
-import api.webservices.inredd.domain.model.dto.TermsDTO;
-import api.webservices.inredd.domain.model.dto.PrivacyPolicyDTO;
 import api.webservices.inredd.repository.TermsOfServiceRepository;
 import api.webservices.inredd.repository.PrivacyPolicyRepository;
 import api.webservices.inredd.repository.UserRepository;

@@ -1,4 +1,4 @@
-package api.webservices.inredd.service.exception;
+package api.webservices.inredd.exceptionhandler;
 
 public class GroupNotEmptyException extends RuntimeException {
     public GroupNotEmptyException(Long groupId) {

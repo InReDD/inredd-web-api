@@ -7,7 +7,6 @@ import java.time.format.*;
 import java.text.Normalizer;
 import javax.persistence.EntityNotFoundException;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +27,7 @@ public class UserService {
 	@Autowired PermissionRepository permissionRepository;
 	@Autowired GroupRepository groupRepository;
     @Autowired private InviteRequestRepository inviteRepo;
-	@Autowired private AcademicRepository academicRepository;
-    @Autowired private AccessRequestRepository accessReqRepo;
+	@Autowired private AccessRequestRepository accessReqRepo;
     @Autowired private AddressRepository addressRepository;
 
     @Transactional
@@ -125,7 +123,6 @@ public class UserService {
      */
     private List<Permission> getPermissionsForGroup(Long groupId) {
         if (groupId.equals(1L)) {
-            List<Permission> permissions = new ArrayList<>();
             return permissionRepository.findAll();
         } else {
             return addCommonUserPermissions();

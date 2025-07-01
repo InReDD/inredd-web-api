@@ -1,15 +1,11 @@
-package api.webservices.inredd.web;
+package api.webservices.inredd.resource;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,9 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.Operation;
 
-import api.webservices.inredd.domain.model.*;
 import api.webservices.inredd.domain.model.dto.*;
-import api.webservices.inredd.repository.InviteRequestRepository;
 import api.webservices.inredd.service.MemberService;
 
 
@@ -29,7 +23,6 @@ public class MemberResource {
 
     private final MemberService memberService;
 
-    @Autowired
     public MemberResource(MemberService memberService) {
         this.memberService = memberService;
     }

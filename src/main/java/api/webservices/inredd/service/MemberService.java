@@ -2,13 +2,10 @@ package api.webservices.inredd.service;
 
 import java.time.Instant;
 import java.util.*;
-import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
 
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
@@ -17,12 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import api.webservices.inredd.domain.model.*;
 import api.webservices.inredd.domain.model.dto.*;
-import api.webservices.inredd.service.EmailService;
+import api.webservices.inredd.specification.UserSpecification;
 import api.webservices.inredd.repository.MemberRepository;
 import api.webservices.inredd.repository.InviteRequestRepository;
 import api.webservices.inredd.repository.GroupRepository;
 import api.webservices.inredd.repository.UserRepository;
-import api.webservices.inredd.domain.specification.UserSpecification;
 
 
 @Service
@@ -32,7 +28,6 @@ public class MemberService {
     @Autowired private UserRepository userRepository;
     @Autowired private GroupRepository groupRepository;
     @Autowired private InviteRequestRepository inviteRepo;
-    @Autowired private JavaMailSender mailSender;
     @Autowired private EmailService emailService;
     
 

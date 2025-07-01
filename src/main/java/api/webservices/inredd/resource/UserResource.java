@@ -1,12 +1,9 @@
 package api.webservices.inredd.resource;
 
 import java.util.List;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.Collections;
-import java.text.Normalizer;
-
 import javax.validation.Valid;
 
 import api.webservices.inredd.domain.model.dto.UserDTO;
@@ -23,7 +20,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import api.webservices.inredd.domain.model.User;
-import api.webservices.inredd.domain.model.dto.UserDTO;
 import api.webservices.inredd.domain.model.dto.CreateUserDTO;
 import api.webservices.inredd.domain.model.dto.UserResponseDTO;
 import api.webservices.inredd.repository.UserRepository;

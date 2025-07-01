@@ -1,7 +1,5 @@
 package api.webservices.inredd.domain.model.dto;
 
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
