@@ -6,7 +6,6 @@ DROP TABLE IF EXISTS anamnesis_forms CASCADE;
 DROP TABLE IF EXISTS visits CASCADE;
 DROP TABLE IF EXISTS patients CASCADE;
 DROP TYPE IF EXISTS sex_enum;
-DROP TYPE IF EXISTS respondent_enum;
 
 -- #############################################################################
 -- ## SEÇÃO 1: DEFINIÇÃO DA ESTRUTURA DO BANCO DE DADOS (DDL)                 ##
@@ -14,7 +13,6 @@ DROP TYPE IF EXISTS respondent_enum;
 
 -- Definição dos tipos de dados personalizados (ENUMs)
 CREATE TYPE sex_enum AS ENUM ('Masculino', 'Feminino', 'Outro');
-CREATE TYPE respondent_enum AS ENUM ('Própria pessoa', 'Pais', 'Responsável');
 
 -- Tabela 1: PATIENTS - Armazena dados demográficos básicos.
 CREATE TABLE patients (
@@ -44,7 +42,6 @@ CREATE TABLE anamnesis_forms (
     id SERIAL PRIMARY KEY,
     -- Relação 1-para-1 com a visita. Cada visita tem no máximo um formulário de anamnese.
     visit_id INT NOT NULL UNIQUE REFERENCES visits(id) ON DELETE CASCADE,
-    respondent respondent_enum,
     weight_kg DECIMAL(5, 2),
     height_m DECIMAL(3, 2),
     systolic_bp INT,
@@ -132,9 +129,9 @@ INSERT INTO visits (patient_id, visit_date, main_complaint)
 VALUES 
     (1, '2024-05-20', 'Dor no dente do siso inferior direito.');
 
-INSERT INTO anamnesis_forms (visit_id, respondent, weight_kg, height_m, systolic_bp, diastolic_bp, detailed_medical_history, psychosocial_history) 
+INSERT INTO anamnesis_forms (visit_id, weight_kg, height_m, systolic_bp, diastolic_bp, detailed_medical_history, psychosocial_history) 
 VALUES 
-    (1, 'Própria pessoa', 85.5, 1.78, 120, 80, 'Nenhum problema de saúde significativo relatado.', 'Não fumante, consome álcool socialmente aos finais de semana.');
+    (1, 85.5, 1.78, 120, 80, 'Nenhum problema de saúde significativo relatado.', 'Não fumante, consome álcool socialmente aos finais de semana.');
 
 INSERT INTO anamnesis_conditions (anamnesis_id, condition_id) 
 VALUES 
@@ -155,9 +152,9 @@ INSERT INTO visits (patient_id, visit_date, main_complaint)
 VALUES 
     (1, '2024-06-10', 'Consulta de rotina e limpeza.');
 
-INSERT INTO anamnesis_forms (visit_id, respondent, systolic_bp, diastolic_bp, additional_info_for_dentist) 
+INSERT INTO anamnesis_forms (visit_id, systolic_bp, diastolic_bp, additional_info_for_dentist) 
 VALUES 
-    (2, 'Própria pessoa', 125, 85, 'A dor no siso melhorou após o medicamento prescrito.');
+    (2, 125, 85, 'A dor no siso melhorou após o medicamento prescrito.');
 
 INSERT INTO specific_health_questions (anamnesis_id, has_cardiovascular_issue, has_rheumatic_fever, has_joint_pain, has_excessive_bleeding, had_local_anesthesia, had_anesthesia_reaction, uses_substances) 
 VALUES 
@@ -178,9 +175,9 @@ INSERT INTO visits (patient_id, visit_date, main_complaint)
 VALUES 
     (2, '2025-01-15', 'Gostaria de fazer clareamento dental.');
 
-INSERT INTO anamnesis_forms (visit_id, respondent, weight_kg, height_m, is_pregnant, previous_dental_history) 
+INSERT INTO anamnesis_forms (visit_id, weight_kg, height_m, is_pregnant, previous_dental_history) 
 VALUES 
-    (3, 'Própria pessoa', 65.0, 1.65, FALSE, 'Já usei aparelho ortodôntico por 3 anos, removido em 2015.');
+    (3, 65.0, 1.65, FALSE, 'Já usei aparelho ortodôntico por 3 anos, removido em 2015.');
 
 INSERT INTO anamnesis_conditions (anamnesis_id, condition_id) 
 VALUES 

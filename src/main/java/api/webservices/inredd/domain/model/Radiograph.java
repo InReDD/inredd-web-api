@@ -3,7 +3,6 @@ package api.webservices.inredd.domain.model;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -28,9 +27,9 @@ public class Radiograph {
     @Column(columnDefinition = "TEXT")
     private String notes;
 
-    @Type(type = "org.hibernate.type.StringNVarchartype") // For older hibernate versions, or use a converter
-    @Column(name = "viewer_context_json", columnDefinition = "jsonb")
-    private String viewerContextJson;
+    // @Type(type = "org.hibernate.type.StringNVarchartype") // For older hibernate versions, or use a converter
+    // @Column(name = "viewer_context_json", columnDefinition = "jsonb")
+    // private String viewerContextJson;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -53,8 +52,8 @@ public class Radiograph {
     public void setFilePathOrUrl(String filePathOrUrl) { this.filePathOrUrl = filePathOrUrl; }
     public String getNotes() { return notes; }
     public void setNotes(String notes) { this.notes = notes; }
-    public String getViewerContextJson() { return viewerContextJson; }
-    public void setViewerContextJson(String viewerContextJson) { this.viewerContextJson = viewerContextJson; }
+    // public String getViewerContextJson() { return viewerContextJson; }
+    // public void setViewerContextJson(String viewerContextJson) { this.viewerContextJson = viewerContextJson; }
     public OffsetDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(OffsetDateTime createdAt) { this.createdAt = createdAt; }
     public Visit getVisit() { return visit; }

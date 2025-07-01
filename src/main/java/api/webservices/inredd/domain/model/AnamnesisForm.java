@@ -20,9 +20,6 @@ public class AnamnesisForm {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
-    private Respondent respondent;
-
     @Column(name = "weight_kg")
     private BigDecimal weightKg;
 
@@ -87,8 +84,6 @@ public class AnamnesisForm {
     //<editor-fold desc="Getters and Setters">
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
-    public Respondent getRespondent() { return respondent; }
-    public void setRespondent(Respondent respondent) { this.respondent = respondent; }
     public BigDecimal getWeightKg() { return weightKg; }
     public void setWeightKg(BigDecimal weightKg) { this.weightKg = weightKg; }
     public BigDecimal getHeightM() { return heightM; }
