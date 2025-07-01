@@ -1,10 +1,3 @@
--- #############################################################################
--- ##                                                                         ##
--- ##     ESQUEMA E DADOS DE EXEMPLO COM TABELA CENTRAL DE VISITAS (v3)         ##
--- ##                                                                         ##
--- #############################################################################
-
--- Remove tabelas existentes na ordem correta para evitar erros de dependência.
 DROP TABLE IF EXISTS radiographs CASCADE;
 DROP TABLE IF EXISTS specific_health_questions CASCADE;
 DROP TABLE IF EXISTS anamnesis_conditions CASCADE;
@@ -12,8 +5,6 @@ DROP TABLE IF EXISTS conditions_lookup CASCADE;
 DROP TABLE IF EXISTS anamnesis_forms CASCADE;
 DROP TABLE IF EXISTS visits CASCADE;
 DROP TABLE IF EXISTS patients CASCADE;
-
--- Remove tipos ENUM existentes para uma recriação limpa.
 DROP TYPE IF EXISTS sex_enum;
 DROP TYPE IF EXISTS respondent_enum;
 
