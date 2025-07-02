@@ -1,7 +1,7 @@
 package api.webservices.inredd.domain.model.dto;
 
 import api.webservices.inredd.domain.model.Patient;
-import api.webservices.inredd.domain.model.Sex;
+import api.webservices.inredd.domain.model.SexEnum;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -13,7 +13,7 @@ public class PatientDTO {
     private Long id;
     private String fullName;
     private LocalDate dateOfBirth;
-    private Sex sex;
+    private SexEnum sex;
     private String address;
     private OffsetDateTime createdAt;
     private Set<VisitDTO> visits;
@@ -57,11 +57,11 @@ public class PatientDTO {
         this.dateOfBirth = dateOfBirth;
     }
 
-    public Sex getSex() {
+    public SexEnum getSex() {
         return sex;
     }
 
-    public void setSex(Sex sex) {
+    public void setSex(SexEnum sex) {
         this.sex = sex;
     }
 

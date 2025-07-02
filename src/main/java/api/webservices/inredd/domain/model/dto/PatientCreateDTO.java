@@ -1,13 +1,13 @@
 package api.webservices.inredd.domain.model.dto;
 
-import api.webservices.inredd.domain.model.Sex;
+import api.webservices.inredd.domain.model.SexEnum;
 import java.time.LocalDate;
 
 public class PatientCreateDTO {
 
     private String fullName;
     private LocalDate dateOfBirth;
-    private Sex sex;
+    private SexEnum sex;
     private String address;
 
     // No-argument constructor
@@ -31,11 +31,11 @@ public class PatientCreateDTO {
         this.dateOfBirth = dateOfBirth;
     }
 
-    public Sex getSex() {
+    public SexEnum getSex() {
         return sex;
     }
 
-    public void setSex(Sex sex) {
+    public void setSex(SexEnum sex) {
         this.sex = sex;
     }
 

@@ -29,8 +29,8 @@ public class Patient {
     @Column(name = "date_of_birth", nullable = false)
     private LocalDate dateOfBirth;
 
-    @Enumerated(EnumType.STRING)
-    private Sex sex;
+    @Column(columnDefinition = "sex_enum")
+    private SexEnum sex; 
 
     @Column(columnDefinition = "TEXT")
     private String address;
@@ -71,11 +71,11 @@ public class Patient {
         this.dateOfBirth = dateOfBirth;
     }
 
-    public Sex getSex() {
+    public SexEnum getSex() {
         return sex;
     }
 
-    public void setSex(Sex sex) {
+    public void setSex(SexEnum sex) {
         this.sex = sex;
     }
 

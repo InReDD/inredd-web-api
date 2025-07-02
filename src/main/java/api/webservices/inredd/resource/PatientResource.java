@@ -46,7 +46,6 @@ public class PatientResource {
         // Service layer accepts the DTO and returns the created entity
         Patient createdPatient = patientService.createPatient(patientCreateDTO);
 
-        // We convert the entity to our standard response DTO
         PatientDTO responseDTO = new PatientDTO(createdPatient);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -57,25 +56,14 @@ public class PatientResource {
         return ResponseEntity.created(location).body(responseDTO);
     }
 
-    /**
-     * PUT /api/v1/patients/{id} : Update an existing patient.
-     * The request body must now match the PatientCreateDTO structure.
-     */
     @PutMapping("/{id}")
-    public ResponseEntity<PatientDTO> updatePatient(@PathVariable Long id,
-            @RequestBody PatientCreateDTO patientUpdateDTO) {
-        // Service layer accepts the DTO and returns the updated entity
+    public ResponseEntity<PatientDTO> updatePatient(@PathVariable Long id, 
+    @RequestBody PatientCreateDTO patientUpdateDTO) {
         Patient updatedPatient = patientService.updatePatient(id, patientUpdateDTO);
-
-        // We convert the entity to our standard response DTO
         PatientDTO responseDTO = new PatientDTO(updatedPatient);
-
         return ResponseEntity.ok(responseDTO);
     }
 
-    /**
-     * DELETE /api/v1/patients/{id} : Delete a patient by their ID.
-     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePatient(@PathVariable Long id) {
         patientService.deletePatient(id);
@@ -92,7 +80,6 @@ public class PatientResource {
         @Validated @RequestBody VisitCreateDTO visitCreateDTO) {
         VisitDTO newVisit = visitService.createVisit(patientId, visitCreateDTO);
 
-        // Build the location URI for the newly created resource
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(newVisit.getId())

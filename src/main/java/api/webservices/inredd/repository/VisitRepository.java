@@ -19,7 +19,7 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
     @Query("SELECT v FROM Visit v " +
            "LEFT JOIN FETCH v.anamnesisForm af " +
            "LEFT JOIN FETCH af.specificHealthQuestions " +
-           "LEFT JOIN FETCH af.conditions " + // Assuming a 'conditions' Set in AnamnesisForm
+           "LEFT JOIN FETCH af.conditions " + 
            "LEFT JOIN FETCH v.radiographs " +
            "WHERE v.id = :id")
     Optional<Visit> findByIdWithDetails(@Param("id") Long id);
