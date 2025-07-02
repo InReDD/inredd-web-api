@@ -14,11 +14,9 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
 
     /**
      * Finds a single patient by their ID and fetches all their associated data graph
-     * (visits, anamnesis forms, specific health questions, etc.) in one go.
-     * Using LEFT JOIN FETCH ensures that patients without visits are still returned.
      *
      * @param id The ID of the patient.
-     * @return An Optional containing the Patient with all details, if found.
+     * @return
      */
     @Query("SELECT p FROM Patient p " +
            "LEFT JOIN FETCH p.visits v " +
@@ -30,8 +28,6 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
 
     /**
      * Finds all patients and fetches their complete associated data graph.
-     * WARNING: This can be memory-intensive if you have many patients with extensive histories.
-     * Use with caution in production environments.
      *
      * @return A list of all Patients with their details.
      */

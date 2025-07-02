@@ -11,10 +11,8 @@ import java.time.LocalDate;
 public class VisitSpecification {
 
     public static Specification<Visit> createSpecification(VisitSearchCriteriaDTO criteria) {
-        // Start with a specification that does nothing (will be built upon)
         Specification<Visit> spec = Specification.where(null);
 
-        // --- Standard Filters ---
         if (criteria.getPatientName() != null && !criteria.getPatientName().isEmpty()) {
             spec = spec.and(patientNameContains(criteria.getPatientName()));
         }
@@ -28,7 +26,6 @@ public class VisitSpecification {
             spec = spec.and(mainComplaintContains(criteria.getMainComplaintContains()));
         }
 
-        // --- Dynamically add all health condition filters ---
         if (criteria.getHasCardiovascularIssue() != null) {
             spec = spec.and(hasHealthCondition("hasCardiovascularIssue", criteria.getHasCardiovascularIssue()));
         }
@@ -117,10 +114,6 @@ public class VisitSpecification {
         return spec;
     }
 
-    /**
-     * A utility to find an existing join or create a new one if it doesn't exist.
-     * This prevents duplicate joins and resolves potential NullPointerExceptions.
-     */
     @SuppressWarnings("unchecked")
     private static <FROM, TO> Join<FROM, TO> getOrCreateJoin(From<FROM, ?> from, String attribute, JoinType joinType) {
         for (Join<?, ?> j : from.getJoins()) {

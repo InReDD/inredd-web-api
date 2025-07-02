@@ -34,9 +34,10 @@ public class VisitService {
 
     private final VisitRepository visitRepository;
     private final PatientRepository patientRepository;
-    private final EntityManager entityManager; 
+    private final EntityManager entityManager;
 
-    public VisitService(VisitRepository visitRepository, PatientRepository patientRepository, EntityManager entityManager) {
+    public VisitService(VisitRepository visitRepository, PatientRepository patientRepository,
+            EntityManager entityManager) {
         this.visitRepository = visitRepository;
         this.patientRepository = patientRepository;
         this.entityManager = entityManager;
@@ -61,7 +62,8 @@ public class VisitService {
     @Transactional
     public VisitDTO createVisit(Long patientId, VisitCreateDTO visitCreateDTO) {
         Patient patient = patientRepository.findById(patientId)
-                .orElseThrow(() -> new ResourceNotFoundException("Cannot create visit: Patient not found with id: " + patientId));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Cannot create visit: Patient not found with id: " + patientId));
 
         Visit visit = new Visit();
         visit.setPatient(patient);
@@ -71,11 +73,11 @@ public class VisitService {
         Visit savedVisit = visitRepository.save(visit);
         return new VisitDTO(savedVisit);
     }
-    
+
     @Transactional
     public VisitDTO updateVisit(Long id, VisitUpdateDTO visitUpdateDTO) {
         Visit existingVisit = visitRepository.findByIdWithDetails(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Visit not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Visit not found with id: " + id));
 
         existingVisit.setVisitDate(visitUpdateDTO.getVisitDate());
         existingVisit.setMainComplaint(visitUpdateDTO.getMainComplaint());
@@ -83,18 +85,61 @@ public class VisitService {
         if (visitUpdateDTO.getAnamnesisForm() != null && existingVisit.getAnamnesisForm() != null) {
             var formDTO = visitUpdateDTO.getAnamnesisForm();
             var formEntity = existingVisit.getAnamnesisForm();
-            
+
             formEntity.setWeightKg(formDTO.getWeightKg());
             formEntity.setHeightM(formDTO.getHeightM());
+            formEntity.setSystolicBp(formDTO.getSystolicBp());
+            formEntity.setDiastolicBp(formDTO.getDiastolicBp());
+            formEntity.setPregnant(formDTO.getIsPregnant());
+            formEntity.setHadRecentFever(formDTO.getHadRecentFever());
+            formEntity.setUnderMedicalTreatment(formDTO.getIsUnderMedicalTreatment());
+            formEntity.setTakingMedication(formDTO.getIsTakingMedication());
+            formEntity.setDetailedMedicalHistory(formDTO.getDetailedMedicalHistory());
+            formEntity.setFamilyHealthHistory(formDTO.getFamilyHealthHistory());
+            formEntity.setPreviousDentalHistory(formDTO.getPreviousDentalHistory());
+            formEntity.setPsychosocialHistory(formDTO.getPsychosocialHistory());
+            formEntity.setAdditionalInfoForDentist(formDTO.getAdditionalInfoForDentist());
+            formEntity.setSpecialNeedsDuringTreatment(formDTO.getSpecialNeedsDuringTreatment());
 
             if (formDTO.getSpecificHealthQuestions() != null && formEntity.getSpecificHealthQuestions() != null) {
                 var questionsDTO = formDTO.getSpecificHealthQuestions();
                 var questionsEntity = formEntity.getSpecificHealthQuestions();
+
                 questionsEntity.setHasCardiovascularIssue(questionsDTO.getHasCardiovascularIssue());
+                questionsEntity.setHasRheumaticFever(questionsDTO.getHasRheumaticFever());
+                questionsEntity.setHasJointPain(questionsDTO.getHasJointPain());
+                questionsEntity.setHasChestPain(questionsDTO.getHasChestPain());
+                questionsEntity.setHasFatigueOnExertion(questionsDTO.getHasFatigueOnExertion());
+                questionsEntity.setHasAnkleEdema(questionsDTO.getHasAnkleEdema());
+                questionsEntity.setHasRecentWeightLoss(questionsDTO.getHasRecentWeightLoss());
+                questionsEntity.setHadHepatitis(questionsDTO.getHadHepatitis());
+                questionsEntity.setHasKidneyProblems(questionsDTO.getHasKidneyProblems());
+                questionsEntity.setHasGastricProblems(questionsDTO.getHasGastricProblems());
+                questionsEntity.setHasDizzinessFainting(questionsDTO.getHasDizzinessFainting());
+                questionsEntity.setHasEpilepsy(questionsDTO.getHasEpilepsy());
+                questionsEntity.setWasHospitalized(questionsDTO.getWasHospitalized());
+                questionsEntity.setHasPersistentCough(questionsDTO.getHasPersistentCough());
+                questionsEntity.setHadLocalAnesthesia(questionsDTO.getHadLocalAnesthesia());
+                questionsEntity.setHadAnesthesiaReaction(questionsDTO.getHadAnesthesiaReaction());
+                questionsEntity.setHadGeneralAnesthesia(questionsDTO.getHadGeneralAnesthesia());
+                questionsEntity.setHasExcessiveBleeding(questionsDTO.getHasExcessiveBleeding());
+                questionsEntity.setBleedingControlMethod(questionsDTO.getBleedingControlMethod());
+                questionsEntity.setHadDentalTreatmentComplication(questionsDTO.getHadDentalTreatmentComplication());
+                questionsEntity.setTookPenicillin(questionsDTO.getTookPenicillin());
+                questionsEntity.setTookCorticosteroidLast12m(questionsDTO.getTookCorticosteroidLast12m());
+                questionsEntity.setHasAllergies(questionsDTO.getHasAllergies());
+                questionsEntity.setHadMedicationRelatedProblem(questionsDTO.getHadMedicationRelatedProblem());
+                questionsEntity.setUsesSubstances(questionsDTO.getUsesSubstances());
+                questionsEntity.setHadOralWhiteSpots(questionsDTO.getHadOralWhiteSpots());
+                questionsEntity.setWhiteSpotsTreatment(questionsDTO.getWhiteSpotsTreatment());
+                questionsEntity.setHasRecurrentAphthousUlcers(questionsDTO.getHasRecurrentAphthousUlcers());
+                questionsEntity.setHadHivTest(questionsDTO.getHadHivTest());
+                questionsEntity.setHasInsensitiveBodyArea(questionsDTO.getHasInsensitiveBodyArea());
             }
         }
-        
+
         Visit updatedVisit = visitRepository.save(existingVisit);
+
         return new VisitDTO(updatedVisit);
     }
 
@@ -108,24 +153,18 @@ public class VisitService {
 
     @Transactional(readOnly = true)
     public AdvancedSearchResultDTO searchVisits(VisitSearchCriteriaDTO criteria) {
-        // 1. Build the dynamic query specification from the criteria
         Specification<Visit> spec = VisitSpecification.createSpecification(criteria);
 
-        // 2. Execute a custom query that combines the specification with fetch joins
         List<Visit> filteredVisits = findWithDetails(spec);
 
-        // 3. Map the entity results to DTOs for the response
         List<VisitDTO> visitResultsDTO = filteredVisits.stream()
                 .map(VisitDTO::new)
                 .collect(Collectors.toList());
 
-        // 4. Calculate statistics based on the filtered results
         Map<String, Object> stats = calculateStats(filteredVisits);
 
-        // 5. Return the combined results and stats
         return new AdvancedSearchResultDTO(visitResultsDTO, stats);
     }
-
 
     private List<Visit> findWithDetails(Specification<Visit> spec) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
@@ -135,13 +174,11 @@ public class VisitService {
         root.fetch("patient", JoinType.LEFT);
         root.fetch("anamnesisForm", JoinType.LEFT);
 
-        // Apply the dynamic filters from the specification
         if (spec != null) {
             Predicate predicate = spec.toPredicate(root, query, builder);
             query.where(predicate);
         }
 
-        // Use distinct to prevent duplicate Visit objects from multiple 'fetch' joins
         query.select(root).distinct(true);
 
         return entityManager.createQuery(query).getResultList();
@@ -151,28 +188,26 @@ public class VisitService {
      * A helper method to calculate various statistics from a list of visits.
      *
      * @param visits The list of visits to analyze.
-     * @return A map where keys are stat names and values are the calculated results.
+     * @return A map where keys are stat names and values are the calculated
+     *         results.
      */
     private Map<String, Object> calculateStats(List<Visit> visits) {
         Map<String, Object> stats = new HashMap<>();
 
-        // Example Stat: Count visits by patient sex
         Map<SexEnum, Long> visitsBySex = visits.stream()
                 .filter(visit -> visit.getPatient() != null && visit.getPatient().getSex() != null)
                 .collect(Collectors.groupingBy(
                         visit -> visit.getPatient().getSex(),
-                        Collectors.counting()
-                ));
+                        Collectors.counting()));
         stats.put("visitsBySex", visitsBySex);
-        
-        // Example Stat: Count of visits with cardiovascular issues
-        long cardiovascularCount = visits.stream()
-            .filter(v -> v.getAnamnesisForm() != null && 
-                         v.getAnamnesisForm().getSpecificHealthQuestions() != null &&
-                         Boolean.TRUE.equals(v.getAnamnesisForm().getSpecificHealthQuestions().getHasCardiovascularIssue()))
-            .count();
-        stats.put("cardiovascularIssueCount", cardiovascularCount);
 
+        long cardiovascularCount = visits.stream()
+                .filter(v -> v.getAnamnesisForm() != null &&
+                        v.getAnamnesisForm().getSpecificHealthQuestions() != null &&
+                        Boolean.TRUE
+                                .equals(v.getAnamnesisForm().getSpecificHealthQuestions().getHasCardiovascularIssue()))
+                .count();
+        stats.put("cardiovascularIssueCount", cardiovascularCount);
 
         return stats;
     }

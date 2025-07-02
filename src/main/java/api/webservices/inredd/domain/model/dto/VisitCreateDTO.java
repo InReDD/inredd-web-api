@@ -20,8 +20,6 @@ public class VisitCreateDTO {
     @NotBlank(message = "Main complaint cannot be empty.")
     private String mainComplaint;
 
-    // --- Getters and Setters ---
-
     public LocalDate getVisitDate() {
         return visitDate;
     }
