@@ -25,7 +25,8 @@ public class CorsFilter implements Filter {
         "http://localhost:3001",
         "http://localhost:3006",
         "https://dev.inredd.com.br",
-        "https://api.inredd.com.br"
+        "https://api.inredd.com.br",
+        "http://localhost:3002"
     );
 
     @Override

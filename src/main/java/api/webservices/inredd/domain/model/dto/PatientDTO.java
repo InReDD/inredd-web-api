@@ -2,34 +2,37 @@ package api.webservices.inredd.domain.model.dto;
 
 import api.webservices.inredd.domain.model.Patient;
 import api.webservices.inredd.domain.model.Sex;
-
+import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.LocalDate;
-import java.util.List;
+import java.time.OffsetDateTime;
+import java.util.Set; // Use Set to match the entity
 import java.util.stream.Collectors;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PatientDTO {
-
     private Long id;
     private String fullName;
     private LocalDate dateOfBirth;
     private Sex sex;
-    private List<VisitSummaryDTO> visits;
+    private String address;
+    private OffsetDateTime createdAt;
+    private Set<VisitDTO> visits;
 
-    public PatientDTO() {
+    public PatientDTO(Patient entity) {
+        this.id = entity.getId();
+        this.fullName = entity.getFullName();
+        this.dateOfBirth = entity.getDateOfBirth();
+        this.sex = entity.getSex();
+        this.address = entity.getAddress();
+        this.createdAt = entity.getCreatedAt();
+
+        if (entity.getVisits() != null && !entity.getVisits().isEmpty()) {
+            this.visits = entity.getVisits().stream()
+                    .map(VisitDTO::new)
+                    .collect(Collectors.toSet());
+        }
     }
 
-    public PatientDTO(Patient patient) {
-        this.id = patient.getId();
-        this.fullName = patient.getFullName();
-        this.dateOfBirth = patient.getDateOfBirth();
-        this.sex = patient.getSex();
-        
-        this.visits = patient.getVisits().stream()
-                .map(VisitSummaryDTO::new)
-                .collect(Collectors.toList());
-    }
-
-    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -62,11 +65,27 @@ public class PatientDTO {
         this.sex = sex;
     }
 
-    public List<VisitSummaryDTO> getVisits() {
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Set<VisitDTO> getVisits() {
         return visits;
     }
 
-    public void setVisits(List<VisitSummaryDTO> visits) {
+    public void setVisits(Set<VisitDTO> visits) {
         this.visits = visits;
     }
 }

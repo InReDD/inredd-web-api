@@ -21,15 +21,14 @@ public class PatientResource {
         this.patientService = patientService;
     }
 
-    // --- GET endpoints remain the same ---
     @GetMapping
     public ResponseEntity<List<PatientDTO>> getAllPatients() {
-        return ResponseEntity.ok(patientService.getAllPatients());
+        return ResponseEntity.ok(patientService.getAllPatientsWithDetails());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<PatientDTO> getPatientById(@PathVariable Long id) {
-        return ResponseEntity.ok(patientService.getPatientById(id));
+        return ResponseEntity.ok(patientService.getPatientWithDetailsById(id));
     }
 
     /**
