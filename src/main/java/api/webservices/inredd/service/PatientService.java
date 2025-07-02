@@ -8,6 +8,7 @@ import api.webservices.inredd.domain.model.dto.PatientCreateDTO;
 import api.webservices.inredd.domain.model.dto.PatientDTO;
 import api.webservices.inredd.domain.model.dto.VisitDTO;
 import api.webservices.inredd.service.exception.ResourceNotFoundException;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
