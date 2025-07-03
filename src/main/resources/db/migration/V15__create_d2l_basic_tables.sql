@@ -7,14 +7,8 @@ DROP TABLE IF EXISTS visits CASCADE;
 DROP TABLE IF EXISTS patients CASCADE;
 DROP TYPE IF EXISTS sex_enum;
 
--- #############################################################################
--- ## SEÇÃO 1: DEFINIÇÃO DA ESTRUTURA DO BANCO DE DADOS (DDL)                 ##
--- #############################################################################
+CREATE TYPE sex_enum AS ENUM ('Male', 'Female', 'Other');
 
--- Definição dos tipos de dados personalizados (ENUMs)
-CREATE TYPE sex_enum AS ENUM ('Masculino', 'Feminino', 'Outro');
-
--- Tabela 1: PATIENTS - Armazena dados demográficos básicos.
 CREATE TABLE patients (
     id SERIAL PRIMARY KEY,
     full_name VARCHAR(255) NOT NULL,
@@ -24,9 +18,7 @@ CREATE TABLE patients (
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
-COMMENT ON TABLE patients IS 'Tabela principal para armazenar dados demográficos dos pacientes.';
 
--- Tabela 2: VISITS - Nova tabela central para cada encontro do paciente.
 CREATE TABLE visits (
     id SERIAL PRIMARY KEY,
     patient_id INT NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
@@ -34,13 +26,9 @@ CREATE TABLE visits (
     main_complaint TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
-COMMENT ON TABLE visits IS 'Tabela central que representa cada visita ou encontro de um paciente.';
-COMMENT ON COLUMN visits.main_complaint IS 'Queixa principal ou motivo da visita.';
 
--- Tabela 3: ANAMNESIS_FORMS - Questionário detalhado, agora ligado a uma visita.
 CREATE TABLE anamnesis_forms (
     id SERIAL PRIMARY KEY,
-    -- Relação 1-para-1 com a visita. Cada visita tem no máximo um formulário de anamnese.
     visit_id INT NOT NULL UNIQUE REFERENCES visits(id) ON DELETE CASCADE,
     weight_kg DECIMAL(5, 2),
     height_m DECIMAL(3, 2),
@@ -58,13 +46,9 @@ CREATE TABLE anamnesis_forms (
     special_needs_during_treatment TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
-COMMENT ON TABLE anamnesis_forms IS 'Armazena o questionário de anamnese detalhado para uma visita específica.';
-COMMENT ON COLUMN anamnesis_forms.visit_id IS 'Referência à visita correspondente (FK, UNIQUE).';
 
--- Tabela 4: RADIOGRAPHS - Exames radiográficos, agora ligados a uma visita.
 CREATE TABLE radiographs (
     id SERIAL PRIMARY KEY,
-    -- Uma visita pode ter múltiplos exames radiográficos.
     visit_id INT REFERENCES visits(id) ON DELETE SET NULL,
     patient_id INT NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
     radiograph_date DATE NOT NULL,
@@ -73,34 +57,19 @@ CREATE TABLE radiographs (
     notes TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
-COMMENT ON TABLE radiographs IS 'Armazena informações sobre as radiografias, associadas a uma visita.';
-COMMENT ON COLUMN radiographs.visit_id IS 'Referência à visita em que a radiografia foi solicitada/analisada.';
 
--- Tabela 5: CONDITIONS_LOOKUP - Tabela de consulta para condições médicas.
 CREATE TABLE conditions_lookup (
     id SERIAL PRIMARY KEY,
     condition_name VARCHAR(255) UNIQUE NOT NULL,
     category VARCHAR(100)
 );
-INSERT INTO conditions_lookup (condition_name, category) VALUES
-    ('Alergia a Medicamentos', 'Alergia'), ('Artrite', 'Reumatológica'), ('Câncer', 'Oncologia'),
-    ('Epilepsia', 'Neurológica'), ('Desidratação', 'Geral'), ('Desmaios', 'Neurológica'),
-    ('Diabetes', 'Endócrina'), ('Difteria', 'Infecciosa'), ('Febre Reumática', 'Cardiovascular'),
-    ('Hemorragia', 'Hematológica'), ('Hepatite', 'Infecciosa'), ('Herpes', 'Infecciosa'),
-    ('Hipertensão', 'Cardiovascular'), ('Infecções', 'Infecciosa'), ('Infecções Sexualmente Transmissíveis', 'Infecciosa'),
-    ('Mau-hálito', 'Odontológica'), ('Osteoporose', 'Óssea'), ('Problemas Cardíacos', 'Cardiovascular'),
-    ('Problemas Neurológicos', 'Neurológica'), ('Problemas de Pele', 'Dermatológica'), ('Problemas Renais', 'Renal'),
-    ('Problemas Respiratórios', 'Respiratória'), ('Sarampo', 'Infecciosa'), ('Transfusão de Sangue', 'Histórico'),
-    ('Transplante de Órgãos', 'Histórico');
 
--- Tabela 6: ANAMNESIS_CONDITIONS - Tabela de junção para condições de um formulário.
 CREATE TABLE anamnesis_conditions (
     anamnesis_id INT NOT NULL REFERENCES anamnesis_forms(id) ON DELETE CASCADE,
     condition_id INT NOT NULL REFERENCES conditions_lookup(id) ON DELETE CASCADE,
     PRIMARY KEY (anamnesis_id, condition_id)
 );
 
--- Tabela 7: SPECIFIC_HEALTH_QUESTIONS - Respostas Sim/Não para um formulário.
 CREATE TABLE specific_health_questions (
     anamnesis_id INT PRIMARY KEY REFERENCES anamnesis_forms(id) ON DELETE CASCADE,
     has_cardiovascular_issue BOOLEAN, has_rheumatic_fever BOOLEAN, has_joint_pain BOOLEAN,
@@ -115,79 +84,66 @@ CREATE TABLE specific_health_questions (
     has_recurrent_aphthous_ulcers BOOLEAN, had_hiv_test BOOLEAN, has_insensitive_body_area BOOLEAN
 );
 
--- #############################################################################
--- ## SEÇÃO 2: INSERÇÃO DE DADOS DE EXEMPLO (DML) - FORMATO MULTILINHA        ##
--- #############################################################################
+INSERT INTO conditions_lookup (condition_name, category) VALUES
+    ('Drug Allergy', 'Allergy'), ('Arthritis', 'Rheumatologic'), ('Cancer', 'Oncology'),
+    ('Epilepsy', 'Neurologic'), ('Dehydration', 'General'), ('Fainting', 'Neurologic'),
+    ('Diabetes', 'Endocrine'), ('Diphtheria', 'Infectious'), ('Rheumatic Fever', 'Cardiovascular'),
+    ('Hemorrhage', 'Hematologic'), ('Hepatitis', 'Infectious'), ('Herpes', 'Infectious'),
+    ('Hypertension', 'Cardiovascular'), ('Infections', 'Infectious'), ('Sexually Transmitted Infections', 'Infectious'),
+    ('Bad Breath', 'Dental'), ('Osteoporosis', 'Bone'), ('Heart Problems', 'Cardiovascular'),
+    ('Neurological Problems', 'Neurologic'), ('Skin Problems', 'Dermatologic'), ('Kidney Problems', 'Renal'),
+    ('Respiratory Problems', 'Respiratory'), ('Measles', 'Infectious'), ('Blood Transfusion', 'History'),
+    ('Organ Transplant', 'History');
 
--- PACIENTE 1: João da Silva
 INSERT INTO patients (full_name, date_of_birth, sex, address) 
 VALUES 
-    ('João da Silva', '1985-04-15', 'Masculino', 'Rua das Flores, 123, Ribeirão Preto, SP');
+    ('John Smith', '1985-04-15', 'Male', '123 Flower St, Ribeirao Preto, SP'),
+    ('Mary Johnson', '1992-11-30', 'Female', '789 Main Ave, Sertaozinho, SP'),
+    ('Carlos Pereira', '1978-09-22', 'Male', '456 Oak Blvd, Cravinhos, SP'),
+    ('Ana Beatriz Costa', '1999-03-12', 'Female', '101 Pine Way, Jardinopolis, SP');
 
--- VISITA 1 PARA João da Silva (Paciente ID: 1, Visita ID: 1, Anamnese ID: 1)
 INSERT INTO visits (patient_id, visit_date, main_complaint) 
 VALUES 
-    (1, '2024-05-20', 'Dor no dente do siso inferior direito.');
+    (1, '2024-05-20', 'Pain in lower right wisdom tooth.'),
+    (1, '2025-06-10', 'Routine check-up and cleaning.'),
+    (2, '2025-01-15', 'Interested in teeth whitening.'),
+    (3, '2025-07-01', 'Broken molar and sensitivity to cold.'),
+    (2, '2025-08-22', 'Follow-up on teeth whitening and general sensitivity.'),
+    (4, '2025-09-05', 'Consultation for orthodontic treatment options.');
 
-INSERT INTO anamnesis_forms (visit_id, weight_kg, height_m, systolic_bp, diastolic_bp, detailed_medical_history, psychosocial_history) 
+INSERT INTO anamnesis_forms (visit_id, weight_kg, height_m, systolic_bp, diastolic_bp, detailed_medical_history, psychosocial_history, is_taking_medication, is_pregnant, previous_dental_history, family_health_history) 
 VALUES 
-    (1, 85.5, 1.78, 120, 80, 'Nenhum problema de saúde significativo relatado.', 'Não fumante, consome álcool socialmente aos finais de semana.');
+    (1, 85.5, 1.78, 120, 80, 'No significant health issues reported.', 'Non-smoker, drinks alcohol socially on weekends.', FALSE, NULL, NULL, NULL),
+    (2, 86.0, 1.78, 125, 85, NULL, 'Reports stress from new job.', FALSE, NULL, 'Previous wisdom tooth pain resolved.', NULL),
+    (3, 65.0, 1.65, 110, 70, NULL, NULL, FALSE, FALSE, 'Used orthodontic braces for 3 years, removed in 2015.', NULL),
+    (4, 92.0, 1.85, 135, 88, 'Type 2 Diabetes, controlled with Metformin.', NULL, TRUE, NULL, 'Multiple fillings, occasional gum bleeding.', 'Father had heart problems; mother has osteoporosis.'),
+    (5, 65.5, 1.65, 112, 72, 'Reports sensitivity has decreased but still present in upper left quadrant.', NULL, FALSE, FALSE, NULL, 'Mother has history of arthritis.'),
+    (6, 58.0, 1.62, 105, 65, 'Asthma, uses inhaler as needed.', 'University student, reports high caffeine intake.', TRUE, FALSE, 'No major dental work.', 'No known hereditary conditions.');
+
+INSERT INTO specific_health_questions (anamnesis_id, has_cardiovascular_issue, has_rheumatic_fever, has_joint_pain, has_excessive_bleeding, had_local_anesthesia, had_anesthesia_reaction, uses_substances, has_allergies, had_medication_related_problem, has_kidney_problems, was_hospitalized, took_penicillin, took_corticosteroid_last_12m, has_persistent_cough) 
+VALUES 
+    (1, TRUE, FALSE, TRUE, FALSE, TRUE, FALSE, TRUE, TRUE, FALSE, FALSE, FALSE, TRUE, FALSE, FALSE),
+    (2, TRUE, FALSE, FALSE, FALSE, TRUE, FALSE, TRUE, TRUE, FALSE, FALSE, FALSE, TRUE, FALSE, FALSE),
+    (3, FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, FALSE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE),
+    (4, TRUE, FALSE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, TRUE, TRUE, FALSE),
+    (5, FALSE, FALSE, TRUE, FALSE, TRUE, FALSE, FALSE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE),
+    (6, FALSE, TRUE, FALSE, FALSE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, TRUE, FALSE, TRUE, TRUE);
 
 INSERT INTO anamnesis_conditions (anamnesis_id, condition_id) 
 VALUES 
-    (1, 13), -- Hipertensão
-    (1, 1);  -- Alergia
+    (1, 13),
+    (1, 1),
+    (3, 22),
+    (4, 7),
+    (4, 17),
+    (4, 18),
+    (5, 2),
+    (6, 22),
+    (6, 1);
 
-INSERT INTO specific_health_questions (anamnesis_id, has_cardiovascular_issue, has_rheumatic_fever, has_joint_pain, has_excessive_bleeding, had_local_anesthesia, had_anesthesia_reaction, uses_substances) 
-VALUES 
-    (1, TRUE, FALSE, FALSE, FALSE, TRUE, FALSE, TRUE);
-
--- RADIOGRAFIA para a VISITA 1 de João da Silva
 INSERT INTO radiographs (visit_id, patient_id, radiograph_date, file_path_or_url, notes, viewer_context_json) 
 VALUES 
-    (1, 1, '2024-05-21', '/radiographs/joao_silva/panoramic_20240521.jpg', 'Radiografia panorâmica para avaliação do siso.', '{"viewer_version": "1.2", "annotations": [{"type": "circle", "points": [450, 320], "radius": 50, "label": "Dente 48 - Semi-incluso"}], "settings": {"brightness": 55, "contrast": 70}}');
-
--- VISITA 2 PARA João da Silva (Paciente ID: 1, Visita ID: 2, Anamnese ID: 2)
-INSERT INTO visits (patient_id, visit_date, main_complaint) 
-VALUES 
-    (1, '2024-06-10', 'Consulta de rotina e limpeza.');
-
-INSERT INTO anamnesis_forms (visit_id, systolic_bp, diastolic_bp, additional_info_for_dentist) 
-VALUES 
-    (2, 125, 85, 'A dor no siso melhorou após o medicamento prescrito.');
-
-INSERT INTO specific_health_questions (anamnesis_id, has_cardiovascular_issue, has_rheumatic_fever, has_joint_pain, has_excessive_bleeding, had_local_anesthesia, had_anesthesia_reaction, uses_substances) 
-VALUES 
-    (2, TRUE, FALSE, FALSE, FALSE, TRUE, FALSE, TRUE);
-
--- PACIENTE 2: Maria Oliveira
-INSERT INTO patients (full_name, date_of_birth, sex, address) 
-VALUES 
-    ('Maria Oliveira', '1992-11-30', 'Feminino', 'Avenida Principal, 789, Sertãozinho, SP');
-
--- Radiografia antiga para Maria, sem associação a uma visita específica no novo sistema.
-INSERT INTO radiographs (visit_id, patient_id, radiograph_date, file_path_or_url, notes) 
-VALUES 
-    (NULL, 2, '2023-10-05', '/radiographs/maria_oliveira/periapical_20231005.png', 'Check-up de rotina do ano anterior.');
-
--- VISITA 1 PARA Maria Oliveira (Paciente ID: 2, Visita ID: 3, Anamnese ID: 3)
-INSERT INTO visits (patient_id, visit_date, main_complaint) 
-VALUES 
-    (2, '2025-01-15', 'Gostaria de fazer clareamento dental.');
-
-INSERT INTO anamnesis_forms (visit_id, weight_kg, height_m, is_pregnant, previous_dental_history) 
-VALUES 
-    (3, 65.0, 1.65, FALSE, 'Já usei aparelho ortodôntico por 3 anos, removido em 2015.');
-
-INSERT INTO anamnesis_conditions (anamnesis_id, condition_id) 
-VALUES 
-    (3, 22); -- Problema Respiratório
-
-INSERT INTO specific_health_questions (anamnesis_id, has_cardiovascular_issue, has_rheumatic_fever, has_allergies, had_medication_related_problem, had_local_anesthesia, uses_substances) 
-VALUES 
-    (3, FALSE, FALSE, TRUE, TRUE, TRUE, FALSE);
-
--- RADIOGRAFIA para a VISITA 1 de Maria Oliveira
-INSERT INTO radiographs (visit_id, patient_id, radiograph_date, file_path_or_url, notes, viewer_context_json) 
-VALUES 
-    (3, 2, '2025-01-15', '/radiographs/maria_oliveira/bitewing_20250115.jpg', 'Radiografias interproximais para checar cáries antes do clareamento.', '{"settings": {"brightness": 50, "contrast": 65}}');
+    (1, 1, '2024-05-21', '/radiographs/john_smith/panoramic_20240521.jpg', 'Panoramic radiograph for wisdom tooth evaluation.', '{"viewer_version": "1.2", "annotations": [{"type": "circle", "points": [450, 320], "radius": 50, "label": "Tooth 48 - Semi-impacted"}], "settings": {"brightness": 55, "contrast": 70}}'),
+    (NULL, 2, '2024-10-05', '/radiographs/mary_johnson/periapical_20241005.png', 'Routine check-up from the previous year.', NULL),
+    (3, 2, '2025-01-15', '/radiographs/mary_johnson/bitewing_20250115.jpg', 'Bitewing radiographs to check for cavities before whitening.', '{"settings": {"brightness": 50, "contrast": 65}}'),
+    (6, 4, '2025-09-05', '/radiographs/ana_costa/cephalometric_20250905.tif', 'Lateral cephalometric radiograph for orthodontic assessment.', '{"settings": {"brightness": 50, "contrast": 50}}');

@@ -3,9 +3,9 @@ package api.webservices.inredd.domain.model;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum SexEnum {
-    MASCULINO("Masculino"),
-    FEMININO("Feminino"),
-    OUTRO("Outro");
+    MALE("Male"),
+    FEMALE("Female"),
+    OTHER("Other");
 
     private final String value;
 

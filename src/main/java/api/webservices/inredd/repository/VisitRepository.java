@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,4 +33,16 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
      */
     @Query("SELECT v FROM Visit v LEFT JOIN FETCH v.anamnesisForm af LEFT JOIN FETCH af.specificHealthQuestions WHERE v.patient.id = :patientId")
     List<Visit> findAllByPatientIdWithDetails(Long patientId);
+
+    /**
+     * Counts the number of visits within a given date range.
+     * Spring Data JPA automatically derives the query from this method name.
+     * "countBy" -> Specifies this is a count query.
+     * "VisitDateBetween" -> Creates a WHERE clause for the 'visitDate' field using two parameters.
+     * @param startDate The start of the date range (inclusive).
+     * @param endDate The end of the date range (inclusive).
+     * @return The total number of visits scheduled within the specified range.
+     */
+    long countByVisitDateBetween(LocalDate startDate, LocalDate endDate);
+    
 }
