@@ -23,10 +23,12 @@ public class CorsFilter implements Filter {
     private final List<String> allowedOrigins = Arrays.asList(
         "http://localhost:4200",
         "http://localhost:3001",
+        "http://localhost:3002",
         "http://localhost:3006",
         "https://dev.inredd.com.br",
         "https://api.inredd.com.br",
-        "http://localhost:3002"
+        "https://app.inredd.com.br",
+        "https://api.inredd.com.br/oauth/token"
     );
 
     @Override

@@ -36,6 +36,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter{
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeRequests(requests -> requests
                         // Swagger e docs
+                        .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .antMatchers(
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
@@ -48,8 +49,8 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter{
                         .antMatchers("/users").permitAll()
                         // todo o resto precisa de token
                         .anyRequest().permitAll());
-            //.anyRequest().authenticated();
-    }
+                // .anyRequest().authenticated();
+        }
 
 	@Override
 	public void configure(ResourceServerSecurityConfigurer resources) {
