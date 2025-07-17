@@ -4,19 +4,21 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import com.vladmihalcea.hibernate.type.basic.PostgreSQLEnumType;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
 @Entity
 @Table(name = "patients")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@TypeDef(name = "pgsql_enum", typeClass = PostgreSQLEnumType.class)
 public class Patient {
 
     @Id
@@ -29,8 +31,10 @@ public class Patient {
     @Column(name = "date_of_birth", nullable = false)
     private LocalDate dateOfBirth;
 
+    @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "sex_enum")
-    private SexEnum sex; 
+    @Type(type = "pgsql_enum")
+    private SexEnum sex;
 
     @Column(columnDefinition = "TEXT")
     private String address;

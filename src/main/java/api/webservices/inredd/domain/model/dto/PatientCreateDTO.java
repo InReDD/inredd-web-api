@@ -39,6 +39,15 @@ public class PatientCreateDTO {
         this.sex = sex;
     }
 
+    // Allow setting sex from a String (for deserialization from JSON)
+    public void setSex(String sex) {
+        if (sex != null) {
+            this.sex = SexEnum.fromValue(sex);
+        } else {
+            this.sex = null;
+        }
+    }
+
     public String getAddress() {
         return address;
     }

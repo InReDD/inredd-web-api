@@ -7,7 +7,7 @@ DROP TABLE IF EXISTS visits CASCADE;
 DROP TABLE IF EXISTS patients CASCADE;
 DROP TYPE IF EXISTS sex_enum;
 
-CREATE TYPE sex_enum AS ENUM ('Male', 'Female', 'Other');
+CREATE TYPE sex_enum AS ENUM ('MALE', 'FEMALE', 'OTHER');
 
 CREATE TABLE patients (
     id SERIAL PRIMARY KEY,
@@ -97,10 +97,10 @@ INSERT INTO conditions_lookup (condition_name, category) VALUES
 
 INSERT INTO patients (full_name, date_of_birth, sex, address) 
 VALUES 
-    ('John Smith', '1985-04-15', 'Male', '123 Flower St, Ribeirao Preto, SP'),
-    ('Mary Johnson', '1992-11-30', 'Female', '789 Main Ave, Sertaozinho, SP'),
-    ('Carlos Pereira', '1978-09-22', 'Male', '456 Oak Blvd, Cravinhos, SP'),
-    ('Ana Beatriz Costa', '1999-03-12', 'Female', '101 Pine Way, Jardinopolis, SP');
+    ('John Smith', '1985-04-15', 'MALE', '123 Flower St, Ribeirao Preto, SP'),
+    ('Mary Johnson', '1992-11-30', 'FEMALE', '789 Main Ave, Sertaozinho, SP'),
+    ('Carlos Pereira', '1978-09-22', 'MALE', '456 Oak Blvd, Cravinhos, SP'),
+    ('Ana Beatriz Costa', '1999-03-12', 'FEMALE', '101 Pine Way, Jardinopolis, SP');
 
 INSERT INTO visits (patient_id, visit_date, main_complaint) 
 VALUES 

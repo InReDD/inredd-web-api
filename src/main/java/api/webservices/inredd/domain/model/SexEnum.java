@@ -17,4 +17,14 @@ public enum SexEnum {
     public String getValue() {
         return value;
     }
+
+    @com.fasterxml.jackson.annotation.JsonCreator
+    public static SexEnum fromValue(String value) {
+        for (SexEnum sex : SexEnum.values()) {
+            if (sex.value.equalsIgnoreCase(value) || sex.name().equalsIgnoreCase(value)) {
+                return sex;
+            }
+        }
+        throw new IllegalArgumentException("Unknown value for SexEnum: " + value);
+    }
 }
