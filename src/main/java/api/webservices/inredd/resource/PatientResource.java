@@ -38,7 +38,7 @@ public class PatientResource {
     }
 
     /**
-     * POST /api/v1/patients : Create a new patient.
+     * POST /patients : Create a new patient.
      * The request body must now match the PatientCreateDTO structure.
      */
     @PostMapping
