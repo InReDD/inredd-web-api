@@ -38,7 +38,7 @@ public class PatientResource {
     @PostMapping
     public ResponseEntity<PatientDTO> createPatient(@RequestBody PatientCreateDTO patientCreateDTO) {
         Patient createdPatient = patientService.createPatient(patientCreateDTO);
-        PatientDTO responseDTO = new PatientDTO(createdPatient);
+        PatientDTO responseDTO = new PatientDTO(createdPatient, false);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
@@ -52,7 +52,7 @@ public class PatientResource {
     public ResponseEntity<PatientDTO> updatePatient(@PathVariable Long id, 
     @RequestBody PatientCreateDTO patientUpdateDTO) {
         Patient updatedPatient = patientService.updatePatient(id, patientUpdateDTO);
-        PatientDTO responseDTO = new PatientDTO(updatedPatient);
+        PatientDTO responseDTO = new PatientDTO(updatedPatient, false);
         return ResponseEntity.ok(responseDTO);
     }
 

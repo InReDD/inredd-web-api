@@ -35,8 +35,8 @@ public class DashboardService {
         // Get the 5 most recently created patients
         List<Patient> recentPatientEntities = patientRepository.findTop5ByOrderByCreatedAtDesc();
         List<PatientDTO> recentPatientsDTO = recentPatientEntities.stream()
-                .map(PatientDTO::new)
-                .collect(Collectors.toList());
+            .map(patient -> new PatientDTO(patient, false))
+            .collect(Collectors.toList());
 
         return new DashboardStatsDTO(totalPatients, upcomingVisits, recentPatientsDTO);
     }

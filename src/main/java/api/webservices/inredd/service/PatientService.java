@@ -29,7 +29,7 @@ public class PatientService {
     @Transactional(readOnly = true)
     public List<PatientDTO> getAllPatients() {
         List<Patient> patients = patientRepository.findAll();
-        return patients.stream().map(PatientDTO::new).collect(Collectors.toList());
+        return patients.stream().map(patient -> new PatientDTO(patient, false)).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -39,7 +39,7 @@ public class PatientService {
             throw new ResourceNotFoundException("Patient not found with id: " + patientId);
         }
         Patient patient = patients.get(0);
-        return new PatientDTO(patient);
+        return new PatientDTO(patient, true);
     }
 
     @Transactional(readOnly = true)
