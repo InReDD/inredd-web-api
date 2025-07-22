@@ -107,3 +107,8 @@ VALUES
     (2, 1, '2025-06-10', decode('89504E470D0A1A0A0000000D4948445200000100000001000806000000', 'hex'), 'Routine check-up radiograph.', '{"settings": {"brightness": 50, "contrast": 65}}'),
     (3, 2, '2025-01-15', decode('89504E470D0A1A0A0000000D4948445200000100000001000806000000', 'hex'), 'Bitewing radiographs to check for cavities before whitening.', '{"settings": {"brightness": 50, "contrast": 65}}'),
     (4, 4, '2025-09-05', decode('89504E470D0A1A0A0000000D4948445200000100000001000806000000', 'hex'), 'Lateral cephalometric radiograph for orthodontic assessment.', '{"settings": {"brightness": 50, "contrast": 50}}');
+
+INSERT INTO anamnesis_forms (visit_id, weight_kg, height_m, systolic_bp, diastolic_bp, is_pregnant, had_recent_fever, is_under_medical_treatment, is_taking_medication, detailed_medical_history, family_health_history, previous_dental_history, psychosocial_history, additional_info_for_dentist, special_needs_during_treatment)
+VALUES
+    (1, 70.5, 1.75, 120, 80, FALSE, FALSE, FALSE, FALSE, 'No significant medical history.', 'No family history of major illnesses.', 'No prior dental issues.', 'No psychosocial concerns.', 'None.', 'None.'),
+    (2, 65.0, 1.68, 110, 70, FALSE, FALSE, FALSE, FALSE, 'No significant medical history.', 'No family history of major illnesses.', 'No prior dental issues.', 'No psychosocial concerns.', 'None.', 'None.');

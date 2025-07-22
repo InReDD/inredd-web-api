@@ -27,7 +27,7 @@ public class DashboardService {
     public DashboardStatsDTO getDashboardStats() {
         long totalPatients = patientRepository.count();
         
-        // Example: count visits scheduled for the upcoming 7 days
+        // Count visits scheduled for the upcoming 7 days
         LocalDate today = LocalDate.now();
         LocalDate nextWeek = today.plusDays(7);
         long upcomingVisits = visitRepository.countByVisitDateBetween(today, nextWeek);

@@ -20,16 +20,14 @@ import java.util.List;
 public class PatientResource {
 
     private final PatientService patientService;
-    private final VisitService visitService;
 
-    public PatientResource(PatientService patientService, VisitService visitService) {
+    public PatientResource(PatientService patientService) {
         this.patientService = patientService;
-        this.visitService = visitService;
     }
 
     @GetMapping
     public ResponseEntity<List<PatientDTO>> getAllPatients() {
-        return ResponseEntity.ok(patientService.getAllPatientsWithDetails());
+        return ResponseEntity.ok(patientService.getAllPatients());
     }
 
     @GetMapping("/{id}")
@@ -37,15 +35,9 @@ public class PatientResource {
         return ResponseEntity.ok(patientService.getPatientWithDetailsById(id));
     }
 
-    /**
-     * POST /patients : Create a new patient.
-     * The request body must now match the PatientCreateDTO structure.
-     */
     @PostMapping
     public ResponseEntity<PatientDTO> createPatient(@RequestBody PatientCreateDTO patientCreateDTO) {
-        // Service layer accepts the DTO and returns the created entity
         Patient createdPatient = patientService.createPatient(patientCreateDTO);
-
         PatientDTO responseDTO = new PatientDTO(createdPatient);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -68,23 +60,5 @@ public class PatientResource {
     public ResponseEntity<Void> deletePatient(@PathVariable Long id) {
         patientService.deletePatient(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/{patientId}/visits")
-    public ResponseEntity<List<VisitDTO>> getAllVisitsForPatient(@PathVariable Long patientId) {
-        return ResponseEntity.ok(visitService.getAllVisitsForPatient(patientId));
-    }
-
-    @PostMapping("/{patientId}/visits")
-    public ResponseEntity<VisitDTO> createVisitForPatient(@PathVariable Long patientId,
-        @Validated @RequestBody VisitCreateDTO visitCreateDTO) {
-        VisitDTO newVisit = visitService.createVisit(patientId, visitCreateDTO);
-
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(newVisit.getId())
-                .toUri();
-
-        return ResponseEntity.created(location).body(newVisit);
     }
 }

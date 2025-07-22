@@ -5,24 +5,32 @@ import api.webservices.inredd.domain.model.SexEnum;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.util.Set;
+import java.util.Set; // Use Set to match the entity
+import java.util.stream.Collectors;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class PatientDTO {
+public class PatientDetailedDTO {
     private Long id;
     private String fullName;
     private LocalDate dateOfBirth;
     private SexEnum sex;
     private String address;
     private OffsetDateTime createdAt;
+    private Set<VisitDTO> visits;
 
-    public PatientDTO(Patient entity) {
+    public PatientDetailedDTO(Patient entity) {
         this.id = entity.getId();
         this.fullName = entity.getFullName();
         this.dateOfBirth = entity.getDateOfBirth();
         this.sex = entity.getSex();
         this.address = entity.getAddress();
         this.createdAt = entity.getCreatedAt();
+
+        if (entity.getVisits() != null && !entity.getVisits().isEmpty()) {
+            this.visits = entity.getVisits().stream()
+                    .map(VisitDTO::new)
+                    .collect(Collectors.toSet());
+        }
     }
 
     public Long getId() {
@@ -71,5 +79,13 @@ public class PatientDTO {
 
     public void setCreatedAt(OffsetDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Set<VisitDTO> getVisits() {
+        return visits;
+    }
+
+    public void setVisits(Set<VisitDTO> visits) {
+        this.visits = visits;
     }
 }

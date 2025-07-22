@@ -10,18 +10,12 @@ import java.util.List;
 import java.util.Optional;
 
 public interface VisitRepository extends JpaRepository<Visit, Long> {
-       /**
-     * Finds a single visit by ID and fetches all its related entities in one query
-     * to prevent N+1 problems.
-     *
-     * @param id The ID of the visit.
-     * @return An Optional containing the Visit with all details, if found.
+     /**
+     * Finds a single visit by ID 
      */
     @Query("SELECT v FROM Visit v " +
            "LEFT JOIN FETCH v.anamnesisForm af " +
            "LEFT JOIN FETCH af.specificHealthQuestions " +
-           "LEFT JOIN FETCH af.conditions " + 
-           "LEFT JOIN FETCH v.radiographs " +
            "WHERE v.id = :id")
     Optional<Visit> findByIdWithDetails(@Param("id") Long id);
 

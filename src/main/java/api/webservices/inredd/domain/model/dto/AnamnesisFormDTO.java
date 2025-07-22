@@ -3,8 +3,6 @@ package api.webservices.inredd.domain.model.dto;
 import api.webservices.inredd.domain.model.AnamnesisForm;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.math.BigDecimal;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AnamnesisFormDTO {
@@ -25,7 +23,6 @@ public class AnamnesisFormDTO {
     private String additionalInfoForDentist;
     private String specialNeedsDuringTreatment;
     private SpecificHealthQuestionsDTO specificHealthQuestions;
-    private Set<ConditionDTO> conditions;
 
     // Default constructor
     public AnamnesisFormDTO() {}
@@ -50,12 +47,6 @@ public class AnamnesisFormDTO {
 
         if (entity.getSpecificHealthQuestions() != null) {
             this.specificHealthQuestions = new SpecificHealthQuestionsDTO(entity.getSpecificHealthQuestions());
-        }
-
-        if (entity.getConditions() != null && !entity.getConditions().isEmpty()) {
-            this.conditions = entity.getConditions().stream()
-                .map(ConditionDTO::new)
-                .collect(Collectors.toSet());
         }
     }
 
@@ -186,14 +177,4 @@ public class AnamnesisFormDTO {
     public void setSpecificHealthQuestions(SpecificHealthQuestionsDTO specificHealthQuestions) {
         this.specificHealthQuestions = specificHealthQuestions;
     }
-
-    public Set<ConditionDTO> getConditions() {
-        return conditions;
-    }
-
-    public void setConditions(Set<ConditionDTO> conditions) {
-        this.conditions = conditions;
-    }
-
-    
 }

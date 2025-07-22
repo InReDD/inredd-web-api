@@ -7,9 +7,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 @Entity
 @Table(name = "visits")
@@ -37,9 +34,6 @@ public class Visit {
     @OneToOne(mappedBy = "visit", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private AnamnesisForm anamnesisForm;
 
-    @OneToMany(mappedBy = "visit", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Radiograph> radiographs = new ArrayList<>();
-
     // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -53,19 +47,4 @@ public class Visit {
     public void setPatient(Patient patient) { this.patient = patient; }
     public AnamnesisForm getAnamnesisForm() { return anamnesisForm; }
     public void setAnamnesisForm(AnamnesisForm anamnesisForm) { this.anamnesisForm = anamnesisForm; }
-    public List<Radiograph> getRadiographs() { return radiographs; }
-    public void setRadiographs(List<Radiograph> radiographs) { this.radiographs = radiographs; }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        Visit other = (Visit) obj;
-        return Objects.equals(id, other.id);
-    }
 }

@@ -7,37 +7,16 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface PatientRepository extends JpaRepository<Patient, Long> {
 
-       /**
-        * Finds a single patient by their ID and fetches all their associated data
-        * graph
-        *
-        * @param id The ID of the patient.
-        * @return
-        */
        @Query("SELECT p FROM Patient p " +
-                     "LEFT JOIN FETCH p.visits v " +
-                     "LEFT JOIN FETCH v.anamnesisForm af " +
-                     "LEFT JOIN FETCH af.specificHealthQuestions " +
-                     "LEFT JOIN FETCH v.radiographs " +
-                     "WHERE p.id = :id")
-       Optional<Patient> findByIdWithDetails(@Param("id") Long id);
-
-       /**
-        * Finds all patients and fetches their complete associated data graph.
-        *
-        * @return A list of all Patients with their details.
-        */
-       @Query("SELECT DISTINCT p FROM Patient p " +
-                     "LEFT JOIN FETCH p.visits v " +
-                     "LEFT JOIN FETCH v.anamnesisForm af " +
-                     "LEFT JOIN FETCH af.specificHealthQuestions " +
-                     "LEFT JOIN FETCH v.radiographs")
-       List<Patient> findAllWithDetails();
+       "LEFT JOIN FETCH p.visits v " +
+       "LEFT JOIN FETCH v.anamnesisForm af " +
+       "LEFT JOIN FETCH af.specificHealthQuestions shq " +
+       "WHERE p.id = :id")
+       List<Patient> findByIdWithDetails(@Param("id") Long id);
 
        /**
         * Finds the top 5 most recently created patients.
@@ -49,4 +28,5 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
         * @return A list containing up to 5 of the newest patient records.
         */
        List<Patient> findTop5ByOrderByCreatedAtDesc();
+
 }

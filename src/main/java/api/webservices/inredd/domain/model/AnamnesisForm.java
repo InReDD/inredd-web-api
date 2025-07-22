@@ -73,15 +73,6 @@ public class AnamnesisForm {
     @OneToOne(mappedBy = "anamnesisForm", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private SpecificHealthQuestions specificHealthQuestions;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "anamnesis_conditions",
-        joinColumns = @JoinColumn(name = "anamnesis_id"),
-        inverseJoinColumns = @JoinColumn(name = "condition_id")
-    )
-    private Set<ConditionLookup> conditions = new HashSet<>();
-
-    //<editor-fold desc="Getters and Setters">
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public BigDecimal getWeightKg() { return weightKg; }
@@ -118,9 +109,6 @@ public class AnamnesisForm {
     public void setVisit(Visit visit) { this.visit = visit; }
     public SpecificHealthQuestions getSpecificHealthQuestions() { return specificHealthQuestions; }
     public void setSpecificHealthQuestions(SpecificHealthQuestions specificHealthQuestions) { this.specificHealthQuestions = specificHealthQuestions; }
-    public Set<ConditionLookup> getConditions() { return conditions; }
-    public void setConditions(Set<ConditionLookup> conditions) { this.conditions = conditions; }
-    //</editor-fold>
 
     @Override
     public int hashCode() {
