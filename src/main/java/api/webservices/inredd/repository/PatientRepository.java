@@ -12,8 +12,9 @@ import java.util.List;
 public interface PatientRepository extends JpaRepository<Patient, Long> {
 
        @Query("SELECT p FROM Patient p " +
-       "LEFT JOIN FETCH p.visits v " +
-       "WHERE p.id = :id")
+              "LEFT JOIN FETCH p.visits v " +
+              "LEFT JOIN FETCH v.radiograph r " +
+              "WHERE p.id = :id")
        List<Patient> findByIdWithDetails(@Param("id") Long id);
 
        /**

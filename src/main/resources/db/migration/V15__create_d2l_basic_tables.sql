@@ -51,7 +51,6 @@ CREATE TABLE radiographs (
     id SERIAL PRIMARY KEY,
     visit_id INT NOT NULL UNIQUE REFERENCES visits(id) ON DELETE CASCADE,
     patient_id INT NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
-    radiograph_date DATE NOT NULL,
     viewer_context_json JSONB, 
     image_data BYTEA NOT NULL,
     notes TEXT,
@@ -101,14 +100,19 @@ VALUES
     (2, '2025-08-22', 'Follow-up on teeth whitening and general sensitivity.'),
     (4, '2025-09-05', 'Consultation for orthodontic treatment options.');
 
-INSERT INTO radiographs (visit_id, patient_id, radiograph_date, image_data, notes, viewer_context_json) 
+INSERT INTO radiographs (visit_id, patient_id, image_data, notes, viewer_context_json) 
 VALUES 
-    (1, 1, '2024-05-21', decode('89504E470D0A1A0A0000000D4948445200000100000001000806000000', 'hex'), 'Panoramic radiograph for wisdom tooth evaluation.', '{"viewer_version": "1.2", "annotations": [{"type": "circle", "points": [450, 320], "radius": 50, "label": "Tooth 48 - Semi-impacted"}], "settings": {"brightness": 55, "contrast": 70}}'),
-    (2, 1, '2025-06-10', decode('89504E470D0A1A0A0000000D4948445200000100000001000806000000', 'hex'), 'Routine check-up radiograph.', '{"settings": {"brightness": 50, "contrast": 65}}'),
-    (3, 2, '2025-01-15', decode('89504E470D0A1A0A0000000D4948445200000100000001000806000000', 'hex'), 'Bitewing radiographs to check for cavities before whitening.', '{"settings": {"brightness": 50, "contrast": 65}}'),
-    (4, 4, '2025-09-05', decode('89504E470D0A1A0A0000000D4948445200000100000001000806000000', 'hex'), 'Lateral cephalometric radiograph for orthodontic assessment.', '{"settings": {"brightness": 50, "contrast": 50}}');
+    (1, 1, decode('89504E470D0A1A0A0000000D4948445200000100000001000806000000', 'hex'), 'Panoramic radiograph for wisdom tooth evaluation.', '{"viewer_version": "1.2", "annotations": [{"type": "circle", "points": [450, 320], "radius": 50, "label": "Tooth 48 - Semi-impacted"}], "settings": {"brightness": 55, "contrast": 70}}'),
+    (2, 1, decode('89504E470D0A1A0A0000000D4948445200000100000001000806000000', 'hex'), 'Routine check-up radiograph.', '{"settings": {"brightness": 50, "contrast": 65}}'),
+    (3, 2, decode('89504E470D0A1A0A0000000D4948445200000100000001000806000000', 'hex'), 'Bitewing radiographs to check for cavities before whitening.', '{"settings": {"brightness": 50, "contrast": 65}}'),
+    (4, 4, decode('89504E470D0A1A0A0000000D4948445200000100000001000806000000', 'hex'), 'Lateral cephalometric radiograph for orthodontic assessment.', '{"settings": {"brightness": 50, "contrast": 50}}');
 
 INSERT INTO anamnesis_forms (visit_id, weight_kg, height_m, systolic_bp, diastolic_bp, is_pregnant, had_recent_fever, is_under_medical_treatment, is_taking_medication, detailed_medical_history, family_health_history, previous_dental_history, psychosocial_history, additional_info_for_dentist, special_needs_during_treatment)
 VALUES
     (1, 70.5, 1.75, 120, 80, FALSE, FALSE, FALSE, FALSE, 'No significant medical history.', 'No family history of major illnesses.', 'No prior dental issues.', 'No psychosocial concerns.', 'None.', 'None.'),
     (2, 65.0, 1.68, 110, 70, FALSE, FALSE, FALSE, FALSE, 'No significant medical history.', 'No family history of major illnesses.', 'No prior dental issues.', 'No psychosocial concerns.', 'None.', 'None.');
+
+INSERT INTO specific_health_questions (anamnesis_id, has_cardiovascular_issue, has_rheumatic_fever, has_joint_pain, has_excessive_bleeding, had_local_anesthesia, had_anesthesia_reaction, uses_substances, has_allergies, had_medication_related_problem, has_kidney_problems, was_hospitalized, took_penicillin, took_corticosteroid_last_12m, has_persistent_cough) 
+VALUES 
+    (1, TRUE, FALSE, TRUE, FALSE, TRUE, FALSE, TRUE, TRUE, FALSE, FALSE, FALSE, TRUE, FALSE, FALSE),
+    (2, TRUE, FALSE, FALSE, FALSE, TRUE, FALSE, TRUE, TRUE, FALSE, FALSE, FALSE, TRUE, FALSE, FALSE);

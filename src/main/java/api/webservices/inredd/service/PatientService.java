@@ -68,7 +68,7 @@ public class PatientService {
 
         existingPatient.setFullName(patientUpdateDTO.getFullName());
         existingPatient.setDateOfBirth(patientUpdateDTO.getDateOfBirth());
-        // existingPatient.setSex(patientUpdateDTO.getSex());
+        existingPatient.setSex(patientUpdateDTO.getSex());
         existingPatient.setAddress(patientUpdateDTO.getAddress());
 
         return patientRepository.save(existingPatient);

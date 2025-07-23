@@ -3,14 +3,10 @@ package api.webservices.inredd.resource;
 import api.webservices.inredd.domain.model.Patient;
 import api.webservices.inredd.domain.model.dto.PatientCreateDTO;
 import api.webservices.inredd.domain.model.dto.PatientDTO;
-import api.webservices.inredd.domain.model.dto.VisitCreateDTO;
-import api.webservices.inredd.domain.model.dto.VisitDTO;
 import api.webservices.inredd.service.PatientService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import api.webservices.inredd.service.VisitService;
 
 import java.net.URI;
 import java.util.List;

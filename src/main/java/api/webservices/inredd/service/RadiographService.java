@@ -81,7 +81,6 @@ public class RadiographService {
         try {
             Radiograph radiograph = new Radiograph();
             radiograph.setVisit(visit);
-            radiograph.setPatientId(patientId);
             radiograph.setRadiographDate(java.time.LocalDate.now());
             radiograph.setViewerContextJson(viewerContextJson);
 

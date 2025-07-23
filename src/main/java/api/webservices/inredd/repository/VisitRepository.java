@@ -10,8 +10,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface VisitRepository extends JpaRepository<Visit, Long> {
-     /**
-     * Finds a single visit by ID 
+
+    /**
+     * Finds a single visit by ID, including anamnesis form, specific health questions, and radiograph.
      */
     @Query("SELECT v FROM Visit v " +
            "LEFT JOIN FETCH v.anamnesisForm af " +
@@ -20,13 +21,14 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
     Optional<Visit> findByIdWithDetails(@Param("id") Long id);
 
     /**
-     * Finds all visits for a given patient, fetching all details for each visit.
-     *
-     * @param patientId The ID of the patient.
-     * @return A List of fully detailed Visit objects.
+     * Finds all visits for a given patient, fetching all details for each visit, including radiograph.
      */
-    @Query("SELECT v FROM Visit v LEFT JOIN FETCH v.anamnesisForm af LEFT JOIN FETCH af.specificHealthQuestions WHERE v.patient.id = :patientId")
-    List<Visit> findAllByPatientIdWithDetails(Long patientId);
+    @Query("SELECT v FROM Visit v " +
+           "LEFT JOIN FETCH v.anamnesisForm af " +
+           "LEFT JOIN FETCH af.specificHealthQuestions " +
+           "LEFT JOIN FETCH v.radiograph r " +
+           "WHERE v.patient.id = :patientId")
+    List<Visit> findAllByPatientIdWithDetails(@Param("patientId") Long patientId);
 
     /**
      * Counts the number of visits within a given date range.
@@ -38,5 +40,4 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
      * @return The total number of visits scheduled within the specified range.
      */
     long countByVisitDateBetween(LocalDate startDate, LocalDate endDate);
-    
 }

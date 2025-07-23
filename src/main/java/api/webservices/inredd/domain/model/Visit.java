@@ -34,17 +34,62 @@ public class Visit {
     @OneToOne(mappedBy = "visit", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private AnamnesisForm anamnesisForm;
 
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public LocalDate getVisitDate() { return visitDate; }
-    public void setVisitDate(LocalDate visitDate) { this.visitDate = visitDate; }
-    public String getMainComplaint() { return mainComplaint; }
-    public void setMainComplaint(String mainComplaint) { this.mainComplaint = mainComplaint; }
-    public OffsetDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(OffsetDateTime createdAt) { this.createdAt = createdAt; }
-    public Patient getPatient() { return patient; }
-    public void setPatient(Patient patient) { this.patient = patient; }
-    public AnamnesisForm getAnamnesisForm() { return anamnesisForm; }
-    public void setAnamnesisForm(AnamnesisForm anamnesisForm) { this.anamnesisForm = anamnesisForm; }
+    @OneToOne(mappedBy = "visit", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Radiograph radiograph;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public LocalDate getVisitDate() {
+        return visitDate;
+    }
+
+    public void setVisitDate(LocalDate visitDate) {
+        this.visitDate = visitDate;
+    }
+
+    public String getMainComplaint() {
+        return mainComplaint;
+    }
+
+    public void setMainComplaint(String mainComplaint) {
+        this.mainComplaint = mainComplaint;
+    }
+
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Patient getPatient() {
+        return patient;
+    }
+
+    public void setPatient(Patient patient) {
+        this.patient = patient;
+    }
+
+    public AnamnesisForm getAnamnesisForm() {
+        return anamnesisForm;
+    }
+
+    public void setAnamnesisForm(AnamnesisForm anamnesisForm) {
+        this.anamnesisForm = anamnesisForm;
+    }
+
+    public Radiograph getRadiograph() {
+        return radiograph;
+    }
+
+    public void setRadiograph(Radiograph radiograph) {
+        this.radiograph = radiograph;
+    }
 }

@@ -9,6 +9,7 @@ public class VisitDTO {
     private LocalDate visitDate;
     private String mainComplaint;
     private AnamnesisFormDTO anamnesisForm;
+    private RadiographDTO radiograph; 
 
     public VisitDTO(Visit entity) {
         this.id = entity.getId();
@@ -16,6 +17,9 @@ public class VisitDTO {
         this.mainComplaint = entity.getMainComplaint();
         if (entity.getAnamnesisForm() != null) {
             this.anamnesisForm = new AnamnesisFormDTO(entity.getAnamnesisForm());
+        }
+        if (entity.getRadiograph() != null) {
+            this.radiograph = new RadiographDTO(entity.getRadiograph());
         }
     }
 
@@ -49,5 +53,13 @@ public class VisitDTO {
 
     public void setAnamnesisForm(AnamnesisFormDTO anamnesisForm) {
         this.anamnesisForm = anamnesisForm;
+    }
+
+    public RadiographDTO getRadiograph() {
+        return radiograph;
+    }
+
+    public void setRadiograph(RadiographDTO radiograph) {
+        this.radiograph = radiograph;
     }
 }

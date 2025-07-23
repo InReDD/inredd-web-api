@@ -7,8 +7,6 @@ import java.time.LocalDate;
 public class RadiographDTO {
 
     private Long id;
-    private Long visitId;
-    private Long patientId;
     private LocalDate radiographDate;
     private String viewerContextJson;
     private String notes;
@@ -16,11 +14,9 @@ public class RadiographDTO {
 
     public RadiographDTO(Radiograph radiograph) {
         this.id = radiograph.getId();
-        this.visitId = radiograph.getVisit().getId();
-        this.patientId = radiograph.getPatientId();
-        this.radiographDate = radiograph.getRadiographDate();
         this.viewerContextJson = radiograph.getViewerContextJson();
         this.notes = radiograph.getNotes();
+        this.imageData = radiograph.getImageData();
     }
 
     public byte[] getImageData() {
@@ -37,26 +33,6 @@ public class RadiographDTO {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Long getVisitId() {
-        return visitId;
-    }
-
-    public void setVisitId(Long visitId) {
-        this.visitId = visitId;
-    }
-
-    public Long getPatientId() {
-        return patientId;
-    }
-
-    public void setPatientId(Long patientId) {
-        this.patientId = patientId;
-    }
-
-    public LocalDate getRadiographDate() {
-        return radiographDate;
     }
 
     public void setRadiographDate(LocalDate radiographDate) {
@@ -78,5 +54,4 @@ public class RadiographDTO {
     public void setNotes(String notes) {
         this.notes = notes;
     }
-
 }
