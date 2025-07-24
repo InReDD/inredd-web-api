@@ -99,72 +99,178 @@ public class VisitService {
         }
 
         // Set the main complaint
-        if (visitCreateDTO != null) {
+        if (visitCreateDTO != null && visitCreateDTO.getMainComplaint() != null) {
             visit.setMainComplaint(visitCreateDTO.getMainComplaint());
-
-            // Handle Anamnesis Form
-            AnamnesisForm formEntity = new AnamnesisForm();
-            if (visitCreateDTO.getAnamnesisFormDTO() != null) {
-                var formDTO = visitCreateDTO.getAnamnesisFormDTO();
-
-                formEntity.setWeightKg(formDTO.getWeightKg());
-                formEntity.setHeightM(formDTO.getHeightM());
-                formEntity.setSystolicBp(formDTO.getSystolicBp());
-                formEntity.setDiastolicBp(formDTO.getDiastolicBp());
-                formEntity.setPregnant(formDTO.getIsPregnant());
-                formEntity.setHadRecentFever(formDTO.getHadRecentFever());
-                formEntity.setUnderMedicalTreatment(formDTO.getIsUnderMedicalTreatment());
-                formEntity.setTakingMedication(formDTO.getIsTakingMedication());
-                formEntity.setDetailedMedicalHistory(formDTO.getDetailedMedicalHistory());
-                formEntity.setFamilyHealthHistory(formDTO.getFamilyHealthHistory());
-                formEntity.setPreviousDentalHistory(formDTO.getPreviousDentalHistory());
-                formEntity.setPsychosocialHistory(formDTO.getPsychosocialHistory());
-                formEntity.setAdditionalInfoForDentist(formDTO.getAdditionalInfoForDentist());
-                formEntity.setSpecialNeedsDuringTreatment(formDTO.getSpecialNeedsDuringTreatment());
-
-                // Handle Specific Health Questions
-                if (formDTO.getSpecificHealthQuestions() != null) {
-                    var questionsDTO = formDTO.getSpecificHealthQuestions();
-                    SpecificHealthQuestions questionsEntity = new SpecificHealthQuestions();
-
-                    questionsEntity.setHasCardiovascularIssue(questionsDTO.getHasCardiovascularIssue());
-                    questionsEntity.setHasRheumaticFever(questionsDTO.getHasRheumaticFever());
-                    questionsEntity.setHasJointPain(questionsDTO.getHasJointPain());
-                    questionsEntity.setHasChestPain(questionsDTO.getHasChestPain());
-                    questionsEntity.setHasFatigueOnExertion(questionsDTO.getHasFatigueOnExertion());
-                    questionsEntity.setHasAnkleEdema(questionsDTO.getHasAnkleEdema());
-                    questionsEntity.setHasRecentWeightLoss(questionsDTO.getHasRecentWeightLoss());
-                    questionsEntity.setHadHepatitis(questionsDTO.getHadHepatitis());
-                    questionsEntity.setHasKidneyProblems(questionsDTO.getHasKidneyProblems());
-                    questionsEntity.setHasGastricProblems(questionsDTO.getHasGastricProblems());
-                    questionsEntity.setHasDizzinessFainting(questionsDTO.getHasDizzinessFainting());
-                    questionsEntity.setHasEpilepsy(questionsDTO.getHasEpilepsy());
-                    questionsEntity.setWasHospitalized(questionsDTO.getWasHospitalized());
-                    questionsEntity.setHasPersistentCough(questionsDTO.getHasPersistentCough());
-                    questionsEntity.setHadLocalAnesthesia(questionsDTO.getHadLocalAnesthesia());
-                    questionsEntity.setHadAnesthesiaReaction(questionsDTO.getHadAnesthesiaReaction());
-                    questionsEntity.setHadGeneralAnesthesia(questionsDTO.getHadGeneralAnesthesia());
-                    questionsEntity.setHasExcessiveBleeding(questionsDTO.getHasExcessiveBleeding());
-                    questionsEntity.setBleedingControlMethod(questionsDTO.getBleedingControlMethod());
-                    questionsEntity.setHadDentalTreatmentComplication(questionsDTO.getHadDentalTreatmentComplication());
-                    questionsEntity.setTookPenicillin(questionsDTO.getTookPenicillin());
-                    questionsEntity.setTookCorticosteroidLast12m(questionsDTO.getTookCorticosteroidLast12m());
-                    questionsEntity.setHasAllergies(questionsDTO.getHasAllergies());
-                    questionsEntity.setHadMedicationRelatedProblem(questionsDTO.getHadMedicationRelatedProblem());
-                    questionsEntity.setUsesSubstances(questionsDTO.getUsesSubstances());
-                    questionsEntity.setHadOralWhiteSpots(questionsDTO.getHadOralWhiteSpots());
-                    questionsEntity.setWhiteSpotsTreatment(questionsDTO.getWhiteSpotsTreatment());
-                    questionsEntity.setHasRecurrentAphthousUlcers(questionsDTO.getHasRecurrentAphthousUlcers());
-                    questionsEntity.setHadHivTest(questionsDTO.getHadHivTest());
-                    questionsEntity.setHasInsensitiveBodyArea(questionsDTO.getHasInsensitiveBodyArea());
-
-                    formEntity.setSpecificHealthQuestions(questionsEntity);
-                }
-            }
-
-            // Associate the AnamnesisForm with the Visit
-            visit.setAnamnesisForm(formEntity);
+        } else {
+            visit.setMainComplaint("No main complaint provided"); // Default value
         }
+
+        // Handle Anamnesis Form
+        AnamnesisForm formEntity = new AnamnesisForm();
+        if (visitCreateDTO != null && visitCreateDTO.getAnamnesisFormDTO() != null) {
+            var formDTO = visitCreateDTO.getAnamnesisFormDTO();
+
+            formEntity.setWeightKg(formDTO.getWeightKg() != null ? formDTO.getWeightKg() : java.math.BigDecimal.ZERO);
+            formEntity.setHeightM(formDTO.getHeightM() != null ? formDTO.getHeightM() : java.math.BigDecimal.ZERO);
+            formEntity.setSystolicBp(formDTO.getSystolicBp() != null ? formDTO.getSystolicBp() : 0);
+            formEntity.setDiastolicBp(formDTO.getDiastolicBp() != null ? formDTO.getDiastolicBp() : 0);
+            formEntity.setIsPregnant(formDTO.getIsPregnant() != null ? formDTO.getIsPregnant() : false);
+            formEntity.setHadRecentFever(formDTO.getHadRecentFever() != null ? formDTO.getHadRecentFever() : false);
+            formEntity.setIsUnderMedicalTreatment(
+                    formDTO.getIsUnderMedicalTreatment() != null ? formDTO.getIsUnderMedicalTreatment() : false);
+            formEntity.setIsTakingMedication(
+                    formDTO.getIsTakingMedication() != null ? formDTO.getIsTakingMedication() : false);
+            formEntity.setDetailedMedicalHistory(
+                    formDTO.getDetailedMedicalHistory() != null ? formDTO.getDetailedMedicalHistory() : "");
+            formEntity.setFamilyHealthHistory(
+                    formDTO.getFamilyHealthHistory() != null ? formDTO.getFamilyHealthHistory() : "");
+            formEntity.setPreviousDentalHistory(
+                    formDTO.getPreviousDentalHistory() != null ? formDTO.getPreviousDentalHistory() : "");
+            formEntity.setPsychosocialHistory(
+                    formDTO.getPsychosocialHistory() != null ? formDTO.getPsychosocialHistory() : "");
+            formEntity.setAdditionalInfoForDentist(
+                    formDTO.getAdditionalInfoForDentist() != null ? formDTO.getAdditionalInfoForDentist() : "");
+            formEntity.setSpecialNeedsDuringTreatment(
+                    formDTO.getSpecialNeedsDuringTreatment() != null ? formDTO.getSpecialNeedsDuringTreatment() : "");
+
+            // Handle Specific Health Questions
+            if (formDTO.getSpecificHealthQuestions() != null) {
+                var questionsDTO = formDTO.getSpecificHealthQuestions();
+                SpecificHealthQuestions questionsEntity = new SpecificHealthQuestions();
+
+                questionsEntity.setHasCardiovascularIssue(
+                        questionsDTO.getHasCardiovascularIssue() != null ? questionsDTO.getHasCardiovascularIssue()
+                                : false);
+                questionsEntity.setHasRheumaticFever(
+                        questionsDTO.getHasRheumaticFever() != null ? questionsDTO.getHasRheumaticFever() : false);
+                questionsEntity.setHasJointPain(
+                        questionsDTO.getHasJointPain() != null ? questionsDTO.getHasJointPain() : false);
+                questionsEntity.setHasChestPain(
+                        questionsDTO.getHasChestPain() != null ? questionsDTO.getHasChestPain() : false);
+                questionsEntity.setHasFatigueOnExertion(
+                        questionsDTO.getHasFatigueOnExertion() != null ? questionsDTO.getHasFatigueOnExertion()
+                                : false);
+                questionsEntity.setHasAnkleEdema(
+                        questionsDTO.getHasAnkleEdema() != null ? questionsDTO.getHasAnkleEdema() : false);
+                questionsEntity.setHasRecentWeightLoss(
+                        questionsDTO.getHasRecentWeightLoss() != null ? questionsDTO.getHasRecentWeightLoss() : false);
+                questionsEntity.setHadHepatitis(
+                        questionsDTO.getHadHepatitis() != null ? questionsDTO.getHadHepatitis() : false);
+                questionsEntity.setHasKidneyProblems(
+                        questionsDTO.getHasKidneyProblems() != null ? questionsDTO.getHasKidneyProblems() : false);
+                questionsEntity.setHasGastricProblems(
+                        questionsDTO.getHasGastricProblems() != null ? questionsDTO.getHasGastricProblems() : false);
+                questionsEntity.setHasDizzinessFainting(
+                        questionsDTO.getHasDizzinessFainting() != null ? questionsDTO.getHasDizzinessFainting()
+                                : false);
+                questionsEntity
+                        .setHasEpilepsy(questionsDTO.getHasEpilepsy() != null ? questionsDTO.getHasEpilepsy() : false);
+                questionsEntity.setWasHospitalized(
+                        questionsDTO.getWasHospitalized() != null ? questionsDTO.getWasHospitalized() : false);
+                questionsEntity.setHasPersistentCough(
+                        questionsDTO.getHasPersistentCough() != null ? questionsDTO.getHasPersistentCough() : false);
+                questionsEntity.setHadLocalAnesthesia(
+                        questionsDTO.getHadLocalAnesthesia() != null ? questionsDTO.getHadLocalAnesthesia() : false);
+                questionsEntity.setHadAnesthesiaReaction(
+                        questionsDTO.getHadAnesthesiaReaction() != null ? questionsDTO.getHadAnesthesiaReaction()
+                                : false);
+                questionsEntity.setHadGeneralAnesthesia(
+                        questionsDTO.getHadGeneralAnesthesia() != null ? questionsDTO.getHadGeneralAnesthesia()
+                                : false);
+                questionsEntity.setHasExcessiveBleeding(
+                        questionsDTO.getHasExcessiveBleeding() != null ? questionsDTO.getHasExcessiveBleeding()
+                                : false);
+                questionsEntity.setBleedingControlMethod(
+                        questionsDTO.getBleedingControlMethod() != null ? questionsDTO.getBleedingControlMethod() : "");
+                questionsEntity
+                        .setHadDentalTreatmentComplication(questionsDTO.getHadDentalTreatmentComplication() != null
+                                ? questionsDTO.getHadDentalTreatmentComplication()
+                                : false);
+                questionsEntity.setTookPenicillin(
+                        questionsDTO.getTookPenicillin() != null ? questionsDTO.getTookPenicillin() : false);
+                questionsEntity.setTookCorticosteroidLast12m(questionsDTO.getTookCorticosteroidLast12m() != null
+                        ? questionsDTO.getTookCorticosteroidLast12m()
+                        : false);
+                questionsEntity.setHasAllergies(
+                        questionsDTO.getHasAllergies() != null ? questionsDTO.getHasAllergies() : false);
+                questionsEntity.setHadMedicationRelatedProblem(questionsDTO.getHadMedicationRelatedProblem() != null
+                        ? questionsDTO.getHadMedicationRelatedProblem()
+                        : false);
+                questionsEntity.setUsesSubstances(
+                        questionsDTO.getUsesSubstances() != null ? questionsDTO.getUsesSubstances() : false);
+                questionsEntity.setHadOralWhiteSpots(
+                        questionsDTO.getHadOralWhiteSpots() != null ? questionsDTO.getHadOralWhiteSpots() : false);
+                questionsEntity.setWhiteSpotsTreatment(
+                        questionsDTO.getWhiteSpotsTreatment() != null ? questionsDTO.getWhiteSpotsTreatment() : "");
+                questionsEntity.setHasRecurrentAphthousUlcers(questionsDTO.getHasRecurrentAphthousUlcers() != null
+                        ? questionsDTO.getHasRecurrentAphthousUlcers()
+                        : false);
+                questionsEntity
+                        .setHadHivTest(questionsDTO.getHadHivTest() != null ? questionsDTO.getHadHivTest() : false);
+                questionsEntity.setHasInsensitiveBodyArea(
+                        questionsDTO.getHasInsensitiveBodyArea() != null ? questionsDTO.getHasInsensitiveBodyArea()
+                                : false);
+
+                formEntity.setSpecificHealthQuestions(questionsEntity);
+            }
+        } else {
+            // Set default values for Anamnesis Form
+            formEntity.setWeightKg(java.math.BigDecimal.ZERO);
+            formEntity.setHeightM(java.math.BigDecimal.ZERO);
+            formEntity.setSystolicBp(0);
+            formEntity.setDiastolicBp(0);
+            formEntity.setIsPregnant(false);
+            formEntity.setHadRecentFever(false);
+            formEntity.setIsUnderMedicalTreatment(false);
+            formEntity.setIsTakingMedication(false);
+            formEntity.setDetailedMedicalHistory("");
+            formEntity.setFamilyHealthHistory("");
+            formEntity.setPreviousDentalHistory("");
+            formEntity.setPsychosocialHistory("");
+            formEntity.setAdditionalInfoForDentist("");
+            formEntity.setSpecialNeedsDuringTreatment("");
+
+            // Set default values for Specific Health Questions
+            SpecificHealthQuestions questionsEntity = new SpecificHealthQuestions();
+            questionsEntity.setHasCardiovascularIssue(false);
+            questionsEntity.setHasRheumaticFever(false);
+            questionsEntity.setHasJointPain(false);
+            questionsEntity.setHasChestPain(false);
+            questionsEntity.setHasFatigueOnExertion(false);
+            questionsEntity.setHasAnkleEdema(false);
+            questionsEntity.setHasRecentWeightLoss(false);
+            questionsEntity.setHadHepatitis(false);
+            questionsEntity.setHasKidneyProblems(false);
+            questionsEntity.setHasGastricProblems(false);
+            questionsEntity.setHasDizzinessFainting(false);
+            questionsEntity.setHasEpilepsy(false);
+            questionsEntity.setWasHospitalized(false);
+            questionsEntity.setHasPersistentCough(false);
+            questionsEntity.setHadLocalAnesthesia(false);
+            questionsEntity.setHadAnesthesiaReaction(false);
+            questionsEntity.setHadGeneralAnesthesia(false);
+            questionsEntity.setHasExcessiveBleeding(false);
+            questionsEntity.setBleedingControlMethod("");
+            questionsEntity.setHadDentalTreatmentComplication(false);
+            questionsEntity.setTookPenicillin(false);
+            questionsEntity.setTookCorticosteroidLast12m(false);
+            questionsEntity.setHasAllergies(false);
+            questionsEntity.setHadMedicationRelatedProblem(false);
+            questionsEntity.setUsesSubstances(false);
+            questionsEntity.setHadOralWhiteSpots(false);
+            questionsEntity.setWhiteSpotsTreatment("");
+            questionsEntity.setHasRecurrentAphthousUlcers(false);
+            questionsEntity.setHadHivTest(false);
+            questionsEntity.setHasInsensitiveBodyArea(false);
+
+            // Set the relationship in both directions
+            questionsEntity.setAnamnesisForm(formEntity);
+            formEntity.setSpecificHealthQuestions(questionsEntity);
+        }
+
+        // Associate the AnamnesisForm with the Visit
+        formEntity.setVisit(visit); // Set the relationship in both directions
+        visit.setAnamnesisForm(formEntity);
 
         // Save the visit to the database
         Visit savedVisit = visitRepository.save(visit);
@@ -185,14 +291,12 @@ public class VisitService {
             var formDTO = visitUpdateDTO.getAnamnesisForm();
             var formEntity = existingVisit.getAnamnesisForm();
 
-            formEntity.setWeightKg(formDTO.getWeightKg());
-            formEntity.setHeightM(formDTO.getHeightM());
             formEntity.setSystolicBp(formDTO.getSystolicBp());
             formEntity.setDiastolicBp(formDTO.getDiastolicBp());
-            formEntity.setPregnant(formDTO.getIsPregnant());
+            formEntity.setIsPregnant(formDTO.getIsPregnant());
             formEntity.setHadRecentFever(formDTO.getHadRecentFever());
-            formEntity.setUnderMedicalTreatment(formDTO.getIsUnderMedicalTreatment());
-            formEntity.setTakingMedication(formDTO.getIsTakingMedication());
+            formEntity.setIsUnderMedicalTreatment(formDTO.getIsUnderMedicalTreatment());
+            formEntity.setIsTakingMedication(formDTO.getIsTakingMedication());
             formEntity.setDetailedMedicalHistory(formDTO.getDetailedMedicalHistory());
             formEntity.setFamilyHealthHistory(formDTO.getFamilyHealthHistory());
             formEntity.setPreviousDentalHistory(formDTO.getPreviousDentalHistory());
@@ -342,7 +446,8 @@ public class VisitService {
                 ObjectMapper objectMapper = new ObjectMapper();
                 return objectMapper.readTree(response.getBody());
             } else {
-                throw new RuntimeException("Failed to process radiograph with external service: " + response.getStatusCode());
+                throw new RuntimeException(
+                        "Failed to process radiograph with external service: " + response.getStatusCode());
             }
         } catch (IOException e) {
             throw new RuntimeException("Failed to read radiograph image", e);

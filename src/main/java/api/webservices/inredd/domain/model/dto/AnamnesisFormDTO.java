@@ -34,10 +34,10 @@ public class AnamnesisFormDTO {
         this.heightM = entity.getHeightM();
         this.systolicBp = entity.getSystolicBp();
         this.diastolicBp = entity.getDiastolicBp();
-        this.isPregnant = entity.getPregnant();
+        this.isPregnant = entity.getIsPregnant();
         this.hadRecentFever = entity.getHadRecentFever();
-        this.isUnderMedicalTreatment = entity.getUnderMedicalTreatment();
-        this.isTakingMedication = entity.getTakingMedication();
+        this.isUnderMedicalTreatment = entity.getIsUnderMedicalTreatment();
+        this.isTakingMedication = entity.getIsTakingMedication();
         this.detailedMedicalHistory = entity.getDetailedMedicalHistory();
         this.familyHealthHistory = entity.getFamilyHealthHistory();
         this.previousDentalHistory = entity.getPreviousDentalHistory();

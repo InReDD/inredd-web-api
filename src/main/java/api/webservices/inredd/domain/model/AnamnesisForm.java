@@ -63,7 +63,7 @@ public class AnamnesisForm {
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private OffsetDateTime createdAt;
-    
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "visit_id", nullable = false, unique = true)
     private Visit visit;
@@ -71,42 +71,149 @@ public class AnamnesisForm {
     @OneToOne(mappedBy = "anamnesisForm", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private SpecificHealthQuestions specificHealthQuestions;
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public BigDecimal getWeightKg() { return weightKg; }
-    public void setWeightKg(BigDecimal weightKg) { this.weightKg = weightKg; }
-    public BigDecimal getHeightM() { return heightM; }
-    public void setHeightM(BigDecimal heightM) { this.heightM = heightM; }
-    public Integer getSystolicBp() { return systolicBp; }
-    public void setSystolicBp(Integer systolicBp) { this.systolicBp = systolicBp; }
-    public Integer getDiastolicBp() { return diastolicBp; }
-    public void setDiastolicBp(Integer diastolicBp) { this.diastolicBp = diastolicBp; }
-    public Boolean getPregnant() { return isPregnant; }
-    public void setPregnant(Boolean pregnant) { isPregnant = pregnant; }
-    public Boolean getHadRecentFever() { return hadRecentFever; }
-    public void setHadRecentFever(Boolean hadRecentFever) { this.hadRecentFever = hadRecentFever; }
-    public Boolean getUnderMedicalTreatment() { return isUnderMedicalTreatment; }
-    public void setUnderMedicalTreatment(Boolean underMedicalTreatment) { isUnderMedicalTreatment = underMedicalTreatment; }
-    public Boolean getTakingMedication() { return isTakingMedication; }
-    public void setTakingMedication(Boolean takingMedication) { isTakingMedication = takingMedication; }
-    public String getDetailedMedicalHistory() { return detailedMedicalHistory; }
-    public void setDetailedMedicalHistory(String detailedMedicalHistory) { this.detailedMedicalHistory = detailedMedicalHistory; }
-    public String getFamilyHealthHistory() { return familyHealthHistory; }
-    public void setFamilyHealthHistory(String familyHealthHistory) { this.familyHealthHistory = familyHealthHistory; }
-    public String getPreviousDentalHistory() { return previousDentalHistory; }
-    public void setPreviousDentalHistory(String previousDentalHistory) { this.previousDentalHistory = previousDentalHistory; }
-    public String getPsychosocialHistory() { return psychosocialHistory; }
-    public void setPsychosocialHistory(String psychosocialHistory) { this.psychosocialHistory = psychosocialHistory; }
-    public String getAdditionalInfoForDentist() { return additionalInfoForDentist; }
-    public void setAdditionalInfoForDentist(String additionalInfoForDentist) { this.additionalInfoForDentist = additionalInfoForDentist; }
-    public String getSpecialNeedsDuringTreatment() { return specialNeedsDuringTreatment; }
-    public void setSpecialNeedsDuringTreatment(String specialNeedsDuringTreatment) { this.specialNeedsDuringTreatment = specialNeedsDuringTreatment; }
-    public OffsetDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(OffsetDateTime createdAt) { this.createdAt = createdAt; }
-    public Visit getVisit() { return visit; }
-    public void setVisit(Visit visit) { this.visit = visit; }
-    public SpecificHealthQuestions getSpecificHealthQuestions() { return specificHealthQuestions; }
-    public void setSpecificHealthQuestions(SpecificHealthQuestions specificHealthQuestions) { this.specificHealthQuestions = specificHealthQuestions; }
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public BigDecimal getWeightKg() {
+        return weightKg;
+    }
+
+    public void setWeightKg(BigDecimal weightKg) {
+        this.weightKg = weightKg;
+    }
+
+    public BigDecimal getHeightM() {
+        return heightM;
+    }
+
+    public void setHeightM(BigDecimal heightM) {
+        this.heightM = heightM;
+    }
+
+    public Integer getSystolicBp() {
+        return systolicBp;
+    }
+
+    public void setSystolicBp(Integer systolicBp) {
+        this.systolicBp = systolicBp;
+    }
+
+    public Integer getDiastolicBp() {
+        return diastolicBp;
+    }
+
+    public void setDiastolicBp(Integer diastolicBp) {
+        this.diastolicBp = diastolicBp;
+    }
+
+    public Boolean getIsPregnant() {
+        return isPregnant;
+    }
+
+    public void setIsPregnant(Boolean isPregnant) {
+        this.isPregnant = isPregnant;
+    }
+
+    public Boolean getHadRecentFever() {
+        return hadRecentFever;
+    }
+
+    public void setHadRecentFever(Boolean hadRecentFever) {
+        this.hadRecentFever = hadRecentFever;
+    }
+
+    public Boolean getIsUnderMedicalTreatment() {
+        return isUnderMedicalTreatment;
+    }
+
+    public void setIsUnderMedicalTreatment(Boolean isUnderMedicalTreatment) {
+        this.isUnderMedicalTreatment = isUnderMedicalTreatment;
+    }
+
+    public Boolean getIsTakingMedication() {
+        return isTakingMedication;
+    }
+
+    public void setIsTakingMedication(Boolean isTakingMedication) {
+        this.isTakingMedication = isTakingMedication;
+    }
+
+    public String getDetailedMedicalHistory() {
+        return detailedMedicalHistory;
+    }
+
+    public void setDetailedMedicalHistory(String detailedMedicalHistory) {
+        this.detailedMedicalHistory = detailedMedicalHistory;
+    }
+
+    public String getFamilyHealthHistory() {
+        return familyHealthHistory;
+    }
+
+    public void setFamilyHealthHistory(String familyHealthHistory) {
+        this.familyHealthHistory = familyHealthHistory;
+    }
+
+    public String getPreviousDentalHistory() {
+        return previousDentalHistory;
+    }
+
+    public void setPreviousDentalHistory(String previousDentalHistory) {
+        this.previousDentalHistory = previousDentalHistory;
+    }
+
+    public String getPsychosocialHistory() {
+        return psychosocialHistory;
+    }
+
+    public void setPsychosocialHistory(String psychosocialHistory) {
+        this.psychosocialHistory = psychosocialHistory;
+    }
+
+    public String getAdditionalInfoForDentist() {
+        return additionalInfoForDentist;
+    }
+
+    public void setAdditionalInfoForDentist(String additionalInfoForDentist) {
+        this.additionalInfoForDentist = additionalInfoForDentist;
+    }
+
+    public String getSpecialNeedsDuringTreatment() {
+        return specialNeedsDuringTreatment;
+    }
+
+    public void setSpecialNeedsDuringTreatment(String specialNeedsDuringTreatment) {
+        this.specialNeedsDuringTreatment = specialNeedsDuringTreatment;
+    }
+
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Visit getVisit() {
+        return visit;
+    }
+
+    public void setVisit(Visit visit) {
+        this.visit = visit;
+    }
+
+    public SpecificHealthQuestions getSpecificHealthQuestions() {
+        return specificHealthQuestions;
+    }
+
+    public void setSpecificHealthQuestions(SpecificHealthQuestions specificHealthQuestions) {
+        this.specificHealthQuestions = specificHealthQuestions;
+    }
 
     @Override
     public int hashCode() {
@@ -115,8 +222,10 @@ public class AnamnesisForm {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         AnamnesisForm other = (AnamnesisForm) obj;
         return Objects.equals(id, other.id);
     }
