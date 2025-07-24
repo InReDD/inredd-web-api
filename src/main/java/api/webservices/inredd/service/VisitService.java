@@ -272,6 +272,31 @@ public class VisitService {
         formEntity.setVisit(visit); // Set the relationship in both directions
         visit.setAnamnesisForm(formEntity);
 
+        // Handle optional radiograph creation and association
+        if (radiographImage != null && !radiographImage.isEmpty()) {
+            try {
+                Radiograph radiograph = new Radiograph();
+
+                // Associate the radiograph with the patient
+                radiograph.setPatient(patient);
+
+                radiograph.setImageData(radiographImage.getBytes()); // Save the image data
+
+                if (visitCreateDTO != null) {
+                    radiograph.setNotes(visitCreateDTO.getRadiographNotes());
+                }
+
+                // Send the image to the external service and get the results
+                JsonNode viewerContextJson = processRadiograph(radiographImage);
+                radiograph.setViewerContextJson(viewerContextJson); // Save the results in viewerContextJson
+
+                visit.setRadiograph(radiograph); // Associate the radiograph with the visit
+
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to upload radiograph image", e);
+            }
+        }
+
         // Save the visit to the database
         Visit savedVisit = visitRepository.save(visit);
 
