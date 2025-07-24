@@ -1,8 +1,10 @@
 package api.webservices.inredd.service;
 
+import api.webservices.inredd.domain.model.AnamnesisForm;
 import api.webservices.inredd.domain.model.Patient;
 import api.webservices.inredd.domain.model.Radiograph;
 import api.webservices.inredd.domain.model.SexEnum;
+import api.webservices.inredd.domain.model.SpecificHealthQuestions;
 import api.webservices.inredd.domain.model.Visit;
 import api.webservices.inredd.domain.model.dto.AdvancedSearchResultDTO;
 import api.webservices.inredd.domain.model.dto.VisitCreateDTO;
@@ -89,35 +91,79 @@ public class VisitService {
         Visit visit = new Visit();
         visit.setPatient(patient); // Associate the visit with the patient
 
-        // Handle optional visitCreateDTO
-        if (visitCreateDTO != null) {
-            visit.setVisitDate(visitCreateDTO.getVisitDate() != null ? visitCreateDTO.getVisitDate() : LocalDate.now()); // Set the visit date or default to today
-            visit.setMainComplaint(visitCreateDTO.getMainComplaint()); // Set the main complaint
+        // Set the visit date
+        if (visitCreateDTO != null && visitCreateDTO.getVisitDate() != null) {
+            visit.setVisitDate(visitCreateDTO.getVisitDate());
         } else {
-            visit.setVisitDate(LocalDate.now()); // Default to today's date if visitCreateDTO is null
+            visit.setVisitDate(LocalDate.now()); // Default to today's date if not provided
         }
 
-        // Handle optional radiograph creation and association
-        if (radiographImage != null && !radiographImage.isEmpty()) {
-            try {
-                Radiograph radiograph = new Radiograph();
+        // Set the main complaint
+        if (visitCreateDTO != null) {
+            visit.setMainComplaint(visitCreateDTO.getMainComplaint());
 
-                // Associate the radiograph with the patient
-                radiograph.setPatient(patient);
+            // Handle Anamnesis Form
+            AnamnesisForm formEntity = new AnamnesisForm();
+            if (visitCreateDTO.getAnamnesisFormDTO() != null) {
+                var formDTO = visitCreateDTO.getAnamnesisFormDTO();
 
-                radiograph.setImageData(radiographImage.getBytes()); // Save the image data
-                if (visitCreateDTO != null) {
-                    radiograph.setNotes(visitCreateDTO.getRadiographNotes()); // Set notes from DTO
+                formEntity.setWeightKg(formDTO.getWeightKg());
+                formEntity.setHeightM(formDTO.getHeightM());
+                formEntity.setSystolicBp(formDTO.getSystolicBp());
+                formEntity.setDiastolicBp(formDTO.getDiastolicBp());
+                formEntity.setPregnant(formDTO.getIsPregnant());
+                formEntity.setHadRecentFever(formDTO.getHadRecentFever());
+                formEntity.setUnderMedicalTreatment(formDTO.getIsUnderMedicalTreatment());
+                formEntity.setTakingMedication(formDTO.getIsTakingMedication());
+                formEntity.setDetailedMedicalHistory(formDTO.getDetailedMedicalHistory());
+                formEntity.setFamilyHealthHistory(formDTO.getFamilyHealthHistory());
+                formEntity.setPreviousDentalHistory(formDTO.getPreviousDentalHistory());
+                formEntity.setPsychosocialHistory(formDTO.getPsychosocialHistory());
+                formEntity.setAdditionalInfoForDentist(formDTO.getAdditionalInfoForDentist());
+                formEntity.setSpecialNeedsDuringTreatment(formDTO.getSpecialNeedsDuringTreatment());
+
+                // Handle Specific Health Questions
+                if (formDTO.getSpecificHealthQuestions() != null) {
+                    var questionsDTO = formDTO.getSpecificHealthQuestions();
+                    SpecificHealthQuestions questionsEntity = new SpecificHealthQuestions();
+
+                    questionsEntity.setHasCardiovascularIssue(questionsDTO.getHasCardiovascularIssue());
+                    questionsEntity.setHasRheumaticFever(questionsDTO.getHasRheumaticFever());
+                    questionsEntity.setHasJointPain(questionsDTO.getHasJointPain());
+                    questionsEntity.setHasChestPain(questionsDTO.getHasChestPain());
+                    questionsEntity.setHasFatigueOnExertion(questionsDTO.getHasFatigueOnExertion());
+                    questionsEntity.setHasAnkleEdema(questionsDTO.getHasAnkleEdema());
+                    questionsEntity.setHasRecentWeightLoss(questionsDTO.getHasRecentWeightLoss());
+                    questionsEntity.setHadHepatitis(questionsDTO.getHadHepatitis());
+                    questionsEntity.setHasKidneyProblems(questionsDTO.getHasKidneyProblems());
+                    questionsEntity.setHasGastricProblems(questionsDTO.getHasGastricProblems());
+                    questionsEntity.setHasDizzinessFainting(questionsDTO.getHasDizzinessFainting());
+                    questionsEntity.setHasEpilepsy(questionsDTO.getHasEpilepsy());
+                    questionsEntity.setWasHospitalized(questionsDTO.getWasHospitalized());
+                    questionsEntity.setHasPersistentCough(questionsDTO.getHasPersistentCough());
+                    questionsEntity.setHadLocalAnesthesia(questionsDTO.getHadLocalAnesthesia());
+                    questionsEntity.setHadAnesthesiaReaction(questionsDTO.getHadAnesthesiaReaction());
+                    questionsEntity.setHadGeneralAnesthesia(questionsDTO.getHadGeneralAnesthesia());
+                    questionsEntity.setHasExcessiveBleeding(questionsDTO.getHasExcessiveBleeding());
+                    questionsEntity.setBleedingControlMethod(questionsDTO.getBleedingControlMethod());
+                    questionsEntity.setHadDentalTreatmentComplication(questionsDTO.getHadDentalTreatmentComplication());
+                    questionsEntity.setTookPenicillin(questionsDTO.getTookPenicillin());
+                    questionsEntity.setTookCorticosteroidLast12m(questionsDTO.getTookCorticosteroidLast12m());
+                    questionsEntity.setHasAllergies(questionsDTO.getHasAllergies());
+                    questionsEntity.setHadMedicationRelatedProblem(questionsDTO.getHadMedicationRelatedProblem());
+                    questionsEntity.setUsesSubstances(questionsDTO.getUsesSubstances());
+                    questionsEntity.setHadOralWhiteSpots(questionsDTO.getHadOralWhiteSpots());
+                    questionsEntity.setWhiteSpotsTreatment(questionsDTO.getWhiteSpotsTreatment());
+                    questionsEntity.setHasRecurrentAphthousUlcers(questionsDTO.getHasRecurrentAphthousUlcers());
+                    questionsEntity.setHadHivTest(questionsDTO.getHadHivTest());
+                    questionsEntity.setHasInsensitiveBodyArea(questionsDTO.getHasInsensitiveBodyArea());
+
+                    formEntity.setSpecificHealthQuestions(questionsEntity);
                 }
-
-                // Send the image to the external service and get the results
-                JsonNode viewerContextJson = processRadiograph(radiographImage);
-                radiograph.setViewerContextJson(viewerContextJson); // Save the results in viewerContextJson
-
-                visit.setRadiograph(radiograph); // Associate the radiograph with the visit
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to upload radiograph image", e);
             }
+
+            // Associate the AnamnesisForm with the Visit
+            visit.setAnamnesisForm(formEntity);
         }
 
         // Save the visit to the database

@@ -19,7 +19,9 @@ public class VisitCreateDTO {
     private String radiographNotes; 
     private String viewerContextJson; 
     private byte[] radiographImageData; 
-
+   
+    private AnamnesisFormDTO anamnesisFormDTO;
+    
     public LocalDate getVisitDate() {
         return visitDate;
     }
@@ -59,4 +61,13 @@ public class VisitCreateDTO {
     public void setRadiographImageData(byte[] radiographImageData) {
         this.radiographImageData = radiographImageData;
     }
+
+    public AnamnesisFormDTO getAnamnesisFormDTO() {
+        return anamnesisFormDTO;
+    }
+
+    public void setAnamnesisFormDTO(AnamnesisFormDTO anamnesisFormDTO) {
+        this.anamnesisFormDTO = anamnesisFormDTO;
+    }
+
 }
