@@ -2,9 +2,8 @@ package api.webservices.inredd.domain.model.dto;
 
 import api.webservices.inredd.domain.model.Radiograph;
 
-import java.time.LocalDate;
-
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 public class RadiographDTO {
 
@@ -37,7 +36,7 @@ public class RadiographDTO {
     }
 
     public JsonNode getViewerContextJson() {
-        return viewerContextJson;
+        return viewerContextJson != null ? viewerContextJson : JsonNodeFactory.instance.objectNode();
     }
 
     public void setViewerContextJson(JsonNode viewerContextJson) {

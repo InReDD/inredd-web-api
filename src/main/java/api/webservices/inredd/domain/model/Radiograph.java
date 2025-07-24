@@ -2,8 +2,9 @@ package api.webservices.inredd.domain.model;
 
 import javax.persistence.*;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.hibernate.annotations.Type;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 import java.time.LocalDate;
 
@@ -23,7 +24,7 @@ public class Radiograph {
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
-    @Type(type = "jsonb")
+    @Type(type = "json")
     @Column(columnDefinition = "jsonb")
     private JsonNode viewerContextJson;
 
@@ -53,7 +54,7 @@ public class Radiograph {
         this.visit = visit;
     }
     public JsonNode getViewerContextJson() {
-        return viewerContextJson;
+        return viewerContextJson != null ? viewerContextJson : JsonNodeFactory.instance.objectNode();
     }
 
     public void setViewerContextJson(JsonNode viewerContextJson) {
