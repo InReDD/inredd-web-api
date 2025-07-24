@@ -1,13 +1,16 @@
 package api.webservices.inredd.resource;
 
 import api.webservices.inredd.domain.model.dto.AdvancedSearchResultDTO;
+import api.webservices.inredd.domain.model.dto.VisitCreateDTO;
 import api.webservices.inredd.domain.model.dto.VisitDTO;
 import api.webservices.inredd.domain.model.dto.VisitSearchCriteriaDTO;
 import api.webservices.inredd.domain.model.dto.VisitUpdateDTO;
 import api.webservices.inredd.service.VisitService;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/visits")
@@ -22,6 +25,15 @@ public class VisitResource {
     @GetMapping("/{id}")
     public ResponseEntity<VisitDTO> getVisitById(@PathVariable Long id) {
         return ResponseEntity.ok(visitService.getVisitById(id));
+    }
+
+    @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    public ResponseEntity<VisitDTO> createVisit(
+            @RequestParam Long patientId,
+            @RequestPart(value = "visitCreateDTO", required = false) @Validated VisitCreateDTO visitCreateDTO,
+            @RequestPart(value = "radiographImage", required = false) MultipartFile radiographImage) {
+        VisitDTO createdVisit = visitService.createVisit(patientId, visitCreateDTO, radiographImage);
+        return ResponseEntity.status(201).body(createdVisit); 
     }
 
     @PutMapping("/{id}")
@@ -39,15 +51,10 @@ public class VisitResource {
 
     /**
      * Handles advanced search requests for visits.
-     * Accepts a JSON object with various filter criteria in the request body.
-     *
-     * @param searchCriteria The DTO containing all search parameters.
-     * @return A ResponseEntity containing the search results and statistics.
      */
     @PostMapping("/search")
     public ResponseEntity<AdvancedSearchResultDTO> searchVisits(@RequestBody VisitSearchCriteriaDTO searchCriteria) {
         AdvancedSearchResultDTO results = visitService.searchVisits(searchCriteria);
         return ResponseEntity.ok(results);
     }
-
 }

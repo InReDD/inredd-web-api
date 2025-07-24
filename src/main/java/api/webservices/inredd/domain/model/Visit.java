@@ -91,5 +91,8 @@ public class Visit {
 
     public void setRadiograph(Radiograph radiograph) {
         this.radiograph = radiograph;
+        if (radiograph != null) {
+            radiograph.setVisit(this); 
+        }
     }
 }

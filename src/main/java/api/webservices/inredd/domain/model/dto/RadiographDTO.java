@@ -4,11 +4,12 @@ import api.webservices.inredd.domain.model.Radiograph;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 public class RadiographDTO {
 
     private Long id;
-    private LocalDate radiographDate;
-    private String viewerContextJson;
+    private JsonNode viewerContextJson;
     private String notes;
     private byte[] imageData;
 
@@ -35,15 +36,11 @@ public class RadiographDTO {
         this.id = id;
     }
 
-    public void setRadiographDate(LocalDate radiographDate) {
-        this.radiographDate = radiographDate;
-    }
-
-    public String getViewerContextJson() {
+    public JsonNode getViewerContextJson() {
         return viewerContextJson;
     }
 
-    public void setViewerContextJson(String viewerContextJson) {
+    public void setViewerContextJson(JsonNode viewerContextJson) {
         this.viewerContextJson = viewerContextJson;
     }
 

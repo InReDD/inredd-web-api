@@ -3,12 +3,10 @@ package api.webservices.inredd.domain.model.dto;
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Null;
-
 import java.time.LocalDate;
 
 /**
  * Data Transfer Object for creating a new Visit.
- * Contains only the essential fields needed for creation.
  */
 public class VisitCreateDTO {
 
@@ -18,6 +16,9 @@ public class VisitCreateDTO {
 
     @NotBlank(message = "Main complaint cannot be empty.")
     private String mainComplaint;
+    private String radiographNotes; 
+    private String viewerContextJson; 
+    private byte[] radiographImageData; 
 
     public LocalDate getVisitDate() {
         return visitDate;
@@ -33,5 +34,29 @@ public class VisitCreateDTO {
 
     public void setMainComplaint(String mainComplaint) {
         this.mainComplaint = mainComplaint;
+    }
+
+    public String getRadiographNotes() {
+        return radiographNotes;
+    }
+
+    public void setRadiographNotes(String radiographNotes) {
+        this.radiographNotes = radiographNotes;
+    }
+
+    public String getViewerContextJson() {
+        return viewerContextJson;
+    }
+
+    public void setViewerContextJson(String viewerContextJson) {
+        this.viewerContextJson = viewerContextJson;
+    }
+
+    public byte[] getRadiographImageData() {
+        return radiographImageData;
+    }
+
+    public void setRadiographImageData(byte[] radiographImageData) {
+        this.radiographImageData = radiographImageData;
     }
 }

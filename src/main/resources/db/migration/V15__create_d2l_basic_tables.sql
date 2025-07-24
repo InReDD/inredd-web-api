@@ -100,12 +100,18 @@ VALUES
     (2, '2025-08-22', 'Follow-up on teeth whitening and general sensitivity.'),
     (4, '2025-09-05', 'Consultation for orthodontic treatment options.');
 
+
+
 INSERT INTO radiographs (visit_id, patient_id, image_data, notes, viewer_context_json) 
 VALUES 
-    (1, 1, decode('89504E470D0A1A0A0000000D4948445200000100000001000806000000', 'hex'), 'Panoramic radiograph for wisdom tooth evaluation.', '{"viewer_version": "1.2", "annotations": [{"type": "circle", "points": [450, 320], "radius": 50, "label": "Tooth 48 - Semi-impacted"}], "settings": {"brightness": 55, "contrast": 70}}'),
-    (2, 1, decode('89504E470D0A1A0A0000000D4948445200000100000001000806000000', 'hex'), 'Routine check-up radiograph.', '{"settings": {"brightness": 50, "contrast": 65}}'),
-    (3, 2, decode('89504E470D0A1A0A0000000D4948445200000100000001000806000000', 'hex'), 'Bitewing radiographs to check for cavities before whitening.', '{"settings": {"brightness": 50, "contrast": 65}}'),
-    (4, 4, decode('89504E470D0A1A0A0000000D4948445200000100000001000806000000', 'hex'), 'Lateral cephalometric radiograph for orthodontic assessment.', '{"settings": {"brightness": 50, "contrast": 50}}');
+    -- (1, 1, decode('89504E470D0A1A0A0000000D4948445200000100000001000806000000', 'hex'), 'Panoramic radiograph for wisdom tooth evaluation.', '{"viewer_version": "1.2", "annotations": [{"type": "circle", "points": [450, 320], "radius": 50, "label": "Tooth 48 - Semi-impacted"}], "settings": {"brightness": 55, "contrast": 70}}'),
+    -- (2, 1, decode('89504E470D0A1A0A0000000D4948445200000100000001000806000000', 'hex'), 'Routine check-up radiograph.', '{"settings": {"brightness": 50, "contrast": 65}}'),
+    -- (3, 2, decode('89504E470D0A1A0A0000000D4948445200000100000001000806000000', 'hex'), 'Bitewing radiographs to check for cavities before whitening.', '{"settings": {"brightness": 50, "contrast": 65}}'),
+    -- (4, 4, decode('89504E470D0A1A0A0000000D4948445200000100000001000806000000', 'hex'), 'Lateral cephalometric radiograph for orthodontic assessment.', '{"settings": {"brightness": 50, "contrast": 50}}');
+    (1, 1, pg_read_binary_file('/srv/pg_imports/images/29-F-68.jpg'), 'Panoramic radiograph for wisdom tooth evaluation.', '{"viewer_version": "1.2", "annotations": [{"type": "circle", "points": [450, 320], "radius": 50, "label": "Tooth 48 - Semi-impacted"}], "settings": {"brightness": 55, "contrast": 70}}'),
+    (2, 1, pg_read_binary_file('/srv/pg_imports/images/242-F-25.jpg'), 'Routine check-up radiograph.', '{"settings": {"brightness": 50, "contrast": 65}}'),
+    (3, 2, pg_read_binary_file('/srv/pg_imports/images/607-F-38.jpg'), 'Bitewing radiographs to check for cavities before whitening.', '{"settings": {"brightness": 50, "contrast": 65}}'),
+    (4, 4, pg_read_binary_file('/srv/pg_imports/images/1386-F-51.jpg'), 'Lateral cephalometric radiograph for orthodontic assessment.', '{"settings": {"brightness": 50, "contrast": 50}}');
 
 INSERT INTO anamnesis_forms (visit_id, weight_kg, height_m, systolic_bp, diastolic_bp, is_pregnant, had_recent_fever, is_under_medical_treatment, is_taking_medication, detailed_medical_history, family_health_history, previous_dental_history, psychosocial_history, additional_info_for_dentist, special_needs_during_treatment)
 VALUES

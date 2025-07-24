@@ -1,6 +1,10 @@
 package api.webservices.inredd.domain.model;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import org.hibernate.annotations.Type;
+
 import java.time.LocalDate;
 
 @Entity
@@ -15,8 +19,13 @@ public class Radiograph {
     @JoinColumn(name = "visit_id", nullable = false)
     private Visit visit;
 
-    @Column(columnDefinition = "JSONB")
-    private String viewerContextJson;
+    @OneToOne
+    @JoinColumn(name = "patient_id", nullable = false)
+    private Patient patient;
+
+    @Type(type = "jsonb")
+    @Column(columnDefinition = "jsonb")
+    private JsonNode viewerContextJson;
 
     @Column(columnDefinition = "TEXT")
     private String notes;
@@ -43,12 +52,11 @@ public class Radiograph {
     public void setVisit(Visit visit) {
         this.visit = visit;
     }
-    
-    public String getViewerContextJson() {
+    public JsonNode getViewerContextJson() {
         return viewerContextJson;
     }
 
-    public void setViewerContextJson(String viewerContextJson) {
+    public void setViewerContextJson(JsonNode viewerContextJson) {
         this.viewerContextJson = viewerContextJson;
     }
 
@@ -74,5 +82,13 @@ public class Radiograph {
 
     public void setCreatedAt(LocalDate createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Patient getPatient() {
+        return patient;
+    }
+
+    public void setPatient(Patient patient) {
+        this.patient = patient;
     }
 }
